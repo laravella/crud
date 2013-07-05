@@ -1,4 +1,4 @@
 crud
 ====
 
-Database create-read-update-delete scaffolding 
+Database create-read-update-delete scaffolding  
