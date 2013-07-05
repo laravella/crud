@@ -1,0 +1,23 @@
+{
+    "name": "laravella/crud",
+    "description": "",
+    "authors": [
+        {
+            "name": "laravella",
+            "email": "laravella.cms@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "illuminate/support": "4.0.x"
+    },
+    "autoload": {
+        "classmap": [
+            "src/migrations"
+        ],
+        "psr-0": {
+            "Laravella\\Crud": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}
