@@ -1,25 +1,14 @@
 <?php
-/*
-Route::filter('ravelauth', function()
-        {
-            if (Request::ajax())
-            {
-                if (Auth::guest())
-                {
-                    App::abort(403);
-                }
-            }
 
-            if (Auth::guest())
-                return Redirect::action('AdminUserLoginController@getIndex');
-        });
-*/
-Route::controller('/db/table', 'DbController');
+Route::get('/db', function() {
+    echo "<a href=\"/db/api/asdf\">Greeting</a><br />";
+    echo "<a href=\"/db/table\">Table</a><br />";
+});
 
-/*
-Route::group(array('prefix' => 'db'), function()
-        {
-        });
- * 
- */
+Route::get('/db/api/{call}', function() {
+    echo DbGopher::greeting();
+});
+
+Route::get('/db/{table}', 'DbController@getIndex');
+
 ?>

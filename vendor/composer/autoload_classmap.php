@@ -55,4 +55,6 @@ return array(
     'Illuminate\\Support\\ServiceProvider' => $vendorDir . '/illuminate/support/Illuminate/Support/ServiceProvider.php',
     'Illuminate\\Support\\Str' => $vendorDir . '/illuminate/support/Illuminate/Support/Str.php',
     'Laravella\\Crud\\CrudServiceProvider' => $baseDir . '/src/Laravella/Crud/CrudServiceProvider.php',
+    'Laravella\\Crud\\DbGopher' => $baseDir . '/src/Laravella/Crud/DbGopher.php',
+    'Laravella\\Crud\\Facades\\DbGopher' => $baseDir . '/src/Laravella/Crud/Facades/DbGopher.php',
 );
