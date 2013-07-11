@@ -11,6 +11,7 @@ Route::get('/asdf', function()
             echo "asdf";
         });
 
+        /*
 Route::filter('crudauth', function()
         {
             
@@ -38,4 +39,6 @@ Route::get('/db/api/{call}', array('before' => 'auth.basic', function()
     {
         echo DbGopher::greeting();
     }));
+         * 
+         */
 ?>
