@@ -20,7 +20,7 @@ class CrudServiceProvider extends ServiceProvider {
 	{
 		$this->package('laravella/crud');
 
-                include __DIR__.'/../../routes/routes.php';                
+                include __DIR__.'/../../routes.php';                
 	}
 
 	/**
