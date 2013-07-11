@@ -8,7 +8,7 @@
 
 Route::get('/asdf', function()
         {
-            echo "asdf";
+            return "asdf";
         });
 
         /*
