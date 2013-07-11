@@ -6,7 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'DbController' => $baseDir . '/src/controllers/DbController.php',
     'Illuminate\\Support\\ClassLoader' => $vendorDir . '/illuminate/support/Illuminate/Support/ClassLoader.php',
     'Illuminate\\Support\\Collection' => $vendorDir . '/illuminate/support/Illuminate/Support/Collection.php',
     'Illuminate\\Support\\Contracts\\ArrayableInterface' => $vendorDir . '/illuminate/support/Illuminate/Support/Contracts/ArrayableInterface.php',
