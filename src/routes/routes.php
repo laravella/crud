@@ -6,10 +6,7 @@
  */
 
 
-Route::get('/asdf', function()
-        {
-            return "asdf";
-        });
+Route::get('/asdf', function() { return "asdf";});
 
         /*
 Route::filter('crudauth', function()

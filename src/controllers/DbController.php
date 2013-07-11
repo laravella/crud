@@ -22,11 +22,6 @@ class DbController extends BaseController {
         die;
     }
 
-    public function missingMethod($parameters = array())
-    {
-        return "Missing Method";
-    }
-
 }
 
 ?>
