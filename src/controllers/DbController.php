@@ -9,12 +9,12 @@ class DbController extends BaseController {
 
     public function getIndex()
     {
-        return View::make("crud::dbview");
+        return "asdf"; //View::make("crud::dbview");
     }
 
     public function getSelect($table = null)
     {
-        return View::make("crud::dbview");
+        return "asdf"; //View::make("crud::dbview");
     }
 
     public function getTable($name = null)
