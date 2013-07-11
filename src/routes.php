@@ -1,5 +1,5 @@
 <?php
 
-Route::get('/asdf', function() { return "asdf";});
+Route::controller('/asdf', 'DbController');
 
 ?>
