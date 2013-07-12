@@ -18,10 +18,9 @@ class DbController extends Controller {
     {
         $table = DB::table($table)->get();
         
-        //return View::make("crud::dbview")->with('data', $table);
+        return View::make("crud::dbview", array('data' => $table)); //->with('data', $table);
         
-        return View::make($this->layout)->nest('content','crud::dbview', array('data' => $table));
-
+        //return View::make($this->layout)->nest('content','crud::dbview', array('data' => $table));
     }
 
     public function missingMethod($parameters)
