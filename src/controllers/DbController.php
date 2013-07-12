@@ -7,14 +7,21 @@
  */
 class DbController extends Controller {
 
+    protected $layout = 'layouts.default';
+    
     public function getIndex()
     {
-        return "asdf"; //View::make("crud::dbview");
+        return "hello from DbController->getIndex()";
     }
 
     public function getSelect($table = null)
     {
-        return "asdf"; //View::make("crud::dbview");
+        $table = DB::table($table)->get();
+        
+        //return View::make("crud::dbview")->with('data', $table);
+        
+        $this->layout->nest('content','crud::dbview',$table);
+
     }
 
     public function missingMethod($parameters)
