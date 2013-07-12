@@ -14,7 +14,10 @@
         "classmap": [
             "src/controllers",
             "src/migrations"
-        ]
+        ],
+        "psr-0": {
+            "Laravella\\Crud": "src/"
+        }                
     },
     "minimum-stability": "dev"
 }
