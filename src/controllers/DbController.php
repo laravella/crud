@@ -20,7 +20,7 @@ class DbController extends Controller {
         
         //return View::make("crud::dbview")->with('data', $table);
         
-        $this->layout->nest('content','crud::dbview',$table);
+        View::make($this->layout)->nest('content','crud::dbview',$table);
 
     }
 
