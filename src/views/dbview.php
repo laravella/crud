@@ -1,5 +1,3 @@
-@extends('layouts.default')
-
 {{-- Web site Title --}}
 @section('title')
 @parent
