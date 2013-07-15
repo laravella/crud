@@ -31,6 +31,16 @@ class DbController extends Controller {
         return View::make("crud::dbview", array('action' => 'select', 'data' => $results, 'prefix' => $prefix));
     }
 
+    private static function __getMeta($tableName) {
+        //get metadata from database
+        return DB::table("_db_fields")
+                ->join('_db_tables', '_db_fields._db_table_id', '=', '_db_tables.id')
+                ->select('_db_fields.name', '_db_fields.label', '_db_fields.key', 
+                        '_db_fields.display', '_db_fields.type', '_db_fields.length', 
+                        '_db_fields.default', '_db_fields.extra')
+                ->where("_db_tables.name", "=", $tableName)->get();
+    }
+    
     /**
      * /db/select/{tablename}
      * 
@@ -43,37 +53,46 @@ class DbController extends Controller {
         $table = DB::table($tableName)->get();
         
         //get metadata from database
-        $meta = DB::table("_db_fields")
-                ->join('_db_tables', '_db_fields._db_table_id', '=', '_db_tables.id')
-                ->select('_db_fields.name', '_db_fields.label', '_db_fields.key', 
-                        '_db_fields.display', '_db_fields.type', '_db_fields.length', 
-                        '_db_fields.default', '_db_fields.extra')
-                ->where("_db_tables.name", "=", $tableName)->get();
+        $meta = DbController::__getMeta($tableName);
+        
+        $fmeta = DbController::__getMeta("_db_fields");
+
+        //turn metadata into array
+        $ma = DbController::__makeArray($fmeta, $meta);
         
         //set field name as key in meta array
-        $ma = array();
-        foreach($meta as $mk) {
-            $ma[$mk->name] = $mk;
+        $metaA = array();
+        foreach($ma as $mk) {
+            $mk['_db_tables.name'] = $tableName;
+            $metaA[$mk['name']] = $mk;
         }
         
         $prefix = "/db/edit/$tableName/";
-        return View::make("crud::dbview", array('action' => 'select', 'data' => $table, 'prefix' => $prefix, 'meta' => $ma));
+        return View::make("crud::dbview", array('action' => 'select', 'data' => $table, 'prefix' => $prefix, 'meta' => $metaA));
     }
 
     /**
-     * Turn a StdClass object into an array
+     * Turn a StdClass object into an array.
      * 
-     * @param type $meta
-     * @param type $data
+     * @param type $meta An array of stdClass objects, each object representing a field's metadata
+     * @param type $data An array of stdClass objects, each object a record
      */
-    private function __makeArray($tableName, $meta, $data) {
+    private static function __makeArray($meta, $data) {
         $arr = array();
+        //loop through records
         foreach($data as $rec) {
-            $rec = array();
+            $recA = array();
+            //for each fieldname in metadata
             foreach ($meta as $metaField) {
-                $rec[$metaField->name] = $rec->$metaField;
+                //get field name
+                $fieldName = $metaField->name;
+                //populate array with value of field
+                if (property_exists($rec, $fieldName)) {
+                    $recA[$fieldName] = $rec->$fieldName;
+                }
             }
-            $arr[] = $rec;
+            //add record array to table array
+            $arr[] = $recA;
         }
         return $arr;
     }

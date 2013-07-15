@@ -18,10 +18,15 @@
     @if($action == 'select')
     <h1>DbView</h1>
         <table class="dbtable">
+            <tr>
+        @foreach($data[0] as $name=>$field)
+                <th>{{$name}}</th>
+        @endforeach
+            </tr>
         @foreach($data as $record)
             <tr>
             @foreach($record as $name=>$field)
-                @if($prefix && $meta[$name]->key == 'PRI')
+                @if($prefix && $meta[$name]['key'] == 'PRI')
                     <td><a href="{{$prefix}}{{$field}}">{{$field}}</a></td>
                 @else
                     <td>{{$field}}</td>
