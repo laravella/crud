@@ -84,10 +84,9 @@
 					<!-- Content -->
 					@yield('content')
 					<!-- ./ content -->
-                                        
+
 				</div>
 				<!-- ./ container -->
-				
 				
                 @include('ravel::layouts.admin.partials.footer')
 

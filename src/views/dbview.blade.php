@@ -14,7 +14,7 @@
     </style>
 @stop
 
-@section('content')
+@section('select')
 <h1>DbView</h1>
     <table class="dbtable">
     @foreach($data as $record)
@@ -29,5 +29,13 @@
         </tr>
     @endforeach
     </table>
+@stop
+
+@section('edit') 
+    <h1>Edit</h1>
+@stop
+
+@section('content')
+    @yield($action)
 @stop
 

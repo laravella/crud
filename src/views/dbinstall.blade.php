@@ -14,20 +14,18 @@
     </style>
 @stop
 
-@section('index')
-<h1>Install</h1>
-<a href="/db/install">Install</a>
+@section('install')
+    <h1>Install</h1>
+    @foreach($log as $logitem)
+        {{$logitem}}<br />
+    @endforeach
 @stop
 
-@section('install')
-<h1>Installed</h1>
+@section('index')
+    <h1>Index</h1>
 @stop
 
 @section('content')
-    @if($action == 'index')
-        @yield('index')
-    @elseif($action == 'install')
-        @yield('install')
-    @endif
+    @yield($action)
 @stop
 

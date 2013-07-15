@@ -28,7 +28,7 @@ class DbController extends Controller {
     {
         $results = DB::select('show tables');
         $prefix = "/db/select/";
-        return View::make("crud::dbview", array('data' => $results, 'prefix' => $prefix));
+        return View::make("crud::dbview", array('action' => 'select', 'data' => $results, 'prefix' => $prefix));
     }
 
     /**
@@ -41,10 +41,14 @@ class DbController extends Controller {
     {
         $table = DB::table($table)->get();
         $prefix = "";
-        return View::make("crud::dbview", array('data' => $table, 'prefix' => $prefix)); //->with('data', $table);
-        //return View::make($this->layout)->nest('content','crud::dbview', array('data' => $table));
+        return View::make("crud::dbview", array('action' => 'select', 'data' => $table, 'prefix' => $prefix));
     }
 
+    public function getEdit($table = null, $id = 0) {
+        $table = DB::table($table)->get();
+        return View::make("crud::dbview", array('action' => 'edit', 'data' => $table));
+    }    
+    
     /**
      * Create the _db_tables table
      * 
@@ -72,14 +76,14 @@ class DbController extends Controller {
                     $table->integer('_db_table_id');
                     $table->string('name', 100);
                     $table->string('label', 100);
-                    $table->integer('display');
-                    $table->string('type', 100);
-                    $table->integer('length');
-                    $table->string('null', 3);
-                    $table->string('key', 50);
-                    $table->string('default', 100);
-                    $table->string('extra', 100);
-                    $table->primary(array('_db_table_id', 'name'));                    
+                    $table->integer('display')->nullable();
+                    $table->string('type', 100)->nullable();
+                    $table->integer('length')->nullable();
+                    $table->string('null', 3)->nullable();
+                    $table->string('key', 50)->nullable();
+                    $table->string('default', 100)->nullable();
+                    $table->string('extra', 100)->nullable();
+                    $table->unique(array('_db_table_id', 'name'));
                 });
     }
 
@@ -145,17 +149,27 @@ class DbController extends Controller {
                                 //loop through list of columns
                                 foreach ($cols as $col)
                                 {
-                                    $colRec = array();
-                                    $colRec['_db_table_id'] = $id;
-                                    $colRec['name'] = $col->Field;
-                                    $colRec['label'] = $col->Field;
-                                    $colRec['display'] = 1;
-                                    $colRec['type'] = $col->Type;
-                                    $colRec['length'] = 0;
-                                    $colRec['null'] = $col->Null;
-                                    $colRec['key'] = $col->Key;
-                                    $colRec['default'] = $col->Default;
-                                    $colRec['extra'] = $col->Extra;
+                                    try
+                                    {
+                                        $colRec = array();
+                                        $colRec['_db_table_id'] = $id;
+                                        $colRec['name'] = $col->Field;
+                                        $colRec['label'] = $col->Field;
+                                        $colRec['display'] = 1;
+                                        $colRec['type'] = $col->Type;
+                                        $colRec['length'] = 0;
+                                        $colRec['null'] = $col->Null;
+                                        $colRec['key'] = $col->Key;
+                                        $colRec['default'] = $col->Default;
+                                        $colRec['extra'] = $col->Extra;
+                                        $id = DB::table('_db_fields')->insertGetId($colRec);
+                                        $log[] = " - {$colRec['name']} inserted with id $id";
+                                    }
+                                    catch (Exception $e)
+                                    {
+                                        $log[] = " x column {$colRec['name']} could not be inserted.";
+                                        $log[] = $e->getMessage();
+                                    }
                                 }
                             }
                             catch (Exception $e)
