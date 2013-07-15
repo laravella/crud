@@ -20,9 +20,14 @@
     @foreach($data as $record)
         <tr>
         @foreach($record as $field)
+            @if($prefix)
+            <td><a href="{{$prefix}}{{$field}}">{{$field}}</a></td>
+            @else
             <td>{{$field}}</td>
+            @endif
         @endforeach
         </tr>
     @endforeach
     </table>
 @stop
+
