@@ -15,24 +15,31 @@
 @stop
 
 @section('select')
-<h1>DbView</h1>
-    <table class="dbtable">
-    @foreach($data as $record)
-        <tr>
-        @foreach($record as $field)
-            @if($prefix)
-            <td><a href="{{$prefix}}{{$field}}">{{$field}}</a></td>
-            @else
-            <td>{{$field}}</td>
-            @endif
+    @if($action == 'select')
+    <h1>DbView</h1>
+        <table class="dbtable">
+        @foreach($data as $record)
+            <tr>
+            @foreach($record as $name=>$field)
+                @if($prefix && $meta[$name]->key == 'PRI')
+                    <td><a href="{{$prefix}}{{$field}}">{{$field}}</a></td>
+                @else
+                    <td>{{$field}}</td>
+                @endif
+            @endforeach
+            </tr>
         @endforeach
-        </tr>
-    @endforeach
-    </table>
+        </table>
+    @endif
 @stop
 
 @section('edit') 
-    <h1>Edit</h1>
+    @if($action == 'edit')
+        <h1>Edit</h1>
+        @foreach($data as $record)
+            {{$record->id}}<br />
+        @endforeach
+    @endif
 @stop
 
 @section('content')

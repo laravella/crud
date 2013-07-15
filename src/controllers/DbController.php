@@ -37,16 +37,57 @@ class DbController extends Controller {
      * @param type $table
      * @return type
      */
-    public function getSelect($table = null)
+    public function getSelect($tableName = null)
     {
-        $table = DB::table($table)->get();
-        $prefix = "";
-        return View::make("crud::dbview", array('action' => 'select', 'data' => $table, 'prefix' => $prefix));
+        //select table data from database
+        $table = DB::table($tableName)->get();
+        
+        //get metadata from database
+        $meta = DB::table("_db_fields")
+                ->join('_db_tables', '_db_fields._db_table_id', '=', '_db_tables.id')
+                ->select('_db_fields.name', '_db_fields.label', '_db_fields.key', 
+                        '_db_fields.display', '_db_fields.type', '_db_fields.length', 
+                        '_db_fields.default', '_db_fields.extra')
+                ->where("_db_tables.name", "=", $tableName)->get();
+        
+        //set field name as key in meta array
+        $ma = array();
+        foreach($meta as $mk) {
+            $ma[$mk->name] = $mk;
+        }
+        
+        $prefix = "/db/edit/$tableName/";
+        return View::make("crud::dbview", array('action' => 'select', 'data' => $table, 'prefix' => $prefix, 'meta' => $ma));
     }
 
+    /**
+     * Turn a StdClass object into an array
+     * 
+     * @param type $meta
+     * @param type $data
+     */
+    private function __makeArray($tableName, $meta, $data) {
+        $arr = array();
+        foreach($data as $rec) {
+            $rec = array();
+            foreach ($meta as $metaField) {
+                $rec[$metaField->name] = $rec->$metaField;
+            }
+            $arr[] = $rec;
+        }
+        return $arr;
+    }
+    
+    /**
+     * Display a single record on screen to be edited by the user
+     * 
+     * @param type $table
+     * @param type $id
+     * @return type
+     */
     public function getEdit($table = null, $id = 0) {
-        $table = DB::table($table)->get();
-        return View::make("crud::dbview", array('action' => 'edit', 'data' => $table));
+        $table = DB::table($table)->where('id', '=', $id)->get();
+        return View::make("crud::dbview", array('action' => 'edit', 'data' => $table, 'prefix' => ''));
     }    
     
     /**
@@ -162,8 +203,8 @@ class DbController extends Controller {
                                         $colRec['key'] = $col->Key;
                                         $colRec['default'] = $col->Default;
                                         $colRec['extra'] = $col->Extra;
-                                        $id = DB::table('_db_fields')->insertGetId($colRec);
-                                        $log[] = " - {$colRec['name']} inserted with id $id";
+                                        $fid = DB::table('_db_fields')->insertGetId($colRec);
+                                        $log[] = " - {$colRec['name']} inserted with id $fid";
                                     }
                                     catch (Exception $e)
                                     {
