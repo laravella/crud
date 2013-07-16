@@ -14,6 +14,15 @@
 </style>
 @stop
 
+@section('index')
+    @if($action == 'index')
+        <h1>Index</h1>
+        <ul>
+        <li><a href="/db/select/_db_tables">List Tables</a></li>
+        </ul>
+    @endif
+@stop
+
 @section('select')
 @if($action == 'select')
 <h1>DbView</h1>
