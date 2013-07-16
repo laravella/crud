@@ -39,7 +39,8 @@ class DbInstallController extends Controller {
                 {
                     $table->increments('id')->unique();
                     $table->integer('_db_table_id')->unsigned();        // links to _db_tables.id
-                    $table->integer('_db_field_id')->unsigned();        // links to _db_fields.id (the id of the primary key)
+                    $table->integer('pk_field_id')->unsigned();                // links to _db_fields.id (the id of the primary key)
+                    $table->integer('pk_display_field_id')->unsigned();        // links to _db_fields.id (the id of a field in the primary table that will be used as a description of the primary key id)
                     $table->string('name', 100);                        // the field's name
                     $table->string('label', 100);                       // the label
                     $table->integer('display')->nullable();             // the field will be displayed in lists/selects
@@ -53,6 +54,86 @@ class DbInstallController extends Controller {
                     $table->unique(array('_db_table_id', 'name'));
                     $table->foreign('_db_table_id')->references('id')->on('_db_tables')->onDelete('cascade');
                 });
+    }
+
+    /**
+     * Update a reference to primary keys in _db_fields
+     * 
+     * @param type $fkTableName
+     * @param type $fkFieldName
+     * @param type $pkTableName
+     * @param type $pkFieldName
+     */
+    private function __updateReference(&$log, $fkTableName, $fkFieldName, $pkTableName, $pkFieldName)
+    {
+//get the id of the pkTableName in _db_tables
+        $fkTableId = DB::table('_db_tables')->where('name', $fkTableName)->pluck('id');
+        
+        $pkTableId = DB::table('_db_tables')->where('name', $pkTableName)->pluck('id');
+
+//get the id of the primary key field in _db_fields
+        $pkFieldId = DB::table('_db_fields')
+                        ->where('_db_table_id', $pkTableId)
+                        ->where('name', $pkFieldName)
+                        ->pluck('id');
+
+        $fkFieldId = DB::table('_db_fields')
+                        ->where('_db_table_id', $fkTableId)
+                        ->where('name', $fkFieldName)
+                        ->pluck('id');
+
+        $log[] = "inserting into _db_fields : where 
+            pkTableName = $pkTableName, 
+            pkFieldName = $pkFieldName, 
+            pkTableId = $pkTableId, 
+            pkFieldId = $pkFieldId, 
+                
+            fkTableName = $fkTableName, 
+            fkFieldName = $fkFieldName, 
+            fkTableId = $fkTableId,
+            fkFieldId = $fkFieldId";
+        
+//set the reference on the fk field
+        DB::table('_db_fields')
+                ->where('_db_table_id', $fkTableId)
+                ->where('name', $fkFieldName)
+                ->update(array('pk_field_id' => $pkFieldId));
+        /*
+        $log[] = "updating record : {$fkRec->id}";
+        
+        DB::table('_db_fields')
+                ->where('_db_table_id', $fkTableId)
+                ->where('name', $fkFieldName)
+                ->update(array('pk_field_id' => $fieldId));
+        */
+    }
+
+    private function __updateReferences(&$log)
+    {
+        try
+        {
+            $this->__updateReference($log, '_db_fields', '_db_table_id', '_db_tables', 'id');
+
+            $this->__updateReference($log, '_db_table_action_views', 'view_id', '_db_views', 'id');
+            $this->__updateReference($log, '_db_table_action_views', 'table_id', '_db_tables', 'id');
+            $this->__updateReference($log, '_db_table_action_views', 'action_id', '_db_actions', 'id');
+
+            $this->__updateReference($log, '_db_user_permissions', 'user_id', 'users', 'id');
+            $this->__updateReference($log, '_db_user_permissions', 'table_id', '_db_tables', 'id');
+            $this->__updateReference($log, '_db_user_permissions', 'action_id', '_db_actions', 'id');
+
+            $this->__updateReference($log, '_db_usergroup_permissions', 'usergroup_id', 'usergroups', 'id');
+            $this->__updateReference($log, '_db_usergroup_permissions', 'table_id', '_db_tables', 'id');
+            $this->__updateReference($log, '_db_usergroup_permissions', 'action_id', '_db_actions', 'id');
+            
+            $log[] = "Completed foreign key references";
+        }
+        catch (Exception $e)
+        {
+            $log[] = "Error while inserting foreign key references.";
+            $log[] = $e->getMessage();
+            throw new Exception($e);
+        }
     }
 
     /**
@@ -157,7 +238,7 @@ class DbInstallController extends Controller {
         {
             try
             {
-                //$createName is the name of the function which contains the create declarations of the fieldnames
+//$createName is the name of the function which contains the create declarations of the fieldnames
                 $createName = "__create_" . $tableName;
                 $this->$createName($tableName);
                 $log[] = "Table $tableName created";
@@ -220,24 +301,24 @@ class DbInstallController extends Controller {
      */
     private function __populateMeta(&$log)
     {
-        //get the list of tables from the database metadata
+//get the list of tables from the database metadata
         $tables = DB::select('show tables');
-        //loop through records, each record has a tablename
+//loop through records, each record has a tablename
         foreach ($tables as $table)
         {
             try
             {
-                //there is only one field, get it
+//there is only one field, get it
                 foreach ($table as $tableName)
                 {
-                    //insert it into _db_tables
+//insert it into _db_tables
                     $id = DB::table('_db_tables')->insertGetId(array('name' => $tableName));
                     $log[] = "Added $tableName to _db_table with id $id";
                     try
                     {
-                        //get columns from database
+//get columns from database
                         $cols = DB::select("show columns from $tableName");
-                        //loop through list of columns
+//loop through list of columns
                         foreach ($cols as $col)
                         {
                             try
@@ -410,7 +491,7 @@ class DbInstallController extends Controller {
     {
         try
         {
-            //create all the tables
+//create all the tables
             foreach (DbInstallController::__getAdminTables() as $adminTable)
             {
                 $this->__create($adminTable, $log);
@@ -419,6 +500,7 @@ class DbInstallController extends Controller {
             try
             {
                 $this->__populate($log);
+                $this->__updateReferences($log);
             }
             catch (Exception $e)
             {
@@ -434,7 +516,7 @@ class DbInstallController extends Controller {
             $log[] = $e->getMessage();
             $message = " x Error during installation.";
             $log[] = $message;
-            //throw new Exception($message, 1, $e);
+//throw new Exception($message, 1, $e);
         }
         return View::make("crud::dbinstall", array('action' => 'install', 'log' => $log));
     }
