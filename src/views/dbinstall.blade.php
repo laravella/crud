@@ -15,14 +15,23 @@
 @stop
 
 @section('install')
-    <h1>Install</h1>
-    @foreach($log as $logitem)
-        {{$logitem}}<br />
-    @endforeach
+    @if($action == 'install')
+        <h1>Install</h1>
+        @foreach($log as $logitem)
+            {{$logitem}}<br />
+        @endforeach
+    @endif
 @stop
 
 @section('index')
-    <h1>Index</h1>
+    @if($action == 'index')
+        <h1>Index</h1>
+        <ul>
+        <li><a href="/db/install">Install</a></li>
+        <li><a href="/db/reinstall">Reinstall</a></li>
+        <li><a href="/db/select/_db_tables">List Tables</a></li>
+        </ul>
+    @endif
 @stop
 
 @section('content')

@@ -27,7 +27,7 @@ class DbController extends Controller {
     public function getTables()
     {
         $results = DB::select('show tables');
-        $prefix = "/db/select/";
+        $prefix = array("name"=>"/db/select/");
         return View::make("crud::dbview", array('action' => 'select', 'data' => $results, 'prefix' => $prefix));
     }
 
@@ -67,7 +67,7 @@ class DbController extends Controller {
             $metaA[$mk['name']] = $mk;
         }
         
-        $prefix = "/db/edit/$tableName/";
+        $prefix = array("id" => "/db/edit/$tableName/");
         return View::make("crud::dbview", array('action' => 'select', 'data' => $table, 'prefix' => $prefix, 'meta' => $metaA));
     }
 
@@ -143,6 +143,7 @@ class DbController extends Controller {
                     $table->string('key', 50)->nullable();
                     $table->string('default', 100)->nullable();
                     $table->string('extra', 100)->nullable();
+                    $table->string('href', 100)->nullable();            //hyperlink this field with the href link
                     $table->unique(array('_db_table_id', 'name'));
                 });
     }
@@ -175,16 +176,27 @@ class DbController extends Controller {
     }
 
     /**
+     * Drop metadata tables and redo an install
+     */
+    public function getReinstall(&$log = array())
+    {
+        Schema::dropIfExists('_db_tables');
+        $log[] = 'dropped table _db_tables';
+        Schema::dropIfExists('_db_fields');
+        $log[] = 'dropped table _db_fields';
+        return $this->getInstall($log);
+    }
+    
+    /**
      * Generate metadata from the database and insert it into _db_tables
      * 
      * @param type $table
      * @return type
      */
-    public function getInstall()
+    public function getInstall(&$log = array())
     {
         try
         {
-            $log = array();
             $this->__create('_db_tables', $log);
             $this->__create('_db_fields', $log);
             try
