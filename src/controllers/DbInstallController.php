@@ -1,11 +1,4 @@
-<?php
-
-/**
- * Description of DbController
- *
- * @author Victor
- */
-class DbInstallController extends Controller {
+<?php class DbInstallController extends Controller {
 
     protected $layout = 'crud::layouts.default';
 
@@ -60,6 +53,83 @@ class DbInstallController extends Controller {
     }
 
     /**
+     * You can assign a view to a uri so that /db/edit/users can have a different view than /db/edit/accounts
+     * 
+     * 
+     * @param type $tableName
+     */
+    private function __create__db_table_action_views($tableName)
+    {
+        Schema::create($tableName, function ($table)
+                {
+                    $table->increments('id');
+                    $table->integer('table_id');
+                    $table->integer('action_id');
+                    $table->integer('view_id');
+                });
+    }
+    
+    /**
+     * Create database table _db_views
+     * 
+     * @param type $tableName
+     */
+    private function __create__db_views($tableName)
+    {
+        Schema::create($tableName, function ($table)
+                {
+                    $table->increments('id')->unique();
+                    $table->string('name', 100);
+                });
+    }    
+    
+    /**
+     * Create database table _db_actions
+     * 
+     * @param type $tableName
+     */
+    private function __create__db_actions($tableName)
+    {
+        Schema::create($tableName, function ($table)
+                {
+                    $table->increments('id')->unique();
+                    $table->string('name', 100);
+                });
+    }
+    
+    /**
+     * Create database table _db_actions
+     * 
+     * @param type $tableName
+     */
+    private function __create__db_user_permissions($tableName)
+    {
+        Schema::create($tableName, function ($table)
+                {
+                    $table->increments('id')->unique();
+                    $table->integer('user_id');
+                    $table->integer('table_id');
+                    $table->integer('action_id');
+                });
+    }
+    
+    /**
+     * Create database table _db_actions
+     * 
+     * @param type $tableName
+     */
+    private function __create__db_usergroup_permissions($tableName)
+    {
+        Schema::create($tableName, function ($table)
+                {
+                    $table->increments('id')->unique();
+                    $table->integer('usergroup_id');
+                    $table->integer('table_id');
+                    $table->integer('action_id');
+                });
+    }
+    
+    /**
      * Create a database table. To use this function there also needs to be a "__create_".$tableName function in this class.
      * 
      * @param type $tableName
@@ -91,11 +161,25 @@ class DbInstallController extends Controller {
      */
     public function getReinstall(&$log = array())
     {
-        Schema::dropIfExists('_db_tables');
-        $log[] = 'dropped table _db_tables';
-        Schema::dropIfExists('_db_fields');
-        $log[] = 'dropped table _db_fields';
+        foreach (DbInstallController::__getAdminTables() as $adminTable) {
+            Schema::dropIfExists($adminTable);
+            $log[] = "dropped table $adminTable";
+        }        
         return $this->getInstall($log);
+    }
+    
+    /**
+     * returns an array with a list of tables that are used for admin purposes
+     */
+    private static function __getAdminTables() {
+        return array("_db_tables", 
+            "_db_fields", 
+            "_db_views",
+            "_db_actions",
+            "_db_table_action_views",
+            "_db_user_permissions",
+            "_db_usergroup_permissions"
+            );
     }
     
     /**
@@ -108,8 +192,11 @@ class DbInstallController extends Controller {
     {
         try
         {
-            $this->__create('_db_tables', $log);
-            $this->__create('_db_fields', $log);
+            //create all the tables
+            foreach (DbInstallController::__getAdminTables() as $adminTable) {
+                $this->__create($adminTable, $log);
+            }
+            
             try
             {
                 //get the list of tables from the database metadata

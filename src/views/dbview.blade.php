@@ -51,10 +51,20 @@
 
 @section('edit') 
 @if($action == 'edit')
+<div class="page-header">
 <h1>Edit</h1>
-@foreach($data as $record)
-{{$record->id}}<br />
+</div>
+<form method="POST" action="">
+@foreach($meta as $field)
+@if($field['display']) 
+<div class="row">
+    <div class="span4">{{$field['name']}}</div>
+    <div class="span4"><input type="text" value="{{$data[0][$field['name']]}}" /></div>
+</div>
+@endif
 @endforeach
+<div class="well"><input type="submit" class="btn" /></div>
+</form>
 @endif
 @stop
 
