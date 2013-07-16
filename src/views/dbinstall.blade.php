@@ -16,16 +16,22 @@
 
 @section('install')
     @if($action == 'install')
+        <div class="page-header">
         <h1>Install</h1>
+        </div>
+        <table>
         @foreach($log as $logitem)
-            {{$logitem}}<br />
+            <tr><td><span class="label label-info">Info</span></td><td>{{$logitem}}</td></tr>
         @endforeach
+        </table>
     @endif
 @stop
 
 @section('index')
     @if($action == 'index')
+        <div class="page-header">
         <h1>Index</h1>
+        </div>
         <ul>
         <li><a href="/dbinstall/install">Install</a></li>
         <li><a href="/dbinstall/reinstall">Reinstall</a></li>

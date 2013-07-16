@@ -25,7 +25,9 @@
 
 @section('select')
 @if($action == 'select')
+<div class="page-header">
 <h1>DbView</h1>
+</div>
 @if(isset($data) && isset($data[0]))        
 <table class="dbtable">
     <tr>
