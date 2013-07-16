@@ -38,18 +38,20 @@ class DbInstallController extends Controller {
         Schema::create($tableName, function ($table)
                 {
                     $table->increments('id')->unique();
-                    $table->integer('_db_table_id');
-                    $table->string('name', 100);
-                    $table->string('label', 100);
-                    $table->integer('display')->nullable();
-                    $table->string('type', 100)->nullable();
-                    $table->integer('length')->nullable();
-                    $table->string('null', 3)->nullable();
-                    $table->string('key', 50)->nullable();
-                    $table->string('default', 100)->nullable();
+                    $table->integer('_db_table_id')->unsigned();        // links to _db_tables.id
+                    $table->integer('_db_field_id')->unsigned();        // links to _db_fields.id (the id of the primary key)
+                    $table->string('name', 100);                        // the field's name
+                    $table->string('label', 100);                       // the label
+                    $table->integer('display')->nullable();             // the field will be displayed in lists/selects
+                    $table->string('type', 100)->nullable();            // datatype
+                    $table->integer('length')->nullable();              // datalength
+                    $table->string('null', 3)->nullable();              // nullable
+                    $table->string('key', 50)->nullable();              // type of key
+                    $table->string('default', 100)->nullable();         // default value
                     $table->string('extra', 100)->nullable();
                     $table->string('href', 100)->nullable();            //hyperlink this field with the href link
                     $table->unique(array('_db_table_id', 'name'));
+                    $table->foreign('_db_table_id')->references('id')->on('_db_tables')->onDelete('cascade');
                 });
     }
 
@@ -193,12 +195,12 @@ class DbInstallController extends Controller {
         if (!$dropSafe)
         {
             return array("_db_tables",
-            "_db_fields",
-            "_db_views",
-            "_db_actions",
-            "_db_table_action_views",
-            "_db_user_permissions",
-            "_db_usergroup_permissions");
+                "_db_fields",
+                "_db_views",
+                "_db_actions",
+                "_db_table_action_views",
+                "_db_user_permissions",
+                "_db_usergroup_permissions");
         }
         else
         {
@@ -256,21 +258,28 @@ class DbInstallController extends Controller {
                             }
                             catch (Exception $e)
                             {
-                                $log[] = " x column {$colRec['name']} could not be inserted.";
                                 $log[] = $e->getMessage();
+                                $message = " x column {$colRec['name']} could not be inserted.";
+                                $log[] = $message;
+                                throw new Exception($message, 1, $e);
                             }
                         }
                     }
                     catch (Exception $e)
                     {
-                        $log[] = "Could not select columns for table $tableName";
+                        $log[] = $e->getMessage();
+                        $message = "Could not select columns for table $tableName";
+                        $log[] = $message;
+                        throw new Exception($message, 1, $e);
                     }
                 }
             }
             catch (Exception $e)
             {
-                $log[] = "Error inserting table name '$tableName' into _db_tables";
                 $log[] = $e->getMessage();
+                $message = "Error inserting table name '$tableName' into _db_tables";
+                $log[] = $message;
+                throw new Exception($message, 1, $e);
             }
         }
     }
@@ -285,7 +294,7 @@ class DbInstallController extends Controller {
         $arr = array("name" => "crud::dbview");
         $viewId = DB::table('_db_views')->insertGetId($arr);
         $log[] = " - crud::dbview view inserted";
-        $this->__populateTableActionViews($log, $viewId);
+        $this->__populateTableActions($log, $viewId, true);
     }
 
     /**
@@ -293,19 +302,50 @@ class DbInstallController extends Controller {
      * 
      * @param type $log
      * @param type $viewId
+     * @param type $doPermissions Will also populate permissions tables if true
      * 
      */
-    private function __populateTableActionViews(&$log, $viewId)
+    private function __populateTableActions(&$log, $viewId, $doPermissions = false)
     {
-        /*
-          insert into _db_table_action_views (view_id, table_id, action_id)
-          select v.id view_id, t.id table_id, a.id action_id
-          from _db_views v,
-          _db_tables t,
-          _db_actions a
-          where v.id = 1
-          ;
-         */
+        try
+        {
+            $tables = DB::table('_db_tables')->get();
+            $actions = DB::table('_db_actions')->get();
+
+            if ($doPermissions)
+            {
+                $users = DB::table('users')->get();
+                $usergroups = DB::table('usergroups')->get();
+            }
+            foreach ($tables as $table)
+            {
+                foreach ($actions as $action)
+                {
+                    $arr = array('table_id' => $table->id, 'action_id' => $action->id, 'view_id' => $viewId);
+                    DB::table('_db_table_action_views')->insert($arr);
+                    if ($doPermissions)
+                    {
+                        foreach ($users as $user)
+                        {
+                            $arr = array('table_id' => $table->id, 'action_id' => $action->id, 'user_id' => $user->id);
+                            DB::table('_db_user_permissions')->insert($arr);
+                        }
+                        foreach ($usergroups as $usergroup)
+                        {
+                            $arr = array('table_id' => $table->id, 'action_id' => $action->id, 'usergroup_id' => $usergroup->id);
+                            DB::table('_db_usergroup_permissions')->insert($arr);
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception $e)
+        {
+            $log[] = $e->getMessage();
+            $message = "Error inserting record into table.";
+            $log[] = $message;
+            throw new Exception($message, 1, $e);
+        }
     }
 
     /**
@@ -323,6 +363,10 @@ class DbInstallController extends Controller {
         DB::table('_db_actions')->insert($arr);
         $log[] = " - insert action created";
 
+        $arr = array("name" => "edit");
+        DB::table('_db_actions')->insert($arr);
+        $log[] = " - edit action created";
+
         $arr = array("name" => "update");
         DB::table('_db_actions')->insert($arr);
         $log[] = " - update action created";
@@ -333,58 +377,24 @@ class DbInstallController extends Controller {
     }
 
     /**
-     * Populate permissions tables
-     * 
-     */
-    private function __populatePermissions(&$log)
-    {
-        /*
-          delete from _db_usergroup_permissions;
-          insert into _db_usergroup_permissions (usergroup_id, table_id, action_id)
-          select ug.id usergroup_id, t.id table_id, a.id action_id
-          from usergroups ug,
-          _db_tables t,
-          _db_actions a;
-
-          delete from _db_user_permissions;
-          insert into _db_user_permissions (user_id, table_id, action_id)
-          select u.id user_id, t.id table_id, a.id action_id
-          from users u,
-          _db_tables t,
-          _db_actions a;
-         */
-    }
-
-    /**
      * Populate all tables
      * 
      * @param type $log
      */
     private function __populate(&$log)
     {
-        /*
-          "_db_tables",
-          "_db_fields",
-          "_db_views",
-          "_db_actions",
-          "_db_table_action_views",
-          "_db_user_permissions",
-          "_db_usergroup_permissions"
-         */
-
         try
         {
             $this->__populateMeta($log);
             $log[] = "Populated _db_tables and _db_fields";
             $this->__populateActions($log);
             $log[] = "Populated _db_actions";
-            $this->__populatePermissions($log);
-            $log[] = "Populated _db_user_permissions and _db_usergroup_permissions";
             $this->__populateViews($log);
             $log[] = "Populated _db_views";
         }
         catch (Exception $e)
         {
+            $log[] = $e->getMessage();
             $log[] = " x Error populating tables.";
             throw new Exception("Error populating tables.", 1, $e);
         }
@@ -412,12 +422,19 @@ class DbInstallController extends Controller {
             }
             catch (Exception $e)
             {
-                $log[] = "Error inserting table names into _db_tables";
+                $log[] = $e->getMessage();
+                $message = " x Error populating tables.";
+                $log[] = $message;
+                throw new Exception($message, 1, $e);
             }
+            $log[] = "Installation completed successfully.";
         }
         catch (Exception $e)
         {
             $log[] = $e->getMessage();
+            $message = " x Error during installation.";
+            $log[] = $message;
+            //throw new Exception($message, 1, $e);
         }
         return View::make("crud::dbinstall", array('action' => 'install', 'log' => $log));
     }

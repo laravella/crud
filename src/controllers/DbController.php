@@ -1,4 +1,6 @@
-<?php class DbController extends Controller {
+<?php
+
+class DbController extends Controller {
 
     protected $layout = 'crud::layouts.default';
 
@@ -83,11 +85,11 @@
 
         $meta = DbController::__getMeta($tableName);
         $data = DbController::__makeArray($meta, $table);
-        
+
         //get metadata as an array
         $meta = DbController::__getMetaArray($tableName);
-        
-        return View::make("crud::dbview", array('action' => 'edit', 'data' => $data, 'meta'=>$meta, 'prefix' => $prefix));
+
+        return View::make("crud::dbview", array('action' => 'edit', 'data' => $data, 'meta' => $meta, 'prefix' => $prefix));
     }
 
     /**
@@ -97,18 +99,20 @@
      * @param type $id
      * @return type
      */
-    public function postEdit($tableName = null, $id = null) {
+    public function postEdit($tableName = null, $id = null)
+    {
         return "saved";
     }
-    
+
     /**
      * Get a table's metadata (from _db_fields table) as an array
      * 
      * @param type $tableName
      * @return type
      */
-    private static function __getMetaArray($tableName) {
-        
+    private static function __getMetaArray($tableName)
+    {
+
         //get metadata from database
         $meta = DbController::__getMeta($tableName);
 
@@ -116,7 +120,7 @@
 
         //turn metadata into array
         $ma = DbController::__makeArray($fmeta, $meta);
-        
+
         //set field name as key in meta array
         $metaA = array();
         foreach ($ma as $mk)
@@ -124,10 +128,27 @@
             $mk['_db_tables.name'] = $tableName;
             $metaA[$mk['name']] = $mk;
         }
-        
+
         return $metaA;
     }
-    
+
+    /**
+     * Get a select array(object(value, text))
+     */
+    private function __getSelect($table, $valueField, $textField)
+    {
+        $data = DB::table($table)->select($valueField, $textField)->get();
+        $arr = array();
+        if (is_array($data))
+        {
+            foreach($data as $rec)
+            {
+                $arr[] = array('value'=>$rec->$valueField, 'text'=>$rec->$textField);
+            }
+        }
+        return $arr;
+    }
+
     /**
      * If method is not found
      * 
