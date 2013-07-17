@@ -15,18 +15,18 @@
 @stop
 
 @section('index')
-    @if($action == 'index')
-        <h1>Index</h1>
-        <ul>
-        <li><a href="/db/select/_db_tables">List Tables</a></li>
-        </ul>
-    @endif
+@if($action == 'index')
+<h1>Index</h1>
+<ul>
+    <li><a href="/db/select/_db_tables">List Tables</a></li>
+</ul>
+@endif
 @stop
 
 @section('select')
 @if($action == 'select')
 <div class="page-header">
-<h1>DbView</h1>
+    <h1>DbView</h1>
 </div>
 @if(isset($data) && isset($data[0]))        
 <table class="dbtable">
@@ -54,27 +54,29 @@
 @section('edit') 
 @if($action == 'edit')
 <div class="page-header">
-<h1>Edit</h1>
+    <h1>Edit</h1>
 </div>
 <form method="POST" action="/db/edit/{{$tableName}}/">
     @foreach($meta as $field)
-        @if($field['display']) 
-        <div class="row">
-            <div class="span4">{{$field['label']}}</div>
-            @if(isset($field['pk']))
-                <div class="span4">
-                    <select>
-                        @foreach($selects[$field['name']] as $option)
-                        <option value="{{$option['value']}}">{{$option['text']}}</option>
-                        @endforeach
-                    </select>
-                </div>
-            @else
-                <div class="span4"><input type="text" value="{{$data[0][$field['name']]}}" /></div>
-            @endif
-        </div>
+    @if($field['display']) 
+    <div class="row">
+        <div class="span4">{{$field['label']}}</div>
+        @if(isset($field['key']) && $field['key'] == 'PRI')
+            <div class="span4"><input type="text" disabled value="{{$data[0][$field['name']]}}" /></div>
+        @elseif(isset($field['pk']))
+            <div class="span4">
+                <select>
+                    @foreach($selects[$field['name']] as $option)
+                    <option value="{{$option['value']}}">{{$option['text']}}</option>
+                    @endforeach
+                </select>
+            </div>
+        @else
+            <div class="span4"><input type="text" value="{{$data[0][$field['name']]}}" /></div>
         @endif
-    @endforeach
+    </div>
+    @endif
+    @endforeach<br />
     <div class="well"><input type="submit" class="btn" /></div>
 </form>
 @endif

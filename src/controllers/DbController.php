@@ -14,7 +14,14 @@ class DbController extends Controller {
         return View::make("crud::dbinstall", array('action' => 'index'));
     }
 
-    private static function __getFieldMeta($fieldId, $dbFieldsMeta)
+    /**
+     * 
+     * 
+     * @param type $fieldId the id of the field in _db_fields
+     * @param type $dbFieldsMeta [optional] always the result of DbController::__getMeta("_db_fields");
+     * @return type
+     */
+    private static function __getFieldMeta($fieldId, $dbFieldsMeta = null)
     {
         //get metadata of a single field from database
         $fieldMeta = DB::table("_db_fields")
@@ -26,6 +33,11 @@ class DbController extends Controller {
                         ->where("_db_fields.id", $fieldId)->get();
         
         $tableName = $fieldMeta[0]->tableName;
+
+        if (empty($dbFieldsMeta))
+        {
+            $dbFieldsMeta = DbController::__getMeta("_db_fields");
+        }
         
         //turn $fieldMeta into an array
         $fieldMetaA = DbController::__makeArray($dbFieldsMeta, $fieldMeta);
@@ -33,10 +45,32 @@ class DbController extends Controller {
         
         return $fieldMetaA[0];
     }    
+
+    /**
+     * return an array('table'=>array('name'=>'tablename', 'pk_name'=>'fieldname'), 'fields'=array())
+     */
+    private static function __getTableMeta($tableName) {
+        $fieldMeta = __getMetaArray($tableName);
+        $pkName = "";
+        foreach($fieldMeta as $name=>$data) {
+            if ($data['key'] == 'PRI') {
+                $pkName = $name;
+                $pkData = $data;
+            }
+        }
+        
+        $tmData = array('table'=>array('name'=>$tableName, 'pk_name'=>$pkName), 'fields'=>$fieldMeta);
+        return $tmData;
+    }
     
+    /**
+     * get metadata from database
+     * 
+     * @param type $tableName
+     * @return type
+     */
     private static function __getMeta($tableName)
     {
-        //get metadata from database
         $tableMeta = DB::table("_db_fields")
                         ->join('_db_tables', '_db_fields._db_table_id', '=', '_db_tables.id')
                         ->select('_db_fields.name', '_db_fields.label', '_db_fields.key', 
@@ -134,7 +168,7 @@ class DbController extends Controller {
      * 
      * @param type $meta
      */
-    public function __getPkSelects($meta) {
+    private function __getPkSelects($meta) {
         $selectA = array();
         foreach($meta as $metaField) {
             if(isset($metaField['pk'])) {

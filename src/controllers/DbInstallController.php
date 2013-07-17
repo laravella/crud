@@ -69,24 +69,24 @@ class DbInstallController extends Controller {
     {
 //get the id of the pkTableName in _db_tables
         $fkTableId = DB::table('_db_tables')->where('name', $fkTableName)->pluck('id');
-        
+
         $pkTableId = DB::table('_db_tables')->where('name', $pkTableName)->pluck('id');
 
 //get the id of the primary key field in _db_fields
         $pkFieldId = DB::table('_db_fields')
-                        ->where('_db_table_id', $pkTableId)
-                        ->where('name', $pkFieldName)
-                        ->pluck('id');
+                ->where('_db_table_id', $pkTableId)
+                ->where('name', $pkFieldName)
+                ->pluck('id');
 
         $pkDisplayFieldId = DB::table('_db_fields')
-                        ->where('_db_table_id', $pkTableId)
-                        ->where('name', $pkDisplayFieldName)
-                        ->pluck('id');
-        
+                ->where('_db_table_id', $pkTableId)
+                ->where('name', $pkDisplayFieldName)
+                ->pluck('id');
+
         $fkFieldId = DB::table('_db_fields')
-                        ->where('_db_table_id', $fkTableId)
-                        ->where('name', $fkFieldName)
-                        ->pluck('id');
+                ->where('_db_table_id', $fkTableId)
+                ->where('name', $fkFieldName)
+                ->pluck('id');
 
         $log[] = "inserting into _db_fields : where 
             pkTableName = $pkTableName, 
@@ -98,20 +98,20 @@ class DbInstallController extends Controller {
             fkFieldName = $fkFieldName, 
             fkTableId = $fkTableId,
             fkFieldId = $fkFieldId";
-        
+
 //set the reference on the fk field
         DB::table('_db_fields')
                 ->where('_db_table_id', $fkTableId)
                 ->where('name', $fkFieldName)
                 ->update(array('pk_field_id' => $pkFieldId, 'pk_display_field_id' => $pkDisplayFieldId));
         /*
-        $log[] = "updating record : {$fkRec->id}";
-        
-        DB::table('_db_fields')
-                ->where('_db_table_id', $fkTableId)
-                ->where('name', $fkFieldName)
-                ->update(array('pk_field_id' => $fieldId));
-        */
+          $log[] = "updating record : {$fkRec->id}";
+
+          DB::table('_db_fields')
+          ->where('_db_table_id', $fkTableId)
+          ->where('name', $fkFieldName)
+          ->update(array('pk_field_id' => $fieldId));
+         */
     }
 
     private function __updateReferences(&$log)
@@ -131,7 +131,7 @@ class DbInstallController extends Controller {
             $this->__updateReference($log, '_db_usergroup_permissions', 'usergroup_id', 'usergroups', 'id', 'group');
             $this->__updateReference($log, '_db_usergroup_permissions', 'table_id', '_db_tables', 'id', 'name');
             $this->__updateReference($log, '_db_usergroup_permissions', 'action_id', '_db_actions', 'id', 'name');
-            
+
             $log[] = "Completed foreign key references";
         }
         catch (Exception $e)
@@ -306,8 +306,36 @@ class DbInstallController extends Controller {
      * 
      * @param type $name
      */
-    private function __makeLabel($name) {
-        return ucwords(str_replace ('_' , ' ' , $name));
+    private function __makeLabel($name)
+    {
+        return ucwords(str_replace('_', ' ', $name));
+    }
+
+    /**
+     * Returns varchar if fieldType = varchar(100) etc.
+     */
+    private function __getFieldType($fieldType, &$log) {
+        $start = strpos($fieldType,'(');
+        if ($start > 0) {
+            $fieldType = substr($fieldType, 0, $start);
+            $log[] = "fieldtype : $fieldType";
+        }
+        return $fieldType;
+    }
+    
+    /**
+     * Returns 100 if fieldType = varchar(100) etc.
+     */
+    private function __getFieldLength($fieldType, &$log) {
+        $start = strpos($fieldType,'(')+1;
+        $len = null;
+        if ($start > 0) {
+            $count = strpos($fieldType,')')-$start;
+            $len = substr($fieldType, $start, $count);
+            //$log[] = "fieldtype : $fieldType, start : $start, count : $count, len : $len";
+        }
+
+        return $len;
     }
     
     /**
@@ -345,8 +373,8 @@ class DbInstallController extends Controller {
                                 $colRec['label'] = $this->__makeLabel($col->Field);
                                 $colRec['display'] = 1;
                                 $colRec['display_order'] = $displayOrder++;
-                                $colRec['type'] = $col->Type;
-                                $colRec['length'] = 0;
+                                $colRec['type'] = $this->__getFieldType($col->Type, $log);
+                                $colRec['length'] = $this->__getFieldLength($col->Type, $log);
                                 $colRec['null'] = $col->Null;
                                 $colRec['key'] = $col->Key;
                                 $colRec['default'] = $col->Default;
