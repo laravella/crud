@@ -38,12 +38,10 @@ class DbInstallController extends Controller {
         Schema::create($tableName, function ($table)
                 {
                     $table->increments('id')->unique();
-                    $table->integer('_db_table_id')->unsigned();        // links to _db_tables.id
-                    $table->integer('pk_field_id')->unsigned();                // links to _db_fields.id (the id of the primary key)
-                    $table->integer('pk_display_field_id')->unsigned();        // links to _db_fields.id (the id of a field in the primary table that will be used as a description of the primary key id)
                     $table->string('name', 100);                        // the field's name
                     $table->string('label', 100);                       // the label
                     $table->integer('display')->nullable();             // the field will be displayed in lists/selects
+                    $table->integer('display_order')->nullable();       // the order in which field will be displayed in lists/selects
                     $table->string('type', 100)->nullable();            // datatype
                     $table->integer('length')->nullable();              // datalength
                     $table->string('null', 3)->nullable();              // nullable
@@ -51,6 +49,9 @@ class DbInstallController extends Controller {
                     $table->string('default', 100)->nullable();         // default value
                     $table->string('extra', 100)->nullable();
                     $table->string('href', 100)->nullable();            //hyperlink this field with the href link
+                    $table->integer('_db_table_id')->unsigned();        // links to _db_tables.id
+                    $table->integer('pk_field_id')->unsigned();                // links to _db_fields.id (the id of the primary key)
+                    $table->integer('pk_display_field_id')->unsigned();        // links to _db_fields.id (the id of a field in the primary table that will be used as a description of the primary key id)
                     $table->unique(array('_db_table_id', 'name'));
                     $table->foreign('_db_table_id')->references('id')->on('_db_tables')->onDelete('cascade');
                 });
@@ -64,7 +65,7 @@ class DbInstallController extends Controller {
      * @param type $pkTableName
      * @param type $pkFieldName
      */
-    private function __updateReference(&$log, $fkTableName, $fkFieldName, $pkTableName, $pkFieldName)
+    private function __updateReference(&$log, $fkTableName, $fkFieldName, $pkTableName, $pkFieldName, $pkDisplayFieldName)
     {
 //get the id of the pkTableName in _db_tables
         $fkTableId = DB::table('_db_tables')->where('name', $fkTableName)->pluck('id');
@@ -77,6 +78,11 @@ class DbInstallController extends Controller {
                         ->where('name', $pkFieldName)
                         ->pluck('id');
 
+        $pkDisplayFieldId = DB::table('_db_fields')
+                        ->where('_db_table_id', $pkTableId)
+                        ->where('name', $pkDisplayFieldName)
+                        ->pluck('id');
+        
         $fkFieldId = DB::table('_db_fields')
                         ->where('_db_table_id', $fkTableId)
                         ->where('name', $fkFieldName)
@@ -97,7 +103,7 @@ class DbInstallController extends Controller {
         DB::table('_db_fields')
                 ->where('_db_table_id', $fkTableId)
                 ->where('name', $fkFieldName)
-                ->update(array('pk_field_id' => $pkFieldId));
+                ->update(array('pk_field_id' => $pkFieldId, 'pk_display_field_id' => $pkDisplayFieldId));
         /*
         $log[] = "updating record : {$fkRec->id}";
         
@@ -112,19 +118,19 @@ class DbInstallController extends Controller {
     {
         try
         {
-            $this->__updateReference($log, '_db_fields', '_db_table_id', '_db_tables', 'id');
+            $this->__updateReference($log, '_db_fields', '_db_table_id', '_db_tables', 'id', 'name');
 
-            $this->__updateReference($log, '_db_table_action_views', 'view_id', '_db_views', 'id');
-            $this->__updateReference($log, '_db_table_action_views', 'table_id', '_db_tables', 'id');
-            $this->__updateReference($log, '_db_table_action_views', 'action_id', '_db_actions', 'id');
+            $this->__updateReference($log, '_db_table_action_views', 'view_id', '_db_views', 'id', 'name');
+            $this->__updateReference($log, '_db_table_action_views', 'table_id', '_db_tables', 'id', 'name');
+            $this->__updateReference($log, '_db_table_action_views', 'action_id', '_db_actions', 'id', 'name');
 
-            $this->__updateReference($log, '_db_user_permissions', 'user_id', 'users', 'id');
-            $this->__updateReference($log, '_db_user_permissions', 'table_id', '_db_tables', 'id');
-            $this->__updateReference($log, '_db_user_permissions', 'action_id', '_db_actions', 'id');
+            $this->__updateReference($log, '_db_user_permissions', 'user_id', 'users', 'id', 'username');
+            $this->__updateReference($log, '_db_user_permissions', 'table_id', '_db_tables', 'id', 'name');
+            $this->__updateReference($log, '_db_user_permissions', 'action_id', '_db_actions', 'id', 'name');
 
-            $this->__updateReference($log, '_db_usergroup_permissions', 'usergroup_id', 'usergroups', 'id');
-            $this->__updateReference($log, '_db_usergroup_permissions', 'table_id', '_db_tables', 'id');
-            $this->__updateReference($log, '_db_usergroup_permissions', 'action_id', '_db_actions', 'id');
+            $this->__updateReference($log, '_db_usergroup_permissions', 'usergroup_id', 'usergroups', 'id', 'group');
+            $this->__updateReference($log, '_db_usergroup_permissions', 'table_id', '_db_tables', 'id', 'name');
+            $this->__updateReference($log, '_db_usergroup_permissions', 'action_id', '_db_actions', 'id', 'name');
             
             $log[] = "Completed foreign key references";
         }
@@ -296,6 +302,15 @@ class DbInstallController extends Controller {
     }
 
     /**
+     * Replace _ with spaces and make first character of each word uppercase
+     * 
+     * @param type $name
+     */
+    private function __makeLabel($name) {
+        return ucwords(str_replace ('_' , ' ' , $name));
+    }
+    
+    /**
      * populate _db_tables and _db_fields
      * 
      */
@@ -319,6 +334,7 @@ class DbInstallController extends Controller {
 //get columns from database
                         $cols = DB::select("show columns from $tableName");
 //loop through list of columns
+                        $displayOrder = 0;
                         foreach ($cols as $col)
                         {
                             try
@@ -326,8 +342,9 @@ class DbInstallController extends Controller {
                                 $colRec = array();
                                 $colRec['_db_table_id'] = $id;
                                 $colRec['name'] = $col->Field;
-                                $colRec['label'] = $col->Field;
+                                $colRec['label'] = $this->__makeLabel($col->Field);
                                 $colRec['display'] = 1;
+                                $colRec['display_order'] = $displayOrder++;
                                 $colRec['type'] = $col->Type;
                                 $colRec['length'] = 0;
                                 $colRec['null'] = $col->Null;

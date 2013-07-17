@@ -56,16 +56,26 @@
 <div class="page-header">
 <h1>Edit</h1>
 </div>
-<form method="POST" action="">
-@foreach($meta as $field)
-@if($field['display']) 
-<div class="row">
-    <div class="span4">{{$field['name']}}</div>
-    <div class="span4"><input type="text" value="{{$data[0][$field['name']]}}" /></div>
-</div>
-@endif
-@endforeach
-<div class="well"><input type="submit" class="btn" /></div>
+<form method="POST" action="/db/edit/{{$tableName}}/">
+    @foreach($meta as $field)
+        @if($field['display']) 
+        <div class="row">
+            <div class="span4">{{$field['label']}}</div>
+            @if(isset($field['pk']))
+                <div class="span4">
+                    <select>
+                        @foreach($selects[$field['name']] as $option)
+                        <option value="{{$option['value']}}">{{$option['text']}}</option>
+                        @endforeach
+                    </select>
+                </div>
+            @else
+                <div class="span4"><input type="text" value="{{$data[0][$field['name']]}}" /></div>
+            @endif
+        </div>
+        @endif
+    @endforeach
+    <div class="well"><input type="submit" class="btn" /></div>
 </form>
 @endif
 @stop

@@ -14,13 +14,39 @@ class DbController extends Controller {
         return View::make("crud::dbinstall", array('action' => 'index'));
     }
 
+    private static function __getFieldMeta($fieldId, $dbFieldsMeta)
+    {
+        //get metadata of a single field from database
+        $fieldMeta = DB::table("_db_fields")
+                        ->join('_db_tables', '_db_fields._db_table_id', '=', '_db_tables.id')
+                        ->select('_db_fields.name', '_db_tables.name as tableName', '_db_fields.label', '_db_fields.key', 
+                                '_db_fields.display', '_db_fields.type', '_db_fields.length', 
+                                '_db_fields.default', '_db_fields.extra', '_db_fields.href', 
+                                '_db_fields.pk_field_id', '_db_fields.pk_display_field_id', '_db_fields.display_order')
+                        ->where("_db_fields.id", $fieldId)->get();
+        
+        $tableName = $fieldMeta[0]->tableName;
+        
+        //turn $fieldMeta into an array
+        $fieldMetaA = DbController::__makeArray($dbFieldsMeta, $fieldMeta);
+        $fieldMetaA[0]['tableName'] = $tableName;
+        
+        return $fieldMetaA[0];
+    }    
+    
     private static function __getMeta($tableName)
     {
         //get metadata from database
-        return DB::table("_db_fields")
+        $tableMeta = DB::table("_db_fields")
                         ->join('_db_tables', '_db_fields._db_table_id', '=', '_db_tables.id')
-                        ->select('_db_fields.name', '_db_fields.label', '_db_fields.key', '_db_fields.display', '_db_fields.type', '_db_fields.length', '_db_fields.default', '_db_fields.extra')
+                        ->select('_db_fields.name', '_db_fields.label', '_db_fields.key', 
+                                '_db_fields.display', '_db_fields.type', '_db_fields.length', 
+                                '_db_fields.default', '_db_fields.extra', '_db_fields.href', 
+                                '_db_fields.pk_field_id', '_db_fields.pk_display_field_id', '_db_fields.display_order')
+                        ->orderBy('display_order', 'desc')
                         ->where("_db_tables.name", "=", $tableName)->get();
+
+        return $tableMeta;
     }
 
     /**
@@ -36,8 +62,11 @@ class DbController extends Controller {
 
         //get metadata as an array
         $ma = DbController::__getMetaArray($tableName);
+        
+        //print_r($ma);
 
         $prefix = array("id" => "/db/edit/$tableName/");
+        
         return View::make("crud::dbview", array('action' => 'select', 'data' => $table, 'prefix' => $prefix, 'meta' => $ma));
     }
 
@@ -75,23 +104,48 @@ class DbController extends Controller {
      * Display a single record on screen to be edited by the user
      * 
      * @param type $table
-     * @param type $id
+     * @param type $pkValue
      * @return type
      */
-    public function getEdit($tableName = null, $id = 0)
+    public function getEdit($tableName = null, $pkValue = 0)
     {
-        $table = DB::table($tableName)->where('id', '=', $id)->get();
+        //get metadata as an array
+        $metaA = DbController::__getMetaArray($tableName);
+        $meta = DbController::__getMeta($tableName);
+        
+        //TODO : us primary key instead of id
+        $table = DB::table($tableName)->where('id', '=', $pkValue)->get();
         $prefix = array();
 
-        $meta = DbController::__getMeta($tableName);
         $data = DbController::__makeArray($meta, $table);
 
-        //get metadata as an array
-        $meta = DbController::__getMetaArray($tableName);
-
-        return View::make("crud::dbview", array('action' => 'edit', 'data' => $data, 'meta' => $meta, 'prefix' => $prefix));
+        $selects = $this->__getPkSelects($metaA);
+        
+        return View::make("crud::dbview", 
+                array('action' => 'edit', 'data' => $data, 'meta' => $metaA, 
+                    'prefix' => $prefix,
+                    'selects' => $selects,
+                    'tableName' => $tableName));
     }
 
+    /**
+     * Loop through foreign keys and generate an array of select boxes for each
+     * related primary key
+     * 
+     * @param type $meta
+     */
+    public function __getPkSelects($meta) {
+        $selectA = array();
+        foreach($meta as $metaField) {
+            if(isset($metaField['pk'])) {
+                $pk = $metaField['pk'];
+                $pkd = $metaField['pk_display'];
+                $selectA[$metaField['name']] = $this->__getSelect($pk['tableName'], $pk['name'], $pkd['name']);
+            }
+        }
+        return $selectA;
+    }
+    
     /**
      * Update data to the database
      * 
@@ -125,7 +179,16 @@ class DbController extends Controller {
         $metaA = array();
         foreach ($ma as $mk)
         {
-            $mk['_db_tables.name'] = $tableName;
+            //the name of the table
+            $mk['tableName'] = $tableName;
+            if (!empty($mk['pk_field_id'])) {
+                //add primary key's metadata to foreignkey metadata
+                $mk['pk'] = DbController::__getFieldMeta($mk['pk_field_id'], $fmeta);
+                if (!empty($mk['pk_display_field_id'])) {
+                    //add primary key's (displayed one) metadata to foreignkey metadata
+                    $mk['pk_display'] = DbController::__getFieldMeta($mk['pk_display_field_id'], $fmeta);
+                }
+            }
             $metaA[$mk['name']] = $mk;
         }
 
@@ -157,6 +220,7 @@ class DbController extends Controller {
      */
     public function missingMethod($parameters)
     {
+        print_r($parameters);
         return "missing";
     }
 
