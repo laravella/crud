@@ -9,7 +9,13 @@ class Model extends Eloquent {
 
     protected $tableName = "";
     protected $metaData = null;
-
+    
+    protected $primaryKey = "id";
+    
+    protected $guarded = array('id');
+    //protected $fillable = array('first_name', 'last_name', 'email');    
+    
+    
     /**
      * A way to override the constructor. Use this to instantiate the class.
      * 
@@ -23,21 +29,87 @@ class Model extends Eloquent {
         return $model;
     }
 
-    private function __contruct(array $attributes = array())
-    {
-        return parent::__construct($attributes);
+    
+    public function getA() {
+        
     }
-
+    
+    /**
+     * Check if a field is fillable (updateable)
+     * 
+     * @param type $fieldName
+     */
+    private function __isFillable($fieldName) {
+        $fillable = false;
+        if (isset($this->guarded) && is_array($this->guarded)) {
+                if (array_search($fieldName, $this->guarded) || array_search('*', $this->guarded)){
+                    $fillable = false;
+                } else {
+                    $fillable = true;
+                }
+        } else {
+            if (isset($this->fillable) && is_array($this->fillable)) {
+                if (array_search($fieldName, $this->fillable)){
+                    $fillable = true;
+                } else {
+                    $fillable = false;
+                }
+            }
+        }
+    }
+    
+    /**
+     * Update a record
+     * 
+     * @param type $pkValue
+     * @return \Model
+     */
+    public function editRec($pkValue) {
+        
+        $pkName = $this->metaData['table']['pk_name'];
+        
+        $fields = $this->metaData['fields_array'];
+        
+        $updateA = array();
+        foreach($fields as $field) 
+        {
+            //echo $field['name']." : ".$this->isFillable($field['name'])." : ".Input::get($field['name'])."<br />\n";
+            
+            if ($this->isFillable($field['name'])) {
+                $updateA[$field['name']] = Input::get($field['name']);
+            }
+        }
+        //print_r($updateA);
+        DB::table($this->tableName)->where($pkName, '=', $pkValue)->update($updateA);
+        
+        return $this;
+    }
+    
+    /**
+     * Setter for table
+     * 
+     * @param type $tableName
+     */
     public function setTable($tableName)
     {
         $this->tableName = $tableName;
     }
 
+    /**
+     * Setter for metaData
+     * 
+     * @param type $tableName
+     */
     public function setMetaData($tableName)
     {
         $this->metaData = Model::getTableMeta($tableName);
     }
 
+    /**
+     * Getter for metaData
+     * 
+     * @return type
+     */
     public function getMetaData() {
         return $this->metaData;
     }
@@ -136,10 +208,12 @@ class Model extends Eloquent {
         //get metadata from database
         $meta = Model::getMeta($tableName);
 
+        $fieldsMeta = Model::getMeta("_db_fields");
+        
         //turn metadata into array
-        $ma = Model::makeArray($fmeta, $meta);
+        $ma = Model::makeArray($fieldsMeta, $meta);
 
-        $metaA = Model::addPkData($tableName, $ma);
+        $metaA = Model::addPkData($tableName, $ma, $fieldsMeta);
         
         return $metaA;
     }
@@ -149,12 +223,14 @@ class Model extends Eloquent {
      * @param type $tableName
      * @param type $ma
      * @param type $mk
-     * @param type $fmeta
+     * @param type $fieldsMeta
      * @return type
      */
-    public static function addPkData($tableName, $ma) {
+    public static function addPkData($tableName, $ma, $fieldsMeta = null) {
         
-        $fmeta = Model::getMeta("_db_fields");
+        if (empty($fieldsMeta)) {
+            $fieldsMeta = Model::getMeta("_db_fields");
+        }
 
         //set field name as key in meta array
         $metaA = array();
@@ -165,11 +241,11 @@ class Model extends Eloquent {
             if (!empty($mk['pk_field_id']))
             {
                 //add primary key's metadata to foreignkey metadata
-                $mk['pk'] = Model::getFieldMeta($mk['pk_field_id'], $fmeta);
+                $mk['pk'] = Model::getFieldMeta($mk['pk_field_id'], $fieldsMeta);
                 if (!empty($mk['pk_display_field_id']))
                 {
                     //add primary key's (displayed one) metadata to foreignkey metadata
-                    $mk['pk_display'] = Model::getFieldMeta($mk['pk_display_field_id'], $fmeta);
+                    $mk['pk_display'] = Model::getFieldMeta($mk['pk_display_field_id'], $fieldsMeta);
                 }
             }
             $metaA[$mk['name']] = $mk;

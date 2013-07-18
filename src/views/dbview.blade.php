@@ -62,17 +62,21 @@
     <div class="row">
         <div class="span4">{{$field['label']}}</div>
         @if(isset($field['key']) && $field['key'] == 'PRI')
-            <div class="span4"><input type="text" disabled value="{{$data[$field['name']]}}" /></div>
+            <div class="span4"><input type="text" disabled name="{{$field['name']}}" value="{{$data[$field['name']]}}" /></div>
         @elseif(isset($field['pk']))
             <div class="span4">
-                <select>
+                <select name="{{$field['name']}}">
                     @foreach($selects[$field['name']] as $option)
-                    <option value="{{$option['value']}}">{{$option['text']}}</option>
+                        @if($option['value'] == $data[$field['name']])
+                            <option selected value="{{$option['value']}}">{{$option['text']}}</option>
+                        @else
+                            <option value="{{$option['value']}}">{{$option['text']}}</option>
+                        @endif
                     @endforeach
                 </select>
             </div>
         @else
-            <div class="span4"><input type="text" value="{{$data[$field['name']]}}" /></div>
+            <div class="span4"><input type="text" name="{{$field['name']}}" value="{{$data[$field['name']]}}" /></div>
         @endif
     </div>
     @endif

@@ -76,9 +76,10 @@
      */
     public function postEdit($tableName = null, $pkValue = null)
     {
-        $pkName = Input::get('meta.pk_name');
-        DB::table($tableName)->where($pkName, '=', $pkValue)->update(array());
-        return "saved";
+        
+        Model::getInstance($tableName)->editRec($pkValue);
+        
+        return Redirect::to("/db/edit/$tableName/$pkValue");
     }
 
     /**

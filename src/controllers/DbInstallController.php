@@ -25,6 +25,8 @@ class DbInstallController extends Controller {
                 {
                     $table->increments('id')->unique();
                     $table->string('name', 100)->unique();
+                    $table->timestamps();                    
+                    
                 });
     }
 
@@ -52,6 +54,8 @@ class DbInstallController extends Controller {
                     $table->integer('_db_table_id')->unsigned();        // links to _db_tables.id
                     $table->integer('pk_field_id')->unsigned();                // links to _db_fields.id (the id of the primary key)
                     $table->integer('pk_display_field_id')->unsigned();        // links to _db_fields.id (the id of a field in the primary table that will be used as a description of the primary key id)
+                    $table->timestamps();                    
+                    
                     $table->unique(array('_db_table_id', 'name'));
                     $table->foreign('_db_table_id')->references('id')->on('_db_tables')->onDelete('cascade');
                 });
@@ -153,6 +157,8 @@ class DbInstallController extends Controller {
                 {
                     $table->increments('id')->unique();
                     $table->string('name', 100);
+                    $table->timestamps();                    
+                    
                 });
     }
 
@@ -167,6 +173,8 @@ class DbInstallController extends Controller {
                 {
                     $table->increments('id')->unique();
                     $table->string('name', 100);
+                    $table->timestamps();                    
+                    
                 });
     }
 
@@ -184,6 +192,7 @@ class DbInstallController extends Controller {
                     $table->integer('table_id')->unsigned();
                     $table->integer('action_id')->unsigned();
                     $table->integer('view_id')->unsigned();
+                    $table->timestamps();                    
 
                     $table->foreign('view_id')->references('id')->on('_db_views')->onDelete('cascade');
                     $table->foreign('table_id')->references('id')->on('_db_tables')->onDelete('cascade');
@@ -204,7 +213,8 @@ class DbInstallController extends Controller {
                     $table->integer('user_id')->unsigned();
                     $table->integer('table_id')->unsigned();
                     $table->integer('action_id')->unsigned();
-
+                    $table->timestamps();                    
+                    
                     $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
                     $table->foreign('table_id')->references('id')->on('_db_tables')->onDelete('cascade');
                     $table->foreign('action_id')->references('id')->on('_db_actions')->onDelete('cascade');
@@ -224,7 +234,8 @@ class DbInstallController extends Controller {
                     $table->integer('usergroup_id')->unsigned();
                     $table->integer('table_id')->unsigned();
                     $table->integer('action_id')->unsigned();
-
+                    $table->timestamps();                    
+                    
                     $table->foreign('usergroup_id')->references('id')->on('usergroups')->onDelete('cascade');
                     $table->foreign('table_id')->references('id')->on('_db_tables')->onDelete('cascade');
                     $table->foreign('action_id')->references('id')->on('_db_actions')->onDelete('cascade');
