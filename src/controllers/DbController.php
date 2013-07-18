@@ -31,6 +31,42 @@
         return View::make("crud::dbview", array('action' => 'select', 'data' => $table, 'prefix' => $prefix, 'meta' => $ma));
     }
 
+    
+    /**
+     * Prompt user to insert a new record
+     * 
+     * @param type $table
+     * @param type $pkValue
+     * @return type
+     */
+    public function getInsert($tableName = null)
+    {
+        $model = Model::getInstance($tableName);
+        
+        $tableMeta = $model->getMetaData($tableName);
+        
+        //get metadata as an array
+        $metaA = $tableMeta['fields_array']; 
+        $meta = $tableMeta['fields']; 
+        $pkName = $tableMeta['table']['pk_name'];
+        
+        $prefix = array();
+
+        //$table = DB::table($tableName)->where($pkName, '=', $pkValue)->get();
+        //$data = Model::makeArray($meta, $table);
+
+        $selects = $this->__getPkSelects($metaA);
+        
+        return View::make("crud::dbview", 
+                array('action' => 'insert', 
+                    /*'data' => $data[0], */
+                    'meta' => $metaA, 
+                    'pkName' => $pkName, 
+                    'prefix' => $prefix,
+                    'selects' => $selects,
+                    'tableName' => $tableName));
+    }
+    
     /**
      * Display a single record on screen to be edited by the user
      * 

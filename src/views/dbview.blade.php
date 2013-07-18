@@ -29,7 +29,7 @@
     <h1>DbView</h1>
 </div>
 @if(isset($data) && isset($data[0]))        
-<table class="dbtable">
+<table class="table table-striped dbtable">
     <tr>
         @foreach($data[0] as $name=>$field)
         <th>{{$name}}</th>
@@ -59,7 +59,7 @@
 </div>
 <form method="POST" action="/db/edit/{{$tableName}}/{{$data[$pkName]}}">
     @foreach($meta as $field)
-    @if($field['display']) 
+    @if($field['display'] == 1) 
     <div class="row">
         <div class="span4">{{$field['label']}}</div>
         @if(isset($field['key']) && $field['key'] == 'PRI')
@@ -78,6 +78,41 @@
             </div>
         @else
             <div class="span4"><input type="text" name="{{$field['name']}}" value="{{$data[$field['name']]}}" /></div>
+        @endif
+    </div>
+    @endif
+    @endforeach<br />
+    <div class="well"><input type="submit" class="btn" /></div>
+</form>
+@endif
+@stop
+
+@section('insert') 
+@if($action == 'insert')
+<div class="page-header">
+    <h1>New</h1>
+</div>
+<form method="POST" action="/db/insert/{{$tableName}}">
+    @foreach($meta as $field)
+    @if($field['display'] == 1) 
+    <div class="row">
+        <div class="span4">{{$field['label']}}</div>
+        @if(isset($field['key']) && $field['key'] == 'PRI')
+            <div class="span4"><input type="text" disabled name="{{$field['name']}}" value="" /></div>
+        @elseif(isset($field['pk']))
+            <div class="span4">
+                <select name="{{$field['name']}}">
+                    @foreach($selects[$field['name']] as $option)
+                        @if($option['value'] == $field['default'])
+                            <option selected value="{{$option['value']}}">{{$option['text']}}</option>
+                        @else
+                            <option value="{{$option['value']}}">{{$option['text']}}</option>
+                        @endif
+                    @endforeach
+                </select>
+            </div>
+        @else
+            <div class="span4"><input type="text" name="{{$field['name']}}" value="{{$field['default']}}" /></div>
         @endif
     </div>
     @endif

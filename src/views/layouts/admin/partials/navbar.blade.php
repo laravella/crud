@@ -26,6 +26,27 @@
 				</ul>
 				<ul class="nav">
 					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown"> Meta Data<b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<li {{ (Request::is('/db') ? 'class="active"' : '') }}><a href="/db"><i class="icon-user"></i> Home</a></li>
+                                                        <li class="divider"></li>
+							<li {{ (Request::is('/db/select/_db_tables') ? 'class="active"' : '') }}><a href="/db/select/_db_tables"><i class="icon-user"></i> Tables</a></li>
+							<li {{ (Request::is('/db/select/_db_fields') ? 'class="active"' : '') }}><a href="/db/select/_db_fields"><i class="icon-user"></i> Fields</a></li>
+							<li {{ (Request::is('/db/select/_db_actions') ? 'class="active"' : '') }}><a href="/db/select/_db_actions"><i class="icon-user"></i> Actions</a></li>
+							<li {{ (Request::is('/db/select/_db_views') ? 'class="active"' : '') }}><a href="/db/select/_db_views"><i class="icon-user"></i> Views</a></li>
+							<li {{ (Request::is('/db/select/_db_table_action_views') ? 'class="active"' : '') }}><a href="/db/select/_db_table_action_views"><i class="icon-user"></i> Action Views</a></li>
+                                                        <li class="divider"></li>
+							<li {{ (Request::is('/db/select/_db_group_permissions') ? 'class="active"' : '') }}><a href="/db/select/_db_usergroup_permissions"><i class="icon-user"></i> Group Permissions</a></li>
+							<li {{ (Request::is('/db/select/_db_user_permissions') ? 'class="active"' : '') }}><a href="/db/select/_db_user_permissions"><i class="icon-user"></i> User Permissions</a></li>
+                                                        <li class="divider"></li>
+							<li {{ (Request::is('/dbinstall/install') ? 'class="active"' : '') }}><a href="/dbinstall/install"><i class="icon-user"></i> Install</a></li>
+							<li {{ (Request::is('/dbinstall/reinstall') ? 'class="active"' : '') }}><a href="/dbinstall/reinstall"><i class="icon-user"></i> Reinstall</a></li>
+                                                        
+						</ul>								
+					</li>
+				</ul>
+				<ul class="nav">
+					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Contents<b class="caret"></b></a>
 						<ul class="dropdown-menu">
 							<li {{ (Request::is('/admin/pages/index') ? 'class="active"' : '') }}><a href="{{ URL::to('/admin/pages/index') }}"><i class="icon-file"></i> Pages</a></li>

@@ -31,7 +31,7 @@
         <link rel="shortcut icon" href="favicon.ico">
 			
 		<!-- Ravel CMS -->
-		@include('ravel::layouts.admin.partials.assets')
+		@include('crud::layouts.admin.partials.assets')
         @yield('assets_css')
         @yield('assets_js')
 		
@@ -47,13 +47,11 @@
             <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
         <![endif]-->
 		
-        @include('ravel::layouts.admin.partials.navbar')
+        @include('crud::layouts.admin.partials.navbar')
 		@yield('navbar') 
 		
         <!-- Wrapper for the radial gradient background -->
         <div id="body-wrapper" style="margin-top:50px"> 
-
-            {{-- @include('layouts.admin.partials.sidebar') --}}
 
             <div id="main-content"> <!-- Main Content Section with everything -->
 
@@ -69,7 +67,7 @@
 
                 @yield('appcontainer')
 
-                @include('ravel::layouts.admin.partials.scripts')
+                @include('crud::layouts.admin.partials.scripts')
 
 				<!-- Additiona javascript defined in the template -->
                 @yield('javascripts')
@@ -88,7 +86,7 @@
 				</div>
 				<!-- ./ container -->
 				
-                @include('ravel::layouts.admin.partials.footer')
+                @include('crud::layouts.admin.partials.footer')
 
             </div> <!-- End #main-content -->
 
