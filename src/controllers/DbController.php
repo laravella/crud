@@ -21,7 +21,7 @@
     public function getSelect($tableName = null)
     {
         //select table data from database
-        $table = DB::table($tableName)->get();
+        $table = DB::table($tableName)->paginate(5);
 
         //get metadata as an array
         $ma = Model::getMetaArray($tableName);

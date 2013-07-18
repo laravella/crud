@@ -47,6 +47,7 @@
     </tr>
     @endforeach
 </table>
+ {{$data->links()}}
 @endif
 @endif
 @stop

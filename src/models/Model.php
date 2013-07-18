@@ -38,6 +38,7 @@ class Model extends Eloquent {
      * Check if a field is fillable (updateable)
      * 
      * @param type $fieldName
+     * @deprecated since version number
      */
     private function __isFillable($fieldName) {
         $fillable = false;
