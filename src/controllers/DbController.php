@@ -50,7 +50,7 @@ class DbController extends Controller {
      * return an array('table'=>array('name'=>'tablename', 'pk_name'=>'fieldname'), 'fields'=array())
      */
     private static function __getTableMeta($tableName) {
-        $fieldMeta = __getMetaArray($tableName);
+        $fieldMeta = DbController::__getMetaArray($tableName);
         $pkName = "";
         foreach($fieldMeta as $name=>$data) {
             if ($data['key'] == 'PRI') {
@@ -97,8 +97,6 @@ class DbController extends Controller {
         //get metadata as an array
         $ma = DbController::__getMetaArray($tableName);
         
-        //print_r($ma);
-
         $prefix = array("id" => "/db/edit/$tableName/");
         
         return View::make("crud::dbview", array('action' => 'select', 'data' => $table, 'prefix' => $prefix, 'meta' => $ma));
@@ -143,8 +141,10 @@ class DbController extends Controller {
      */
     public function getEdit($tableName = null, $pkValue = 0)
     {
+        $tableMeta = DbController::__getTableMeta($tableName);
+        
         //get metadata as an array
-        $metaA = DbController::__getMetaArray($tableName);
+        $metaA = $tableMeta['fields']; //DbController::__getMetaArray($tableName);
         $meta = DbController::__getMeta($tableName);
         
         //TODO : us primary key instead of id
@@ -172,7 +172,9 @@ class DbController extends Controller {
         $selectA = array();
         foreach($meta as $metaField) {
             if(isset($metaField['pk'])) {
+                //metadata of the primary key
                 $pk = $metaField['pk'];
+                //meta data of the field used to display the primary key
                 $pkd = $metaField['pk_display'];
                 $selectA[$metaField['name']] = $this->__getSelect($pk['tableName'], $pk['name'], $pkd['name']);
             }
@@ -187,8 +189,10 @@ class DbController extends Controller {
      * @param type $id
      * @return type
      */
-    public function postEdit($tableName = null, $id = null)
+    public function postEdit($tableName = null, $pkValue = null)
     {
+        $pkName = Input::get('meta.pk_name');
+        DB::table($tableName)->where($pkName, '=', $pkValue)->update(array());
         return "saved";
     }
 
