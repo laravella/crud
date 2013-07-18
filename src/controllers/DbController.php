@@ -40,14 +40,17 @@
      */
     public function getEdit($tableName = null, $pkValue = 0)
     {
-        $tableMeta = Model::getTableMeta($tableName);
+        $model = Model::getInstance($tableName);
+        
+        $tableMeta = $model->getMetaData($tableName);
         
         //get metadata as an array
-        $metaA = $tableMeta['fields']; //Model::getMetaArray($tableName);
-        $meta = Model::getMeta($tableName);
+        $metaA = $tableMeta['fields_array']; 
+        $meta = $tableMeta['fields']; 
+        $pkName = $tableMeta['table']['pk_name'];
         
-        //TODO : us primary key instead of id
-        $table = DB::table($tableName)->where('id', '=', $pkValue)->get();
+        $table = DB::table($tableName)->where($pkName, '=', $pkValue)->get();
+        
         $prefix = array();
 
         $data = Model::makeArray($meta, $table);
@@ -55,10 +58,27 @@
         $selects = $this->__getPkSelects($metaA);
         
         return View::make("crud::dbview", 
-                array('action' => 'edit', 'data' => $data, 'meta' => $metaA, 
+                array('action' => 'edit', 
+                    'data' => $data[0], 
+                    'meta' => $metaA, 
+                    'pkName' => $pkName, 
                     'prefix' => $prefix,
                     'selects' => $selects,
                     'tableName' => $tableName));
+    }
+    
+    /**
+     * Update data to the database
+     * 
+     * @param type $tableName
+     * @param type $id
+     * @return type
+     */
+    public function postEdit($tableName = null, $pkValue = null)
+    {
+        $pkName = Input::get('meta.pk_name');
+        DB::table($tableName)->where($pkName, '=', $pkValue)->update(array());
+        return "saved";
     }
 
     /**
@@ -79,20 +99,6 @@
             }
         }
         return $selectA;
-    }
-    
-    /**
-     * Update data to the database
-     * 
-     * @param type $tableName
-     * @param type $id
-     * @return type
-     */
-    public function postEdit($tableName = null, $pkValue = null)
-    {
-        $pkName = Input::get('meta.pk_name');
-        DB::table($tableName)->where($pkName, '=', $pkValue)->update(array());
-        return "saved";
     }
 
     /**

@@ -56,13 +56,13 @@
 <div class="page-header">
     <h1>Edit</h1>
 </div>
-<form method="POST" action="/db/edit/{{$tableName}}/">
+<form method="POST" action="/db/edit/{{$tableName}}/{{$data[$pkName]}}">
     @foreach($meta as $field)
     @if($field['display']) 
     <div class="row">
         <div class="span4">{{$field['label']}}</div>
         @if(isset($field['key']) && $field['key'] == 'PRI')
-            <div class="span4"><input type="text" disabled value="{{$data[0][$field['name']]}}" /></div>
+            <div class="span4"><input type="text" disabled value="{{$data[$field['name']]}}" /></div>
         @elseif(isset($field['pk']))
             <div class="span4">
                 <select>
@@ -72,7 +72,7 @@
                 </select>
             </div>
         @else
-            <div class="span4"><input type="text" value="{{$data[0][$field['name']]}}" /></div>
+            <div class="span4"><input type="text" value="{{$data[$field['name']]}}" /></div>
         @endif
     </div>
     @endif
