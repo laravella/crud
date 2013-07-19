@@ -43,9 +43,12 @@ class DbInstallController extends Controller {
                     $table->string('name', 100);                        // the field's name
                     $table->string('label', 100);                       // the label
                     $table->integer('display')->nullable();             // the field will be displayed in lists/selects
+                    $table->integer('searchable')->nullable();          // 1 if the field is display in a search form, else 0
                     $table->integer('display_order')->nullable();       // the order in which field will be displayed in lists/selects
                     $table->string('type', 100)->nullable();            // datatype
                     $table->integer('length')->nullable();              // datalength
+                    $table->integer('width')->nullable();               // display width of the field in pixels
+                    $table->string('widget', 250)->nullable();          // json text to define an html widget
                     $table->string('null', 3)->nullable();              // nullable
                     $table->string('key', 50)->nullable();              // type of key
                     $table->string('default', 100)->nullable();         // default value
@@ -118,10 +121,19 @@ class DbInstallController extends Controller {
          */
     }
 
+    /**
+     * 
+     * 
+     * @param type $log
+     * @throws Exception
+     */
     private function __updateReferences(&$log)
     {
         try
         {
+            // create foreign key references with
+            // log, fkTableName, fkFieldName, pkTableName, pkFieldName, pkDisplayFieldName
+            
             $this->__updateReference($log, '_db_fields', '_db_table_id', '_db_tables', 'id', 'name');
 
             $this->__updateReference($log, '_db_table_action_views', 'view_id', '_db_views', 'id', 'name');
@@ -350,6 +362,20 @@ class DbInstallController extends Controller {
     }
     
     /**
+     * Try and calculate the width of the widget to display the field in 
+     */
+    private function __getFieldWidth($fieldType, $fieldLength) {
+        return 100;
+    }    
+    
+    /**
+     * Try and calculate the best widget to display the field in. Define the widget in json
+     */
+    private function __getFieldWidget($fieldType, $fieldLength) {
+        return ""; //'{widget" : "input", "attributes" : {"type" : "text"}}';
+    }    
+    
+    /**
      * populate _db_tables and _db_fields
      * 
      */
@@ -383,9 +409,12 @@ class DbInstallController extends Controller {
                                 $colRec['name'] = $col->Field;
                                 $colRec['label'] = $this->__makeLabel($col->Field);
                                 $colRec['display'] = 1;
+                                $colRec['searchable'] = 1;
                                 $colRec['display_order'] = $displayOrder++;
                                 $colRec['type'] = $this->__getFieldType($col->Type, $log);
                                 $colRec['length'] = $this->__getFieldLength($col->Type, $log);
+                                $colRec['width'] = $this->__getFieldWidth($colRec['type'], $colRec['length']);
+                                $colRec['widget'] = $this->__getFieldWidget($colRec['type'], $colRec['length']);
                                 $colRec['null'] = $col->Null;
                                 $colRec['key'] = $col->Key;
                                 $colRec['default'] = $col->Default;

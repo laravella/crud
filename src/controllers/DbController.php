@@ -1,4 +1,6 @@
-<?php class DbController extends Controller {
+<?php
+
+class DbController extends Controller {
 
     protected $layout = 'crud::layouts.default';
 
@@ -23,15 +25,49 @@
         //select table data from database
         $table = DB::table($tableName)->paginate(5);
 
+        $tm = Model::getTableMeta($tableName);
+
         //get metadata as an array
-        $ma = Model::getMetaArray($tableName);
-        
+        $ma = $tm['fields_array']; //Model::getMetaArray($tableName);
+
         $prefix = array("id" => "/db/edit/$tableName/");
-        
-        return View::make("crud::dbview", array('action' => 'select', 'data' => $table, 'prefix' => $prefix, 'meta' => $ma));
+
+        return View::make("crud::dbview", array('action' => 'select', 'tableName' => $tm['table']['name'], 'data' => $table, 'prefix' => $prefix, 'meta' => $ma));
     }
 
-    
+    /**
+     * Handle a search request and display it in the select view
+     * 
+     * @param type $tableName
+     * @return type
+     */
+    public function getSearch($tableName = null)
+    {
+        //get the json string from the http querystring ?q=json
+        $json = Input::get('q');
+
+        $searchObj = json_decode($json, true);
+        
+        foreach($searchObj as $sTable=>$sFields) {
+            $table = DB::table($sTable);
+
+            foreach($sFields as $sField=>$sValue) {
+                $table->where($sField, '=', $sValue);
+            }
+        }
+        
+        $data = $table->paginate(10);
+        
+        $prefix = array("id" => "/db/edit/$tableName/");
+
+        $tm = Model::getTableMeta($tableName);
+
+        //get fields metadata as an array
+        $ma = $tm['fields_array']; 
+
+        return View::make("crud::dbview", array('action' => 'select', 'data' => $data, 'tableName' => $tm['table']['name'], 'prefix' => $prefix, 'meta' => $ma));
+    }
+
     /**
      * Prompt user to insert a new record
      * 
@@ -42,31 +78,30 @@
     public function getInsert($tableName = null)
     {
         $model = Model::getInstance($tableName);
-        
+
         $tableMeta = $model->getMetaData($tableName);
-        
+
         //get metadata as an array
-        $metaA = $tableMeta['fields_array']; 
-        $meta = $tableMeta['fields']; 
+        $metaA = $tableMeta['fields_array'];
+        $meta = $tableMeta['fields'];
         $pkName = $tableMeta['table']['pk_name'];
-        
+
         $prefix = array();
 
         //$table = DB::table($tableName)->where($pkName, '=', $pkValue)->get();
         //$data = Model::makeArray($meta, $table);
 
         $selects = $this->__getPkSelects($metaA);
-        
-        return View::make("crud::dbview", 
-                array('action' => 'insert', 
-                    /*'data' => $data[0], */
-                    'meta' => $metaA, 
-                    'pkName' => $pkName, 
+
+        return View::make("crud::dbview", array('action' => 'insert',
+                    /* 'data' => $data[0], */
+                    'meta' => $metaA,
+                    'pkName' => $pkName,
                     'prefix' => $prefix,
                     'selects' => $selects,
                     'tableName' => $tableName));
     }
-    
+
     /**
      * Display a single record on screen to be edited by the user
      * 
@@ -77,32 +112,31 @@
     public function getEdit($tableName = null, $pkValue = 0)
     {
         $model = Model::getInstance($tableName);
-        
+
         $tableMeta = $model->getMetaData($tableName);
-        
+
         //get metadata as an array
-        $metaA = $tableMeta['fields_array']; 
-        $meta = $tableMeta['fields']; 
+        $metaA = $tableMeta['fields_array'];
+        $meta = $tableMeta['fields'];
         $pkName = $tableMeta['table']['pk_name'];
-        
+
         $table = DB::table($tableName)->where($pkName, '=', $pkValue)->get();
-        
+
         $prefix = array();
 
         $data = Model::makeArray($meta, $table);
 
         $selects = $this->__getPkSelects($metaA);
-        
-        return View::make("crud::dbview", 
-                array('action' => 'edit', 
-                    'data' => $data[0], 
-                    'meta' => $metaA, 
-                    'pkName' => $pkName, 
+
+        return View::make("crud::dbview", array('action' => 'edit',
+                    'data' => $data[0],
+                    'meta' => $metaA,
+                    'pkName' => $pkName,
                     'prefix' => $prefix,
                     'selects' => $selects,
                     'tableName' => $tableName));
     }
-    
+
     /**
      * Update data to the database
      * 
@@ -112,9 +146,9 @@
      */
     public function postEdit($tableName = null, $pkValue = null)
     {
-        
+
         Model::getInstance($tableName)->editRec($pkValue);
-        
+
         return Redirect::to("/db/edit/$tableName/$pkValue");
     }
 
@@ -124,10 +158,13 @@
      * 
      * @param type $meta
      */
-    private function __getPkSelects($meta) {
+    private function __getPkSelects($meta)
+    {
         $selectA = array();
-        foreach($meta as $metaField) {
-            if(isset($metaField['pk'])) {
+        foreach ($meta as $metaField)
+        {
+            if (isset($metaField['pk']))
+            {
                 //metadata of the primary key
                 $pk = $metaField['pk'];
                 //meta data of the field used to display the primary key
@@ -147,9 +184,9 @@
         $arr = array();
         if (is_array($data))
         {
-            foreach($data as $rec)
+            foreach ($data as $rec)
             {
-                $arr[] = array('value'=>$rec->$valueField, 'text'=>$rec->$textField);
+                $arr[] = array('value' => $rec->$valueField, 'text' => $rec->$textField);
             }
         }
         return $arr;

@@ -40,6 +40,7 @@ class Model extends Eloquent {
      * @param type $fieldName
      * @deprecated since version number
      */
+    /*
     private function __isFillable($fieldName) {
         $fillable = false;
         if (isset($this->guarded) && is_array($this->guarded)) {
@@ -58,7 +59,7 @@ class Model extends Eloquent {
             }
         }
     }
-    
+    */
     /**
      * Update a record
      * 
@@ -127,7 +128,12 @@ class Model extends Eloquent {
         //get metadata of a single field from database
         $fieldMeta = DB::table("_db_fields")
                         ->join('_db_tables', '_db_fields._db_table_id', '=', '_db_tables.id')
-                        ->select('_db_fields.name', '_db_tables.name as tableName', '_db_fields.label', '_db_fields.key', '_db_fields.display', '_db_fields.type', '_db_fields.length', '_db_fields.default', '_db_fields.extra', '_db_fields.href', '_db_fields.pk_field_id', '_db_fields.pk_display_field_id', '_db_fields.display_order')
+                        ->select('_db_fields.name', '_db_tables.name as tableName', 
+                                '_db_fields.label', '_db_fields.key', '_db_fields.display', 
+                                '_db_fields.type', '_db_fields.length', '_db_fields.default', 
+                                '_db_fields.extra', '_db_fields.href', '_db_fields.pk_field_id', 
+                                '_db_fields.pk_display_field_id', '_db_fields.display_order', 
+                                '_db_fields.width', '_db_fields.widget', '_db_fields.searchable')
                         ->where("_db_fields.id", $fieldId)->get();
 
         $tableName = $fieldMeta[0]->tableName;
@@ -146,8 +152,13 @@ class Model extends Eloquent {
 
     /**
      * return an array(
-     *  'table'=>array('name'=>'tablename', 'pk_name'=>'fieldname'), 
+     *  'table'=>array('name'=>'name', 'pk_name'=>'fieldname'), 
      *  'fields_array'=array('fieldname'=>fieldData,...))
+     *  
+     *  fieldData is in the format : 
+     *  
+     *  array("id" => 1, "name" => fieldName, "label" => 'Field Name' ...)
+     * 
      */
     public static function getTableMeta($tableName)
     {
@@ -190,7 +201,12 @@ class Model extends Eloquent {
     {
         $tableMeta = DB::table("_db_fields")
                         ->join('_db_tables', '_db_fields._db_table_id', '=', '_db_tables.id')
-                        ->select('_db_fields.name', '_db_fields.label', '_db_fields.key', '_db_fields.display', '_db_fields.type', '_db_fields.length', '_db_fields.default', '_db_fields.extra', '_db_fields.href', '_db_fields.pk_field_id', '_db_fields.pk_display_field_id', '_db_fields.display_order')
+                        ->select('_db_fields.name', '_db_fields.label', '_db_fields.key', 
+                                '_db_fields.display', '_db_fields.type', '_db_fields.length', 
+                                '_db_fields.default', '_db_fields.extra', '_db_fields.href', 
+                                '_db_fields.pk_field_id', '_db_fields.pk_display_field_id', 
+                                '_db_fields.display_order', '_db_fields.width', '_db_fields.widget', 
+                                '_db_fields.searchable')
                         ->orderBy('display_order', 'desc')
                         ->where("_db_tables.name", "=", $tableName)->get();
 
