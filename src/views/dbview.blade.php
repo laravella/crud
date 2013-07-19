@@ -11,6 +11,11 @@
     table.dbtable td {
         border : 1px solid #dddddd;
     }
+    
+    table.dbtable td input[type="text"] {
+        margin-bottom: 0px;
+    }
+    
 </style>
 
 <script type="text/javascript">
@@ -40,8 +45,8 @@
 
 @stop
 
-@section('index')
-@if($action == 'index')
+@section('getIndex')
+@if($action == 'getIndex')
 <h1>Index</h1>
 <ul>
     <li><a href="/db/select/_db_tables">List Tables</a></li>
@@ -49,15 +54,15 @@
 @endif
 @stop
 
-@section('select')
-@if($action == 'select')
+@section('getSelect')
+@if($action == 'getSelect')
 <div class="page-header">
     <h1>DbView</h1>
 </div>
 <div class="well">
     <div class="btn-group">
         <a href="/db/insert/{{$tableName}}" class="btn">New</a>
-        <a href="#myModal" role="button" class="btn" data-toggle="modal">Search <b class="caret"></b></a>
+        <a href="#myModal" role="button" class="btn" data-toggle="modal">Search</b></a>
     </div>
     <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-header">
@@ -79,11 +84,16 @@
     </div>
 </div>
 @if(isset($data) && isset($data[0]))
+
 <div style="width:100%; overflow-x: scroll">
     <table class="table table-striped dbtable">
         <tr>
             @foreach($data[0] as $name=>$field)
             <th>{{$meta[$name]['label']}}</th>
+            @if (isset($meta[$name]['pk']))
+            {{-- this is a foreign key, it contains a reference to a primary key --}}
+            <th>{{$meta[$name]['pk']['label']}}</th>
+            @endif
             @endforeach
         </tr>
         @foreach($data as $record)
@@ -92,8 +102,14 @@
             @if((isset($prefix) && isset($prefix[$name])) || (isset($meta) && isset($meta[$name]) && $meta[$name]['key'] == 'PRI'))
             <td><a href="{{$prefix[$name]}}{{$field}}">{{$field}}</a></td>
             @else
-            {{-- see : https://github.com/mruoss/HoverEdit-jQuery-Plugin --}}
+            {{-- hover-edit : see : https://github.com/mruoss/HoverEdit-jQuery-Plugin --}}
+            
             <td><input style="width:{{$meta[$name]['width']}}px" type="text" value="{{$field}}" id="" class="hover-edit" /></div></td>
+            @if(isset($meta[$name]['pk']))
+            {{-- this is a foreign key, it contains a reference to a primary key --}}
+                <td><a href="/db/edit/{{$meta[$name]['pk']['tableName']}}/{{$field}}">{{$meta[$name]['pk']['tableName']}}:{{$field}}</a></td>
+            @endif
+
             @endif
             @endforeach
         </tr>
@@ -105,8 +121,8 @@
 @endif
 @stop
 
-@section('edit') 
-@if($action == 'edit')
+@section('getEdit') 
+@if($action == 'getEdit')
 <div class="page-header">
     <h1>Edit</h1>
 </div>
@@ -140,8 +156,8 @@
 @endif
 @stop
 
-@section('insert') 
-@if($action == 'insert')
+@section('getInsert') 
+@if($action == 'getInsert')
 <div class="page-header">
     <h1>New</h1>
 </div>

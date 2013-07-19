@@ -11,9 +11,40 @@ class DbController extends Controller {
      */
     public function getIndex()
     {
-        return View::make("crud::dbinstall", array('action' => 'index'));
+        $action = 'getIndex';
+        
+        return View::make("crud::dbinstall", array('action' => $action));
     }
 
+    /**
+     * Find the right view to use with the action
+     * 
+     * @param type $tableName
+     * @param type $action
+     */
+    private function __getView($tableName, $action) {
+        $views = DB::table('_db_table_action_views')
+                ->join('_db_tables', '_db_table_action_views.table_id', '=', '_db_tables.id')
+                ->join('_db_actions', '_db_table_action_views.action_id', '=', '_db_actions.id')
+                ->join('_db_views', '_db_table_action_views.view_id', '=', '_db_views.id')
+                ->where('_db_actions.name', '=', $action)
+                ->where('_db_tables.name', '=', $tableName)
+                ->first();
+        return $views->name;
+    }
+    
+
+    /**
+     * Check permissions
+     * 
+     * @param type $tableName
+     * @param type $action
+     */
+    private function __getPermissions($tableName, $action) {
+        //
+        return true;
+    }
+    
     /**
      * /db/select/{tablename}
      * 
@@ -22,6 +53,8 @@ class DbController extends Controller {
      */
     public function getSelect($tableName = null)
     {
+        $action = 'getSelect';
+        
         //select table data from database
         $table = DB::table($tableName)->paginate(5);
 
@@ -32,7 +65,11 @@ class DbController extends Controller {
 
         $prefix = array("id" => "/db/edit/$tableName/");
 
-        return View::make("crud::dbview", array('action' => 'select', 'tableName' => $tm['table']['name'], 'data' => $table, 'prefix' => $prefix, 'meta' => $ma));
+        $view = $this->__getView($tableName, $action);
+        
+        return View::make($view, array('action' => $action, 
+            'tableName' => $tm['table']['name'], 
+            'data' => $table, 'prefix' => $prefix, 'meta' => $ma));
     }
 
     /**
@@ -43,6 +80,8 @@ class DbController extends Controller {
      */
     public function getSearch($tableName = null)
     {
+        $action = 'getSearch';
+        
         //get the json string from the http querystring ?q=json
         $json = Input::get('q');
 
@@ -65,7 +104,11 @@ class DbController extends Controller {
         //get fields metadata as an array
         $ma = $tm['fields_array']; 
 
-        return View::make("crud::dbview", array('action' => 'select', 'data' => $data, 'tableName' => $tm['table']['name'], 'prefix' => $prefix, 'meta' => $ma));
+        $view = $this->__getView($tableName, $action);
+        
+        return View::make($view, array('action' => 'getSelect', 
+            'data' => $data, 'tableName' => $tm['table']['name'], 
+            'prefix' => $prefix, 'meta' => $ma));
     }
 
     /**
@@ -77,6 +120,8 @@ class DbController extends Controller {
      */
     public function getInsert($tableName = null)
     {
+        $action = 'getInsert';
+        
         $model = Model::getInstance($tableName);
 
         $tableMeta = $model->getMetaData($tableName);
@@ -93,7 +138,9 @@ class DbController extends Controller {
 
         $selects = $this->__getPkSelects($metaA);
 
-        return View::make("crud::dbview", array('action' => 'insert',
+        $view = $this->__getView($tableName, $action);
+        
+        return View::make($view, array('action' => 'getEdit',
                     /* 'data' => $data[0], */
                     'meta' => $metaA,
                     'pkName' => $pkName,
@@ -111,6 +158,8 @@ class DbController extends Controller {
      */
     public function getEdit($tableName = null, $pkValue = 0)
     {
+        $action = 'getEdit';
+        
         $model = Model::getInstance($tableName);
 
         $tableMeta = $model->getMetaData($tableName);
@@ -128,7 +177,9 @@ class DbController extends Controller {
 
         $selects = $this->__getPkSelects($metaA);
 
-        return View::make("crud::dbview", array('action' => 'edit',
+        $view = $this->__getView($tableName, $action);
+        
+        return View::make($view, array('action' => $action,
                     'data' => $data[0],
                     'meta' => $metaA,
                     'pkName' => $pkName,
@@ -146,6 +197,7 @@ class DbController extends Controller {
      */
     public function postEdit($tableName = null, $pkValue = null)
     {
+        $action = 'postEdit';
 
         Model::getInstance($tableName)->editRec($pkValue);
 

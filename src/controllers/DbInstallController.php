@@ -521,25 +521,29 @@ class DbInstallController extends Controller {
      */
     private function __populateActions(&$log)
     {
-        $arr = array("name" => "select");
+        $arr = array("name" => "getSelect");
         DB::table('_db_actions')->insert($arr);
-        $log[] = " - select action created";
+        $log[] = " - getSelect action created";
 
-        $arr = array("name" => "insert");
+        $arr = array("name" => "getInsert");
         DB::table('_db_actions')->insert($arr);
-        $log[] = " - insert action created";
+        $log[] = " - getInsert action created";
 
-        $arr = array("name" => "edit");
+        $arr = array("name" => "getEdit");
         DB::table('_db_actions')->insert($arr);
-        $log[] = " - edit action created";
+        $log[] = " - getEdit action created";
 
-        $arr = array("name" => "update");
+        $arr = array("name" => "postEdit");
         DB::table('_db_actions')->insert($arr);
-        $log[] = " - update action created";
+        $log[] = " - postEdit action created";
 
-        $arr = array("name" => "delete");
+        $arr = array("name" => "postDelete");
         DB::table('_db_actions')->insert($arr);
-        $log[] = " - delete action created";
+        $log[] = " - postDelete action created";
+        
+        $arr = array("name" => "getSearch");
+        DB::table('_db_actions')->insert($arr);
+        $log[] = " - getSearch action created";
     }
 
     /**
