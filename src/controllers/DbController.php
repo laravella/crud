@@ -59,7 +59,7 @@ class DbController extends Controller {
         //select table data from database
         $table = DB::table($tableName)->paginate(5);
 
-        $tm = Model::getTableMeta($tableName);
+        $tm = Table::getTableMeta($tableName);
 
         //get field metadata as an array
         $ma = $tm['fields_array']; 
@@ -120,13 +120,13 @@ class DbController extends Controller {
                     
                     //$pktMeta = Model::getFieldMeta($pkTableName);
                     
-                    $pktMeta = Model::getMeta($pkTableName);
+                    $pktMeta = Table::getMeta($pkTableName);
                     
 //                    print_r($pktMeta);
 //                    print_r($pkData);
                     
                     //an array of 
-                    $pkDataA = Model::makeArray($pktMeta, $pkData);
+                    $pkDataA = Table::makeArray($pktMeta, $pkData);
                     
                     // 
                     //$pkRec[$pkValue] = $pkDataA[0];
@@ -179,7 +179,7 @@ class DbController extends Controller {
 
         $prefix = array("id" => "/db/edit/$tableName/");
 
-        $tm = Model::getTableMeta($tableName);
+        $tm = Table::getTableMeta($tableName);
 
         //get fields metadata as an array
         $ma = $tm['fields_array'];
@@ -253,7 +253,7 @@ class DbController extends Controller {
 
         $prefix = array();
 
-        $data = Model::makeArray($meta, $table);
+        $data = Table::makeArray($meta, $table);
 
         $selects = $this->__getPkSelects($metaA);
 
