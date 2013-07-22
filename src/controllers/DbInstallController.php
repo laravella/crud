@@ -74,12 +74,13 @@ class DbInstallController extends Controller {
      */
     private function __updateReference(&$log, $fkTableName, $fkFieldName, $pkTableName, $pkFieldName, $pkDisplayFieldName)
     {
-//get the id of the pkTableName in _db_tables
+        //get the id of the pkTableName in _db_tables
         $fkTableId = DB::table('_db_tables')->where('name', $fkTableName)->pluck('id');
 
         $pkTableId = DB::table('_db_tables')->where('name', $pkTableName)->pluck('id');
 
-//get the id of the primary key field in _db_fields
+        //get the id of the primary key field in _db_fields
+        //for each field in the _db_fields table there will thus be a reference to 
         $pkFieldId = DB::table('_db_fields')
                 ->where('_db_table_id', $pkTableId)
                 ->where('name', $pkFieldName)
@@ -100,7 +101,7 @@ class DbInstallController extends Controller {
             pkFieldName = $pkFieldName, 
             pkTableId = $pkTableId, 
             pkFieldId = $pkFieldId, 
-                
+
             fkTableName = $fkTableName, 
             fkFieldName = $fkFieldName, 
             fkTableId = $fkTableId,

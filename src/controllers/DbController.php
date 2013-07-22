@@ -12,7 +12,7 @@ class DbController extends Controller {
     public function getIndex()
     {
         $action = 'getIndex';
-        
+
         return View::make("crud::dbinstall", array('action' => $action));
     }
 
@@ -22,7 +22,8 @@ class DbController extends Controller {
      * @param type $tableName
      * @param type $action
      */
-    private function __getView($tableName, $action) {
+    private function __getView($tableName, $action)
+    {
         $views = DB::table('_db_table_action_views')
                 ->join('_db_tables', '_db_table_action_views.table_id', '=', '_db_tables.id')
                 ->join('_db_actions', '_db_table_action_views.action_id', '=', '_db_actions.id')
@@ -32,7 +33,6 @@ class DbController extends Controller {
                 ->first();
         return $views->name;
     }
-    
 
     /**
      * Check permissions
@@ -40,11 +40,12 @@ class DbController extends Controller {
      * @param type $tableName
      * @param type $action
      */
-    private function __getPermissions($tableName, $action) {
+    private function __getPermissions($tableName, $action)
+    {
         //
         return true;
     }
-    
+
     /**
      * /db/select/{tablename}
      * 
@@ -54,24 +55,99 @@ class DbController extends Controller {
     public function getSelect($tableName = null)
     {
         $action = 'getSelect';
-        
+
         //select table data from database
         $table = DB::table($tableName)->paginate(5);
 
         $tm = Model::getTableMeta($tableName);
 
-        //get metadata as an array
+        //get field metadata as an array
         $ma = $tm['fields_array']; //Model::getMetaArray($tableName);
 
         $prefix = array("id" => "/db/edit/$tableName/");
 
+        //find the view in the _db_views table, by default crud::dbview
         $view = $this->__getView($tableName, $action);
+
+        $pkTables = $this->__attachPkData($table, $ma);
         
-        return View::make($view, array('action' => $action, 
-            'tableName' => $tm['table']['name'], 
-            'data' => $table, 'prefix' => $prefix, 'meta' => $ma));
+        return View::make($view, array('action' => $action,
+                    'tableName' => $tm['table']['name'],
+                    'pkTables' => $pkTables,
+                    'data' => $table, 'prefix' => $prefix, 'meta' => $ma));
     }
 
+    /**
+     * 
+     * 
+     * @param type $table
+     * @param type $ma
+     * @return array
+     */
+    private function __attachPkData($table, $ma) {
+        $pkTables = array();
+        
+        foreach ($table as $record)
+        {
+            foreach ($record as $name => $value)
+            {
+                $pkRec = array();
+                
+                if (isset($ma[$name]['pk']))
+                {
+                    //$name is a foreign key, it contains a reference to a primary key --}}
+                    $pkFieldId = $ma[$name]['pk_field_id'];
+                    $pkDisplayFieldId = $ma[$name]['pk_display_field_id'];
+                    
+                    //pk display field's meta data array
+                    $pkdfMetaA = $ma[$name]['pk_display'];
+                    
+                    //pk meta data array
+                    $pkfMetaA = $ma[$name]['pk'];
+                    
+                    //get the name of the display field
+                    $pkdfName = $pkdfMetaA['name'];
+                    
+                    //get the name of the pk field
+                    $pkfName = $pkfMetaA['name'];
+                    
+                    $pkTableName = $ma[$name]['pk']['tableName'];
+                    $pkValue = $value;
+                    
+                    //get the actual data of the primary key related to this field (not the meta data)
+                    $pkData = DB::table($pkTableName)->where($pkfName, $pkValue)->get();
+                    
+                    //$pktMeta = Model::getFieldMeta($pkTableName);
+                    
+                    $pktMeta = Model::getMeta($pkTableName);
+                    
+//                    print_r($pktMeta);
+//                    print_r($pkData);
+                    
+                    //an array of 
+                    $pkDataA = Model::makeArray($pktMeta, $pkData);
+                    
+                    // 
+                    //$pkRec[$pkValue] = $pkDataA[0];
+                    
+                    // 
+                    $pkDisplayValue = $pkData[0]->$pkdfName;
+                    
+                    $pkRec[$pkValue] = $pkDisplayValue;
+                    
+                }
+                if (!empty ($pkRec)) {
+                    if (!isset($pkTables[$pkTableName])) {
+                        $pkTables = array();
+                    }
+                    $pkTables[$pkTableName] = $pkRec;
+                }
+            }
+        }
+        //print_r($pkTables);
+        return $pkTables;
+    }
+    
     /**
      * Handle a search request and display it in the select view
      * 
@@ -81,34 +157,36 @@ class DbController extends Controller {
     public function getSearch($tableName = null)
     {
         $action = 'getSearch';
-        
+
         //get the json string from the http querystring ?q=json
         $json = Input::get('q');
 
         $searchObj = json_decode($json, true);
-        
-        foreach($searchObj as $sTable=>$sFields) {
+
+        foreach ($searchObj as $sTable => $sFields)
+        {
             $table = DB::table($sTable);
 
-            foreach($sFields as $sField=>$sValue) {
+            foreach ($sFields as $sField => $sValue)
+            {
                 $table->where($sField, '=', $sValue);
             }
         }
-        
+
         $data = $table->paginate(10);
-        
+
         $prefix = array("id" => "/db/edit/$tableName/");
 
         $tm = Model::getTableMeta($tableName);
 
         //get fields metadata as an array
-        $ma = $tm['fields_array']; 
+        $ma = $tm['fields_array'];
 
         $view = $this->__getView($tableName, $action);
-        
-        return View::make($view, array('action' => 'getSelect', 
-            'data' => $data, 'tableName' => $tm['table']['name'], 
-            'prefix' => $prefix, 'meta' => $ma));
+
+        return View::make($view, array('action' => 'getSelect',
+                    'data' => $data, 'tableName' => $tm['table']['name'],
+                    'prefix' => $prefix, 'meta' => $ma));
     }
 
     /**
@@ -121,7 +199,7 @@ class DbController extends Controller {
     public function getInsert($tableName = null)
     {
         $action = 'getInsert';
-        
+
         $model = Model::getInstance($tableName);
 
         $tableMeta = $model->getMetaData($tableName);
@@ -139,7 +217,7 @@ class DbController extends Controller {
         $selects = $this->__getPkSelects($metaA);
 
         $view = $this->__getView($tableName, $action);
-        
+
         return View::make($view, array('action' => 'getEdit',
                     /* 'data' => $data[0], */
                     'meta' => $metaA,
@@ -159,7 +237,7 @@ class DbController extends Controller {
     public function getEdit($tableName = null, $pkValue = 0)
     {
         $action = 'getEdit';
-        
+
         $model = Model::getInstance($tableName);
 
         $tableMeta = $model->getMetaData($tableName);
@@ -178,7 +256,7 @@ class DbController extends Controller {
         $selects = $this->__getPkSelects($metaA);
 
         $view = $this->__getView($tableName, $action);
-        
+
         return View::make($view, array('action' => $action,
                     'data' => $data[0],
                     'meta' => $metaA,

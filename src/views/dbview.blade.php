@@ -64,6 +64,7 @@
         <a href="/db/insert/{{$tableName}}" class="btn">New</a>
         <a href="#myModal" role="button" class="btn" data-toggle="modal">Search</b></a>
     </div>
+    {{-- the search popup box --}}
     <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-header">
             <h3 id="myModalLabel">Search</h3>
@@ -72,7 +73,8 @@
             <div class="row">
                 @foreach($meta as $field)
                     <div class="span2">{{$field['label']}}</div>
-                    <div class="span3"><input style="width:{{$field['width']}}px" class="formfield" type="text" data-table="{{$tableName}}" 
+                    <div class="span3"><input style="width:{{$field['width']}}px" 
+                                              class="formfield" type="text" data-table="{{$tableName}}" 
                                               name="{{$field['name']}}" /></div>
                 @endforeach
             </div>
@@ -87,6 +89,7 @@
 
 <div style="width:100%; overflow-x: scroll">
     <table class="table table-striped dbtable">
+        {{-- the field titles --}}
         <tr>
             @foreach($data[0] as $name=>$field)
             <th>{{$meta[$name]['label']}}</th>
@@ -98,16 +101,16 @@
         </tr>
         @foreach($data as $record)
         <tr>
-            @foreach($record as $name=>$field)
+            @foreach($record as $name=>$value)
             @if((isset($prefix) && isset($prefix[$name])) || (isset($meta) && isset($meta[$name]) && $meta[$name]['key'] == 'PRI'))
-            <td><a href="{{$prefix[$name]}}{{$field}}">{{$field}}</a></td>
+            <td><a href="{{$prefix[$name]}}{{$value}}">{{$value}}</a></td>
             @else
             {{-- hover-edit : see : https://github.com/mruoss/HoverEdit-jQuery-Plugin --}}
             
-            <td><input style="width:{{$meta[$name]['width']}}px" type="text" value="{{$field}}" id="" class="hover-edit" /></div></td>
+            <td><input style="width:{{$meta[$name]['width']}}px" type="text" value="{{$value}}" id="" class="hover-edit" /></div></td>
             @if(isset($meta[$name]['pk']))
             {{-- this is a foreign key, it contains a reference to a primary key --}}
-                <td><a href="/db/edit/{{$meta[$name]['pk']['tableName']}}/{{$field}}">{{$meta[$name]['pk']['tableName']}}:{{$field}}</a></td>
+                <td><a href="/db/edit/{{$pkTables[$meta[$name]['pk']['tableName']][$value]}}/{{$value}}">{{$pkTables[$meta[$name]['pk']['tableName']][$value]}}</a></td> {{-- {{$meta[$name]['pk']['tableName']}}:{{$value}} --}}
             @endif
 
             @endif
