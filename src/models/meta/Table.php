@@ -1,35 +1,67 @@
-<?php class Table extends Eloquent {
+<?php
+
+class Table extends Eloquent {
+
     protected $tableName = "";
-    private $records;
     private $tableMetaData;
+    private $records;
     private $dbFields;
-    
-    public static function get($tableName) {
+    private $primaryKey;
+
+    /*
+      'table' => array('name' => $tableName, 'pk_name' => $pkName),
+      'fields_array' => $fieldMeta,
+      'fields' => $meta,
+     */
+
+    public function meta()
+    {
+        return $this->$tableMetaData['fields'];
+    }
+
+    public function metaA()
+    {
+        return $this->$tableMetaData['fields_array'];
+    }
+
+    public function pk()
+    {
+        return $this->$tableMetaData['table']['pk_name'];
+    }
+
+    public function name()
+    {
+        return $this->tableName;
+    }
+
+    public function setTableName($tableName)
+    {
+        $this->tableName = $tableName;
+    }
+
+    public static function get($tableName)
+    {
         $table = new Table();
         $table->tableName = $tableName;
         $table->tableMetaData = Table::getTableMeta($tableName); //Table::getMeta("_db_fields");
         return $table;
     }
-    
+
     /**
      * Gets field metadata from the fieldname and tablename
      */
-    public static function getFieldMetaN($fieldName, $tableName) {
+    public static function getFieldMetaN($fieldName, $tableName)
+    {
         //get metadata of a single field from database
         $fieldMeta = DB::table("_db_fields")
                         ->join('_db_tables', '_db_fields._db_table_id', '=', '_db_tables.id')
-                        ->select('_db_fields.name', '_db_tables.name as tableName', 
-                                '_db_fields.label', '_db_fields.key', '_db_fields.display', 
-                                '_db_fields.type', '_db_fields.length', '_db_fields.default', 
-                                '_db_fields.extra', '_db_fields.href', '_db_fields.pk_field_id', 
-                                '_db_fields.pk_display_field_id', '_db_fields.display_order', 
-                                '_db_fields.width', '_db_fields.widget', '_db_fields.searchable')
+                        ->select('_db_fields.name', '_db_tables.name as tableName', '_db_fields.label', '_db_fields.key', '_db_fields.display', '_db_fields.type', '_db_fields.length', '_db_fields.default', '_db_fields.extra', '_db_fields.href', '_db_fields.pk_field_id', '_db_fields.pk_display_field_id', '_db_fields.display_order', '_db_fields.width', '_db_fields.widget', '_db_fields.searchable')
                         ->where("_db_tables.name", $tableName)
                         ->where("_db_fields.name", $fieldName)->get();
-        
-        return Table::__field_meta($fieldMeta);        
+
+        return Table::__field_meta($fieldMeta);
     }
-    
+
     /**
      * 
      * 
@@ -42,19 +74,14 @@
         //get metadata of a single field from database
         $fieldMeta = DB::table("_db_fields")
                         ->join('_db_tables', '_db_fields._db_table_id', '=', '_db_tables.id')
-                        ->select('_db_fields.name', '_db_tables.name as tableName', 
-                                '_db_fields.label', '_db_fields.key', '_db_fields.display', 
-                                '_db_fields.type', '_db_fields.length', '_db_fields.default', 
-                                '_db_fields.extra', '_db_fields.href', '_db_fields.pk_field_id', 
-                                '_db_fields.pk_display_field_id', '_db_fields.display_order', 
-                                '_db_fields.width', '_db_fields.widget', '_db_fields.searchable')
+                        ->select('_db_fields.name', '_db_tables.name as tableName', '_db_fields.label', '_db_fields.key', '_db_fields.display', '_db_fields.type', '_db_fields.length', '_db_fields.default', '_db_fields.extra', '_db_fields.href', '_db_fields.pk_field_id', '_db_fields.pk_display_field_id', '_db_fields.display_order', '_db_fields.width', '_db_fields.widget', '_db_fields.searchable')
                         ->where("_db_fields.id", $fieldId)->get();
-        
-        return Table::__field_meta($fieldMeta);
 
+        return Table::__field_meta($fieldMeta);
     }
 
-    private static function __field_meta($fieldMeta, $dbFieldsMeta = null) {
+    private static function __field_meta($fieldMeta, $dbFieldsMeta = null)
+    {
         $tableName = $fieldMeta[0]->tableName;
 
         if (empty($dbFieldsMeta))
@@ -66,9 +93,9 @@
         $fieldMetaA = Table::makeArray($dbFieldsMeta, $fieldMeta);
         $fieldMetaA[0]['tableName'] = $tableName;
 
-        return $fieldMetaA[0];        
+        return $fieldMetaA[0];
     }
-    
+
     /**
      * return an array(
      *  'table'=>array('name'=>'name', 'pk_name'=>'fieldname'), 
@@ -81,7 +108,7 @@
      */
     public static function getTableMeta($tableName)
     {
-        
+
         //get metadata from database
         $meta = Table::getMeta($tableName);
 
@@ -89,9 +116,9 @@
 
         //turn metadata into array
         $metaA = Table::makeArray($fmeta, $meta);
-        
+
         $fieldMeta = Table::addPkData($tableName, $metaA);
-        
+
         $pkName = "";
         foreach ($metaA as $name => $data)
         {
@@ -102,11 +129,11 @@
         }
 
         $tmData = array(
-            'table' => array('name' => $tableName, 'pk_name' => $pkName), 
+            'table' => array('name' => $tableName, 'pk_name' => $pkName),
             'fields_array' => $fieldMeta,
             'fields' => $meta,
-            );
-        
+        );
+
         return $tmData;
     }
 
@@ -120,12 +147,7 @@
     {
         $tableMeta = DB::table("_db_fields")
                         ->join('_db_tables', '_db_fields._db_table_id', '=', '_db_tables.id')
-                        ->select('_db_fields.name', '_db_fields.label', '_db_fields.key', 
-                                '_db_fields.display', '_db_fields.type', '_db_fields.length', 
-                                '_db_fields.default', '_db_fields.extra', '_db_fields.href', 
-                                '_db_fields.pk_field_id', '_db_fields.pk_display_field_id', 
-                                '_db_fields.display_order', '_db_fields.width', '_db_fields.widget', 
-                                '_db_fields.searchable')
+                        ->select('_db_fields.name', '_db_fields.label', '_db_fields.key', '_db_fields.display', '_db_fields.type', '_db_fields.length', '_db_fields.default', '_db_fields.extra', '_db_fields.href', '_db_fields.pk_field_id', '_db_fields.pk_display_field_id', '_db_fields.display_order', '_db_fields.width', '_db_fields.widget', '_db_fields.searchable')
                         ->orderBy('display_order', 'desc')
                         ->where("_db_tables.name", "=", $tableName)->get();
 
@@ -145,12 +167,12 @@
         $meta = Table::getMeta($tableName);
 
         $fieldsMeta = Table::getMeta("_db_fields");
-        
+
         //turn metadata into array
         $ma = Table::makeArray($fieldsMeta, $meta);
 
         $metaA = Table::addPkData($tableName, $ma, $fieldsMeta);
-        
+
         return $metaA;
     }
 
@@ -162,9 +184,11 @@
      * @param type $fieldsMeta
      * @return type
      */
-    public static function addPkData($tableName, $ma, $fieldsMeta = null) {
-        
-        if (empty($fieldsMeta)) {
+    public static function addPkData($tableName, $ma, $fieldsMeta = null)
+    {
+
+        if (empty($fieldsMeta))
+        {
             $fieldsMeta = Table::getMeta("_db_fields");
         }
 
@@ -185,10 +209,10 @@
                 }
             }
             $metaA[$mk['name']] = $mk;
-        }        
+        }
         return $metaA;
     }
-    
+
     /**
      * Turn a StdClass object into an array using an array of meta data objects.
      * 
@@ -219,7 +243,7 @@
         }
         return $arr;
     }
-    
+
     /**
      * Turn a StdClass object into an array using an array of meta data arrays.
      * 
@@ -249,7 +273,6 @@
         }
         return $arr;
     }
-    
 
 }
 
