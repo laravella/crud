@@ -3,10 +3,11 @@
 class Table extends Eloquent {
 
     protected $tableName = "";
+    protected $primaryKey;
+    
     private $tableMetaData;
     private $records;
     private $dbFields;
-    private $primaryKey;
 
     /*
       'table' => array('name' => $tableName, 'pk_name' => $pkName),
@@ -31,10 +32,10 @@ class Table extends Eloquent {
 
     public function name()
     {
-        return $this->tableName;
+        //return $this->tableName;
     }
 
-    public function setTableName($tableName)
+    protected function setTableName($tableName)
     {
         $this->tableName = $tableName;
     }
@@ -42,7 +43,7 @@ class Table extends Eloquent {
     public static function get($tableName)
     {
         $table = new Table();
-        $table->tableName = $tableName;
+        $table->setTableName($tableName);
         $table->tableMetaData = Table::getTableMeta($tableName); //Table::getMeta("_db_fields");
         return $table;
     }
