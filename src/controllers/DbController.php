@@ -62,7 +62,7 @@ class DbController extends Controller {
         $tm = Model::getTableMeta($tableName);
 
         //get field metadata as an array
-        $ma = $tm['fields_array']; //Model::getMetaArray($tableName);
+        $ma = $tm['fields_array']; 
 
         $prefix = array("id" => "/db/edit/$tableName/");
 
@@ -86,16 +86,16 @@ class DbController extends Controller {
      */
     private function __attachPkData($table, $ma) {
         $pkTables = array();
+            $pkRec = array();
         
         foreach ($table as $record)
         {
             foreach ($record as $name => $value)
             {
-                $pkRec = array();
                 
                 if (isset($ma[$name]['pk']))
                 {
-                    //$name is a foreign key, it contains a reference to a primary key --}}
+                    //{{-- $name is a foreign key, it contains a reference to a primary key --}}
                     $pkFieldId = $ma[$name]['pk_field_id'];
                     $pkDisplayFieldId = $ma[$name]['pk_display_field_id'];
                     
@@ -112,6 +112,7 @@ class DbController extends Controller {
                     $pkfName = $pkfMetaA['name'];
                     
                     $pkTableName = $ma[$name]['pk']['tableName'];
+                    
                     $pkValue = $value;
                     
                     //get the actual data of the primary key related to this field (not the meta data)
@@ -129,7 +130,6 @@ class DbController extends Controller {
                     
                     // 
                     //$pkRec[$pkValue] = $pkDataA[0];
-                    
                     // 
                     $pkDisplayValue = $pkData[0]->$pkdfName;
                     
@@ -137,14 +137,16 @@ class DbController extends Controller {
                     
                 }
                 if (!empty ($pkRec)) {
+                    /*
                     if (!isset($pkTables[$pkTableName])) {
-                        $pkTables = array();
+                        $pkTables[$pkTableName] = array();
                     }
+                    */
                     $pkTables[$pkTableName] = $pkRec;
                 }
             }
         }
-        //print_r($pkTables);
+//        print_r($pkTables);
         return $pkTables;
     }
     

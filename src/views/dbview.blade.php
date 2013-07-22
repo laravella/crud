@@ -110,7 +110,13 @@
             <td><input style="width:{{$meta[$name]['width']}}px" type="text" value="{{$value}}" id="" class="hover-edit" /></div></td>
             @if(isset($meta[$name]['pk']))
             {{-- this is a foreign key, it contains a reference to a primary key --}}
-                <td><a href="/db/edit/{{$pkTables[$meta[$name]['pk']['tableName']][$value]}}/{{$value}}">{{$pkTables[$meta[$name]['pk']['tableName']][$value]}}</a></td> {{-- {{$meta[$name]['pk']['tableName']}}:{{$value}} --}}
+                <td><a href="/db/edit/{{$meta[$name]['pk']['tableName']}}/{{$value}}">{{$pkTables[$meta[$name]['pk']['tableName']][$value]}}</a></td> 
+            {{--
+                <td><a href="/db/edit/{{$meta[$name]['pk']['tableName']}}/{{$value}}">{{$pkTables[$meta[$name]['pk']['tableName']][$value]}}</a></td> 
+                @if($meta[$name]['pk']['tableName'])
+                    <td>{{$meta[$name]['pk']['tableName']}}</td>
+                @endif
+            --}}
             @endif
 
             @endif
