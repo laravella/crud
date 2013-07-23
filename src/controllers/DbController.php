@@ -31,9 +31,29 @@ class DbController extends Controller {
                 ->where('_db_actions.name', '=', $action)
                 ->where('_db_tables.name', '=', $tableName)
                 ->first();
-        return $views->name;
+        return $views;
     }
 
+    /**
+     * Get a record from _db_table_action_views as an stdClass object
+     * 
+     * @param type $tableName
+     * @param type $viewId
+     * @param type $action
+     * @return type
+     */
+    private function __getTableViewAction($tableName, $viewId, $action)
+    {
+        $tva = DB::table('_db_table_action_views')
+                ->join('_db_tables', '_db_table_action_views.table_id', '=', '_db_tables.id')
+                ->join('_db_actions', '_db_table_action_views.action_id', '=', '_db_actions.id')
+                ->where('_db_table_action_views.view_id', '=', $viewId)
+                ->where('_db_actions.name', '=', $action)
+                ->where('_db_tables.name', '=', $tableName)
+                ->first();
+        return $tva;
+    }
+    
     /**
      * Check permissions
      * 
@@ -68,11 +88,14 @@ class DbController extends Controller {
 
         //find the view in the _db_views table, by default crud::dbview
         $view = $this->__getView($tableName, $action);
+        
+        $tva = $this->__getTableViewAction($tableName, $view->id, $action);
 
         $pkTables = $this->__attachPkData($table, $ma);
         
-        return View::make($view, array('action' => $action,
+        return View::make($view->name, array('action' => $action,
                     'tableName' => $tm['table']['name'],
+                    'pageSize' => $tva->page_size,
                     'pkTables' => $pkTables,
                     'data' => $table, 'prefix' => $prefix, 'meta' => $ma));
     }
@@ -184,7 +207,7 @@ class DbController extends Controller {
         //get fields metadata as an array
         $ma = $tm['fields_array'];
 
-        $view = $this->__getView($tableName, $action);
+        $view = $this->__getView($tableName, $action)->name;
 
         return View::make($view, array('action' => 'getSelect',
                     'data' => $data, 'tableName' => $tm['table']['name'],
@@ -213,15 +236,16 @@ class DbController extends Controller {
 
         $prefix = array();
 
-        //$table = DB::table($tableName)->where($pkName, '=', $pkValue)->get();
-        //$data = Model::makeArray($meta, $table);
+        $id = DB::table($tableName)->insertGetId(array());
+        $table = DB::table($tableName)->where($pkName, '=', $id)->get();
+        $data = Table::makeArray($meta, $table);
 
         $selects = $this->__getPkSelects($metaA);
 
-        $view = $this->__getView($tableName, $action);
+        $view = $this->__getView($tableName, $action)->name;
 
         return View::make($view, array('action' => 'getEdit',
-                    /* 'data' => $data[0], */
+                    'data' => $data[0],
                     'meta' => $metaA,
                     'pkName' => $pkName,
                     'prefix' => $prefix,
@@ -257,7 +281,7 @@ class DbController extends Controller {
 
         $selects = $this->__getPkSelects($metaA);
 
-        $view = $this->__getView($tableName, $action);
+        $view = $this->__getView($tableName, $action)->name;
 
         return View::make($view, array('action' => $action,
                     'data' => $data[0],

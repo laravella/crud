@@ -72,10 +72,12 @@
         <div class="modal-body">
             <div class="row">
                 @foreach($meta as $field)
+                    @if($field['searchable'] == 1)
                     <div class="span2">{{$field['label']}}</div>
                     <div class="span3"><input style="width:{{$field['width']}}px" 
                                               class="formfield" type="text" data-table="{{$tableName}}" 
                                               name="{{$field['name']}}" /></div>
+                    @endif
                 @endforeach
             </div>
         </div>

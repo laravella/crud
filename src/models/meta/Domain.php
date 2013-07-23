@@ -149,6 +149,7 @@
                     $table->integer('table_id')->unsigned();
                     $table->integer('action_id')->unsigned();
                     $table->integer('view_id')->unsigned();
+                    $table->integer('page_size')->unsigned(); //the size of a page (pagination) in a list view
                     $table->timestamps();                    
 
                     $table->foreign('view_id')->references('id')->on('_db_views')->onDelete('cascade');
@@ -339,7 +340,7 @@
             {
                 foreach ($actions as $action)
                 {
-                    $arr = array('table_id' => $table->id, 'action_id' => $action->id, 'view_id' => $viewId);
+                    $arr = array('table_id' => $table->id, 'action_id' => $action->id, 'view_id' => $viewId, 'page_size' => 10);
                     DB::table('_db_table_action_views')->insert($arr);
                     if ($doPermissions)
                     {
