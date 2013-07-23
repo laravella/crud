@@ -77,23 +77,13 @@ class DbController extends Controller {
     {
         $action = 'getSelect';
 
-        //find the view in the _db_views table, by default crud::dbview
-        $view = $this->__getView($tableName, $action);
-        
-        $tva = $this->__getTableViewAction($tableName, $view->id, $action);
-
         //select table data from database
-        $table = DB::table($tableName)->paginate($tva->page_size); 
+        $table = DB::table($tableName); 
 
-        $tm = Table::getTableMeta($tableName);
-
-        $prefix = array("id" => "/db/edit/$tableName/");
-
-        $pkTables = $this->__attachPkData($table, $tm['fields_array']);
+        //get related data
+        $params = $this->__makeParams($table, $tableName, $action);
         
-        $params = new Params($action, $tm, $table, $tva, $pkTables, null, $prefix);
-        
-        return View::make($view->name, $params->asArray());
+        return View::make($params->view->name, $params->asArray());
     }
 
     /**
@@ -141,15 +131,9 @@ class DbController extends Controller {
                     
                     $pktMeta = Table::getMeta($pkTableName);
                     
-//                    print_r($pktMeta);
-//                    print_r($pkData);
-                    
                     //an array of 
                     $pkDataA = Table::makeArray($pktMeta, $pkData);
                     
-                    // 
-                    //$pkRec[$pkValue] = $pkDataA[0];
-                    // 
                     $pkDisplayValue = $pkData[0]->$pkdfName;
                     
                     $pkRec[$pkValue] = $pkDisplayValue;
@@ -177,7 +161,7 @@ class DbController extends Controller {
      */
     public function getSearch($tableName = null)
     {
-        $action = 'getSearch';
+        $action = 'getSelect';
 
         //get the json string from the http querystring ?q=json
         $json = Input::get('q');
@@ -194,22 +178,38 @@ class DbController extends Controller {
             }
         }
 
-        $data = $table->paginate(10);
+        $params = $this->__makeParams($table, $tableName, $action);
+        
+        return View::make($params->view->name, $params->asArray());
+
+    }
+
+    /**
+     * Create a standard params object that will be passed to the view
+     * 
+     * @param type $data
+     * @param type $tableName
+     * @param type $action
+     * @return \Laravella\Crud\Params
+     */
+    private function __makeParams($data, $tableName, $action) {
+        
+        $view = $this->__getView($tableName, $action);
+        
+        $data = $data->paginate($view->page_size);
 
         $prefix = array("id" => "/db/edit/$tableName/");
 
         $tm = Table::getTableMeta($tableName);
 
-        //get fields metadata as an array
-        $ma = $tm['fields_array'];
-
-        $view = $this->__getView($tableName, $action)->name;
-
-        return View::make($view, array('action' => 'getSelect',
-                    'data' => $data, 'tableName' => $tm['table']['name'],
-                    'prefix' => $prefix, 'meta' => $ma));
+        $tva = $this->__getTableViewAction($tableName, $view->id, $action);
+        
+        $pkTables = $this->__attachPkData($data, $tm['fields_array']);
+        
+        return new Params($action, $tm, $data, $tva, $pkTables, null, $prefix, $view);
+        
     }
-
+    
     /**
      * Prompt user to insert a new record
      * 

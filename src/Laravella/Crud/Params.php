@@ -9,6 +9,7 @@ class Params {
     public $foreignTables = array();
     public $prefix = "";
     public $tableActionViews = null;
+    public $view = null;
 
     /**
      * 
@@ -21,8 +22,9 @@ class Params {
      * @param type $primaryTables A list of records with primary keys related to this table's via foreign keys.
      * @param type $foreignTables A list of records with foreign key constraints related to this table's primary key.
      * @param type $prefix Used to prepend the href on the primary key
+     * @param type $view An entry in _db_views
      */
-    public function __construct($action, $tableMeta, $data, $tableActionViews, $primaryTables = null, $foreignTables = null, $prefix = "")
+    public function __construct($action, $tableMeta, $data, $tableActionViews, $primaryTables = null, $foreignTables = null, $prefix = "", $view)
     {
         $this->action = $action;
         $this->tableMeta = $tableMeta;
@@ -32,6 +34,7 @@ class Params {
         $this->foreignTables = $foreignTables;
         $this->prefix = $prefix;
         $this->tableActionViews = $tableActionViews;
+        $this->view = $view;
     }
 
     public function asArray()
@@ -44,7 +47,9 @@ class Params {
             "pageSize"=>$this->tableActionViews->page_size,
             "pkTables"=>$this->primaryTables,
             "fkTables"=>$this->foreignTables,
-            "title"=>$this->tableActionViews->title);
+            "title"=>$this->tableActionViews->title,
+            "view"=>$this->view);
+            
     }
 
 }

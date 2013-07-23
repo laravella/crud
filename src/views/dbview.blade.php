@@ -25,6 +25,7 @@
         var comma = '';
         var table = '';
         var field = '';
+        //turn the search form into JSON
         $('.formfield').each(function( index ) {
             table = $(this).attr('data-table');
             if (qA[table] == null || qA[table] == 'undefined' || !qA[table]) {
@@ -34,12 +35,22 @@
                 field = $(this).attr('name');
                 qString += comma+'"'+$(this).attr('name')+'" : "'+$(this).val()+'"';
                 qA[table][field] = $(this).val();
-                alert(qA[table][field]);
                 comma = ',';
             }
         });
         qString = JSON.stringify(qA);
         window.location.href = "/db/search/"+table+"?q="+qString;
+    }
+    
+    function sendDelete() {
+        $('a.record.active').each(function( index ) {
+            console.log($(this).attr('id'));
+        });
+    }
+    
+    function checkRec(recNo) {
+        $('#chkico_'+recNo).toggleClass('icon-ok-sign');
+        $('#chkico_'+recNo).toggleClass('icon-ok-circle');
     }
 </script>
 
@@ -55,13 +66,14 @@
 @stop
 
 @section('getSelect')
-@if($action == 'getSelect')
+@if($action == 'getSelect' || @action == 'getSearch')
 <div class="page-header">
     <h1>{{$title}}</h1>
 </div>
 <div class="well">
     <div class="btn-group">
         <a href="/db/insert/{{$tableName}}" class="btn">New</a>
+        <a href="javascript:sendDelete()" class="btn">Delete</a>
         <a href="#myModal" role="button" class="btn" data-toggle="modal">Search</b></a>
     </div>
     {{-- the search popup box --}}
@@ -93,6 +105,7 @@
     <table class="table table-striped dbtable">
         {{-- the field titles --}}
         <tr>
+            <th></th>
             @foreach($data[0] as $name=>$field)
             <th>{{$meta[$name]['label']}}</th>
             @if (isset($meta[$name]['pk']))
@@ -101,8 +114,14 @@
             @endif
             @endforeach
         </tr>
+        <?php $i = 0; ?>
         @foreach($data as $record)
-        <tr>
+        <tr id="rec_{{$record->id}}">
+            <td>
+                <a data-toggle="button" data-recordid="{{$record->id}}" class="record btn" href="#" id="chkbtn_{{$record->id}}" onclick="javascript:checkRec({{$record->id}})">
+                    <b id="chkico_{{$record->id}}" class="icon-ok-circle"></b>
+                </a>
+            </td>
             @foreach($record as $name=>$value)
             @if((isset($prefix) && isset($prefix[$name])) || (isset($meta) && isset($meta[$name]) && $meta[$name]['key'] == 'PRI'))
             <td><a href="{{$prefix[$name]}}{{$value}}">{{$value}}</a></td>
@@ -113,12 +132,6 @@
             @if(isset($meta[$name]['pk']))
             {{-- this is a foreign key, it contains a reference to a primary key --}}
                 <td><a href="/db/edit/{{$meta[$name]['pk']['tableName']}}/{{$value}}">{{$pkTables[$meta[$name]['pk']['tableName']][$value]}}</a></td> 
-            {{--
-                <td><a href="/db/edit/{{$meta[$name]['pk']['tableName']}}/{{$value}}">{{$pkTables[$meta[$name]['pk']['tableName']][$value]}}</a></td> 
-                @if($meta[$name]['pk']['tableName'])
-                    <td>{{$meta[$name]['pk']['tableName']}}</td>
-                @endif
-            --}}
             @endif
 
             @endif
