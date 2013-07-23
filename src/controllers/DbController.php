@@ -1,4 +1,5 @@
 <?php
+use Laravella\Crud\Params;
 
 class DbController extends Controller {
 
@@ -76,28 +77,23 @@ class DbController extends Controller {
     {
         $action = 'getSelect';
 
-        //select table data from database
-        $table = DB::table($tableName)->paginate(5);
-
-        $tm = Table::getTableMeta($tableName);
-
-        //get field metadata as an array
-        $ma = $tm['fields_array']; 
-
-        $prefix = array("id" => "/db/edit/$tableName/");
-
         //find the view in the _db_views table, by default crud::dbview
         $view = $this->__getView($tableName, $action);
         
         $tva = $this->__getTableViewAction($tableName, $view->id, $action);
 
-        $pkTables = $this->__attachPkData($table, $ma);
+        //select table data from database
+        $table = DB::table($tableName)->paginate($tva->page_size); 
+
+        $tm = Table::getTableMeta($tableName);
+
+        $prefix = array("id" => "/db/edit/$tableName/");
+
+        $pkTables = $this->__attachPkData($table, $tm['fields_array']);
         
-        return View::make($view->name, array('action' => $action,
-                    'tableName' => $tm['table']['name'],
-                    'pageSize' => $tva->page_size,
-                    'pkTables' => $pkTables,
-                    'data' => $table, 'prefix' => $prefix, 'meta' => $ma));
+        $params = new Params($action, $tm, $table, $tva->page_size, $pkTables, null, $prefix);
+        
+        return View::make($view->name, $params->asArray());
     }
 
     /**
