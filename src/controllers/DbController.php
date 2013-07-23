@@ -91,7 +91,7 @@ class DbController extends Controller {
 
         $pkTables = $this->__attachPkData($table, $tm['fields_array']);
         
-        $params = new Params($action, $tm, $table, $tva->page_size, $pkTables, null, $prefix);
+        $params = new Params($action, $tm, $table, $tva, $pkTables, null, $prefix);
         
         return View::make($view->name, $params->asArray());
     }

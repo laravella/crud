@@ -57,7 +57,7 @@
 @section('getSelect')
 @if($action == 'getSelect')
 <div class="page-header">
-    <h1>DbView</h1>
+    <h1>{{$title}}</h1>
 </div>
 <div class="well">
     <div class="btn-group">
@@ -135,7 +135,7 @@
 @section('getEdit') 
 @if($action == 'getEdit')
 <div class="page-header">
-    <h1>Edit</h1>
+    <h1>Edit <span class="h1a">[{{$tableName}}::{{$data[$pkName]}}]</span></h1>
 </div>
 <form method="POST" action="/db/edit/{{$tableName}}/{{$data[$pkName]}}">
     @foreach($meta as $field)

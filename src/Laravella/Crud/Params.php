@@ -5,10 +5,10 @@ class Params {
     public $action = "";
     public $tableMeta = null;
     public $data = null;
-    public $pageSize = 10;
     public $primaryTables = array();
     public $foreignTables = array();
     public $prefix = "";
+    public $tableActionViews = null;
 
     /**
      * 
@@ -22,7 +22,7 @@ class Params {
      * @param type $foreignTables A list of records with foreign key constraints related to this table's primary key.
      * @param type $prefix Used to prepend the href on the primary key
      */
-    public function __construct($action, $tableMeta, $data, $pageSize, $primaryTables = null, $foreignTables = null, $prefix = "")
+    public function __construct($action, $tableMeta, $data, $tableActionViews, $primaryTables = null, $foreignTables = null, $prefix = "")
     {
         $this->action = $action;
         $this->tableMeta = $tableMeta;
@@ -31,6 +31,7 @@ class Params {
         $this->primaryTables = $primaryTables;
         $this->foreignTables = $foreignTables;
         $this->prefix = $prefix;
+        $this->tableActionViews = $tableActionViews;
     }
 
     public function asArray()
@@ -40,10 +41,10 @@ class Params {
             "data"=>$this->data,
             "tableName"=>$this->tableMeta['table']['name'],
             "prefix"=>$this->prefix,
-            "pageSize"=>$this->pageSize,
+            "pageSize"=>$this->tableActionViews->page_size,
             "pkTables"=>$this->primaryTables,
             "fkTables"=>$this->foreignTables,
-            "version"=>1);
+            "title"=>$this->tableActionViews->title);
     }
 
 }
