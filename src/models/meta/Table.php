@@ -4,7 +4,6 @@ class Table extends Eloquent {
 
     protected $tableName = "";
     protected $primaryKey;
-    
     private $tableMetaData;
     private $records;
     private $dbFields;

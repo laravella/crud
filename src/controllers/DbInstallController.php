@@ -37,7 +37,11 @@ class DbInstallController extends Controller {
     {
         if (!$dropSafe)
         {
-            return array("_db_tables",
+            return array(
+                "_db_severities",
+                "_db_logs",
+                "_db_audit",
+                "_db_tables",
                 "_db_fields",
                 "_db_views",
                 "_db_actions",
@@ -47,7 +51,11 @@ class DbInstallController extends Controller {
         }
         else
         {
-            return array("_db_table_action_views",
+            return array(
+                "_db_logs",
+                "_db_severities",
+                "_db_audit",
+                "_db_table_action_views",
                 "_db_user_permissions",
                 "_db_usergroup_permissions",
                 "_db_fields",

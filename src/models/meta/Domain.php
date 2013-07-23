@@ -20,6 +20,56 @@
     }
 
     /**
+     * Create the _db_logs table
+     * 
+     * @param type $table
+     */
+    private static function __create__db_logs($tableName)
+    {
+        Schema::create($tableName, function ($table)
+                {
+                    $table->increments('id')->unique();
+                    $table->integer('severity');
+                    $table->string('message', 100);
+                    $table->timestamps();                    
+                    
+                });
+    }
+
+    /**
+     * Create the _db_severities table
+     * 
+     * @param type $table
+     */
+    private static function __create__db_severities($tableName)
+    {
+        Schema::create($tableName, function ($table)
+                {
+                    $table->increments('id')->unique();
+                    $table->string('name', 100)->unique();
+                    $table->timestamps();                    
+                    
+                });
+    }
+
+    /**
+     * Create the _db_audit table
+     * 
+     * @param type $table
+     */
+    private static function __create__db_audit($tableName)
+    {
+        Schema::create($tableName, function ($table)
+                {
+                    $table->increments('id')->unique();
+                    $table->string('name', 100);
+                    $table->timestamps();                    
+                    
+                });
+    }
+
+    
+    /**
      * Create the _db_fields table
      * 
      * @param type $table
