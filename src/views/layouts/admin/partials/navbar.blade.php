@@ -36,6 +36,9 @@
 							<li {{ (Request::is('/db/select/_db_views') ? 'class="active"' : '') }}><a href="/db/select/_db_views"><i class="icon-user"></i> Views</a></li>
 							<li {{ (Request::is('/db/select/_db_table_action_views') ? 'class="active"' : '') }}><a href="/db/select/_db_table_action_views"><i class="icon-user"></i> Action Views</a></li>
                                                         <li class="divider"></li>
+							<li {{ (Request::is('/db/select/_db_log') ? 'class="active"' : '') }}><a href="/db/select/_db_logs"><i class="icon-user"></i> Log</a></li>
+							<li {{ (Request::is('/db/select/_db_audit') ? 'class="active"' : '') }}><a href="/db/select/_db_audit"><i class="icon-user"></i> Audit</a></li>
+                                                        <li class="divider"></li>
 							<li {{ (Request::is('/db/select/_db_group_permissions') ? 'class="active"' : '') }}><a href="/db/select/_db_usergroup_permissions"><i class="icon-user"></i> Group Permissions</a></li>
 							<li {{ (Request::is('/db/select/_db_user_permissions') ? 'class="active"' : '') }}><a href="/db/select/_db_user_permissions"><i class="icon-user"></i> User Permissions</a></li>
                                                         <li class="divider"></li>
