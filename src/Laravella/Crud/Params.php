@@ -10,6 +10,7 @@ class Params {
     public $prefix = "";
     public $tableActionViews = null;
     public $view = null;
+    public $selects = array();
 
     /**
      * 
@@ -24,7 +25,8 @@ class Params {
      * @param type $prefix Used to prepend the href on the primary key
      * @param type $view An entry in _db_views
      */
-    public function __construct($action, $tableMeta, $data, $tableActionViews, $primaryTables = null, $foreignTables = null, $prefix = "", $view)
+    public function __construct($action, $tableMeta, $data, $tableActionViews, 
+            $primaryTables = null, $foreignTables = null, $prefix = "", $view, $selects)
     {
         $this->action = $action;
         $this->tableMeta = $tableMeta;
@@ -35,6 +37,7 @@ class Params {
         $this->prefix = $prefix;
         $this->tableActionViews = $tableActionViews;
         $this->view = $view;
+        $this->selects = $selects;
     }
 
     public function asArray()
@@ -48,7 +51,8 @@ class Params {
             "pkTables"=>$this->primaryTables,
             "fkTables"=>$this->foreignTables,
             "title"=>$this->tableActionViews->title,
-            "view"=>$this->view);
+            "view"=>$this->view,
+            "selects"=>  $this->selects);
             
     }
 

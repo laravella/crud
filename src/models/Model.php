@@ -13,8 +13,6 @@ class Model extends Eloquent {
     protected $primaryKey = "id";
     
     protected $guarded = array('id');
-    //protected $fillable = array('first_name', 'last_name', 'email');    
-    
     
     /**
      * A way to override the constructor. Use this to instantiate the class.
@@ -26,14 +24,38 @@ class Model extends Eloquent {
         $model = new Model();
         $model->setTable($tableName);
         $model->setMetaData($tableName);
+        $model->setGuarded(array($model->metaData['table']['pk_name']));
         return $model;
     }
 
+    public function setGuarded($guardedA) {
+        $this->guarded = $guardedA;
+    }
     
     public function getA() {
         
     }
 
+    /**
+     * Insert a new record
+     */
+    public function insertRec() {
+        $fields = $this->metaData['fields_array'];
+        
+        $updateA = array();
+        foreach($fields as $field) 
+        {
+            if ($this->isFillable($field['name'])) {
+                $updateA[$field['name']] = Input::get($field['name']);
+            }
+        }
+        
+        $id = DB::table($this->tableName)->insertGetId($updateA);
+        
+        return $id;
+        
+    }
+    
     /**
      * Update a record
      * 
@@ -49,8 +71,6 @@ class Model extends Eloquent {
         $updateA = array();
         foreach($fields as $field) 
         {
-            //echo $field['name']." : ".$this->isFillable($field['name'])." : ".Input::get($field['name'])."<br />\n";
-            
             if ($this->isFillable($field['name'])) {
                 $updateA[$field['name']] = Input::get($field['name']);
             }

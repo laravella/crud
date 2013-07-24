@@ -1,4 +1,4 @@
-<div id="footer">
+<div class="container" id="footer">
 	<small>
 			&#169; Copyright 
 	</small>

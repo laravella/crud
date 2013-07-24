@@ -43,7 +43,7 @@ class DbController extends Controller {
      * @param type $action
      * @return type
      */
-    private function __getTableViewAction($tableName, $viewId, $action)
+    private function __getTableActionView($tableName, $viewId, $action)
     {
         $tva = DB::table('_db_table_action_views')
                 ->join('_db_tables', '_db_table_action_views.table_id', '=', '_db_tables.id')
@@ -194,19 +194,25 @@ class DbController extends Controller {
      */
     private function __makeParams($data, $tableName, $action) {
         
+        $tableMeta = Table::getTableMeta($tableName);
+        
         $view = $this->__getView($tableName, $action);
         
-        $data = $data->paginate($view->page_size);
+        $pkTables = array();
+        
+        if (is_object($data)) {
+            $data = $data->paginate($view->page_size);
+            $pkTables = $this->__attachPkData($data, $tableMeta['fields_array']);
+        }
 
         $prefix = array("id" => "/db/edit/$tableName/");
 
-        $tm = Table::getTableMeta($tableName);
 
-        $tva = $this->__getTableViewAction($tableName, $view->id, $action);
+        $tableActionViews = $this->__getTableActionView($tableName, $view->id, $action);
         
-        $pkTables = $this->__attachPkData($data, $tm['fields_array']);
+        $selects = $this->__getPkSelects($tableMeta['fields_array']);
         
-        return new Params($action, $tm, $data, $tva, $pkTables, null, $prefix, $view);
+        return new Params($action, $tableMeta, $data, $tableActionViews, $pkTables, null, $prefix, $view, $selects);
         
     }
     
@@ -220,33 +226,10 @@ class DbController extends Controller {
     public function getInsert($tableName = null)
     {
         $action = 'getInsert';
-
-        $model = Model::getInstance($tableName);
-
-        $tableMeta = $model->getMetaData($tableName);
-
-        //get metadata as an array
-        $metaA = $tableMeta['fields_array'];
-        $meta = $tableMeta['fields'];
-        $pkName = $tableMeta['table']['pk_name'];
-
-        $prefix = array();
-
-        $id = DB::table($tableName)->insertGetId(array());
-        $table = DB::table($tableName)->where($pkName, '=', $id)->get();
-        $data = Table::makeArray($meta, $table);
-
-        $selects = $this->__getPkSelects($metaA);
-
-        $view = $this->__getView($tableName, $action)->name;
-
-        return View::make($view, array('action' => 'getEdit',
-                    'data' => $data[0],
-                    'meta' => $metaA,
-                    'pkName' => $pkName,
-                    'prefix' => $prefix,
-                    'selects' => $selects,
-                    'tableName' => $tableName));
+ 
+        $params = $this->__makeParams(null, $tableName, $action);
+        
+        return View::make($params->view->name, $params->asArray());
     }
 
     /**
@@ -304,6 +287,19 @@ class DbController extends Controller {
         return Redirect::to("/db/edit/$tableName/$pkValue");
     }
 
+    /**
+     * Insert a new record into $tableName
+     */
+    public function postInsert($tableName) {
+        
+        $action = 'postInsert';
+        
+        $id = Model::getInstance($tableName)->insertRec();
+
+        return Redirect::to("/db/edit/$tableName/$id");    
+        
+    }
+    
     /**
      * Loop through foreign keys and generate an array of select boxes for each
      * related primary key
