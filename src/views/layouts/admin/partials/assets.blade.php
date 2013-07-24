@@ -61,31 +61,33 @@
 		<!-- jQuery -->
 		<script type="text/javascript" src="<?php echo admin_asset('admin/scripts/jquery.min.js');?>"></script>
 		<script type="text/javascript" src="<?php echo admin_asset('admin/scripts/jquery-ui-1.10.0.smoothness.min.js');?>"></script>
-		<script type="text/javascript" src='<?php echo admin_asset('admin/scripts/angularjsui/select2/select2.min.js');?>'></script>
+                
 		<!-- angularjs -->
+                <!--
+		<script type="text/javascript" src='<?php echo admin_asset('admin/scripts/angularjsui/select2/select2.min.js');?>'></script>
 		<script type="text/javascript" src='<?php echo admin_asset('admin/scripts/angular.min.js');?>'></script>
-		
 		<script type="text/javascript" src='<?php echo admin_asset('admin/scripts/angular-resource.min.js');?>'></script>
 		<script type="text/javascript" src='<?php echo admin_asset('admin/scripts/angularjsui/angular-select2.js');?>'></script>
 		<script type="text/javascript" src='<?php echo admin_asset('admin/scripts/angularjsui/angular-ui.min.js');?>'></script>
-		
+                -->
+                
 		<!-- jQuery Configuration -->
 		<script type="text/javascript" src="<?php echo admin_asset('admin/scripts/simpla.jquery.configuration.js');?>"></script>
 		
 		<!-- CKEditor -->
 		<script type="text/javascript" src="<?php echo admin_asset('admin/scripts/ckeditor/ckeditor.js');?>"></script>
+                <!--
 		<script type="text/javascript" src="<?php echo admin_asset('admin/scripts/angular-ckeditor.js');?>"></script>
+                -->
 
 		<!--jbar jquery plugin -->
 		<script type="text/javascript" src="<?php echo admin_asset('admin/jbar/jquery.bar.js');?>"></script>
 		
 		<!--Dropzone -->
+                <!--
 		<script type="text/javascript" src="<?php echo admin_asset('admin/dropzone/dropzone.min.js');?>"></script>
 		<script type="text/javascript" src="<?php echo admin_asset('admin/dropzone/angular-dropzone.js');?>"></script>
-		
-	
-		
-
+                -->
 
 		<!-- Internet Explorer .png-fix -->
 		

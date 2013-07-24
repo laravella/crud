@@ -30,13 +30,13 @@
         <!-- ICO -->
         <link rel="shortcut icon" href="favicon.ico">
 			
-		<!-- Ravel CMS -->
-		@include('crud::layouts.admin.partials.assets')
+        <!-- Ravel CMS -->
+        @include('crud::layouts.admin.partials.assets')
         @yield('assets_css')
         @yield('assets_js')
 		
-		<!-- Additional javascript defined in the template -->
-		@yield('extra_head')
+        <!-- Additional javascript defined in the template -->
+        @yield('extra_head')
 		
     </head>
     <body>
@@ -51,7 +51,7 @@
 		@yield('navbar') 
 		
         <!-- Wrapper for the radial gradient background -->
-        <div id="body-wrapper" style="margin-top:50px"> 
+        <div id="body-wrapper"> 
 
             <div id="main-content"> <!-- Main Content Section with everything -->
 
@@ -66,8 +66,6 @@
                 <div ng-show='nowloading'><i class="icon-spinner icon-spin"  style="display:none"></i></div>
 
                 @yield('appcontainer')
-
-                @include('crud::layouts.admin.partials.scripts')
 
 				<!-- Additiona javascript defined in the template -->
                 @yield('javascripts')

@@ -35,6 +35,11 @@
 </style>
 
 <script type="text/javascript">
+    
+    function alertBox(message) {
+        $(".alert").alert();
+    }
+    
     function sendSearch() {
         var qString = "";
         var qA = new Object();
@@ -59,6 +64,7 @@
     }
     
     function sendDelete() {
+        alertBox("Howzit");
         $('a.record.active').each(function( index ) {
             console.log($(this).attr('id'));
         });
@@ -92,30 +98,39 @@
         <a href="javascript:sendDelete()" class="btn">Delete</a>
         <a href="#myModal" role="button" class="btn" data-toggle="modal">Search</b></a>
     </div>
-    
-    {{-- the search popup box --}}
-    <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-header">
-            <h3 id="myModalLabel">Search</h3>
-        </div>
-        <div class="modal-body">
-            <div class="row">
-                @foreach($meta as $field)
-                    @if($field['searchable'] == 1)
-                    <div class="span2">{{$field['label']}}</div>
-                    <div class="span3"><input style="width:{{$field['width']}}px" 
-                                              class="formfield" type="text" data-table="{{$tableName}}" 
-                                              name="{{$field['name']}}" /></div>
-                    @endif
-                @endforeach
-            </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-          <button class="btn btn-primary" onclick="javascript:sendSearch()">Search</button>
-        </div>        
-    </div>
 </div>
+
+{{-- the search popup box --}}
+<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <h3 id="myModalLabel">Search</h3>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            @foreach($meta as $field)
+                @if($field['searchable'] == 1)
+                <div class="span2">{{$field['label']}}</div>
+                <div class="span3"><input style="width:{{$field['width']}}px" 
+                                          class="formfield" type="text" data-table="{{$tableName}}" 
+                                          name="{{$field['name']}}" /></div>
+                @endif
+            @endforeach
+        </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+      <button class="btn btn-primary" onclick="javascript:sendSearch()">Search</button>
+    </div>        
+</div>
+
+<!-- <div class="alert alert-success alert-error"> -->
+<div class="alert" style="display:none">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <strong>Warning!</strong> Message.
+</div>
+
+
+
 @if(isset($data) && isset($data[0]))
 
 <div class="table_container">
