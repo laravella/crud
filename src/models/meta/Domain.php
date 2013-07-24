@@ -5,10 +5,24 @@
     
     private $log = array();
     
-    private function __log() {
-        
+    /**
+     * 
+     * @param type $severity
+     * @param type $message
+     */
+    private function __log($severity, $message) {
+        $this->log[] = array("severity"=>$severity, "message"=>$message);
     }
 
+    /**
+     * Getter for $log
+     * 
+     * @return type
+     */
+    public function getLog() {
+        return $this->log;
+    }
+    
     /**
      * Create the _db_tables table
      * 
@@ -211,10 +225,9 @@
      * Create a database table. To use this function there also needs to be a "__create_".$tableName function in this class.
      * 
      * @param type $tableName
-     * @param type $log
      * @throws Exception
      */
-    public function create($tableName, &$log)
+    public function create($tableName)
     {
         if (!Schema::hasTable($tableName))
         {
@@ -223,12 +236,12 @@
 //$createName is the name of the function which contains the create declarations of the fieldnames
                 $createName = "__create_" . $tableName;
                 $this->$createName($tableName);
-                $log[] = "Table $tableName created";
+                $this->__log("success", "Table $tableName created");
             }
             catch (Exception $e)
             {
-                $log[] = "Table $tableName could not be created.";
-                $log[] = $e->getMessage();
+                $this->__log("important", "Table $tableName could not be created.");
+                $this->__log("important", $e->getMessage());
                 throw new Exception($e);
             }
         }
@@ -239,7 +252,7 @@
      * populate _db_tables and _db_fields
      * 
      */
-    private function __populateMeta(&$log)
+    private function __populateMeta()
     {
 //get the list of tables from the database metadata
         $tables = DB::select('show tables');
@@ -253,7 +266,7 @@
                 {
 //insert it into _db_tables
                     $id = DB::table('_db_tables')->insertGetId(array('name' => $tableName));
-                    $log[] = "Added $tableName to _db_table with id $id";
+                    $this->__log("success", "Added $tableName to _db_table with id $id");
                     try
                     {
 //get columns from database
@@ -276,8 +289,8 @@
                                 }
                                 $colRec['searchable'] = 1;
                                 $colRec['display_order'] = $displayOrder++;
-                                $colRec['type'] = $this->__getFieldType($col->Type, $log);
-                                $colRec['length'] = $this->__getFieldLength($col->Type, $log);
+                                $colRec['type'] = $this->__getFieldType($col->Type);
+                                $colRec['length'] = $this->__getFieldLength($col->Type);
                                 $colRec['width'] = $this->__getFieldWidth($colRec['type'], $colRec['length']);
                                 $colRec['widget'] = $this->__getFieldWidget($colRec['type'], $colRec['length']);
                                 $colRec['null'] = $col->Null;
@@ -285,31 +298,31 @@
                                 $colRec['default'] = $col->Default;
                                 $colRec['extra'] = $col->Extra;
                                 $fid = DB::table('_db_fields')->insertGetId($colRec);
-                                $log[] = " - {$colRec['name']} inserted with id $fid";
+                                $this->__log("success", " - {$colRec['name']} inserted with id $fid");
                             }
                             catch (Exception $e)
                             {
-                                $log[] = $e->getMessage();
+                                $this->__log("important", $e->getMessage());
                                 $message = " x column {$colRec['name']} could not be inserted.";
-                                $log[] = $message;
+                                $this->__log("important", $message);
                                 throw new Exception($message, 1, $e);
                             }
                         }
                     }
                     catch (Exception $e)
                     {
-                        $log[] = $e->getMessage();
+                        $this->__log("important", $e->getMessage());
                         $message = "Could not select columns for table $tableName";
-                        $log[] = $message;
+                        $this->__log("important", $message);
                         throw new Exception($message, 1, $e);
                     }
                 }
             }
             catch (Exception $e)
             {
-                $log[] = $e->getMessage();
+                $this->__log("important", $e->getMessage());
                 $message = "Error inserting table name '$tableName' into _db_tables";
-                $log[] = $message;
+                $this->__log("important", $message);
                 throw new Exception($message, 1, $e);
             }
         }
@@ -318,50 +331,47 @@
     /**
      * 
      * 
-     * @param type $log
      */
-    private function __populateViews(&$log)
+    private function __populateViews()
     {
         $arr = array("name" => "crud::dbview");
         $viewId = DB::table('_db_views')->insertGetId($arr);
-        $log[] = " - crud::dbview view inserted";
-        $this->__populateTableActions($log, $viewId, true);
+        $this->__log("success", " - crud::dbview view inserted");
+        $this->__populateTableActions($viewId, true);
     }
 
     /**
      * Populate _db_severities
      * 
-     * @param type $log
      */
-    private function __populateSeverities(&$log)
+    private function __populateSeverities()
     {
         $arr = array("name" => "success");
         $viewId = DB::table('_db_severities')->insertGetId($arr);
-        $log[] = " - 'success' severity inserted";
+        $this->__log("success", " - 'success' severity inserted");
         
         $arr = array("name" => "info");
         $viewId = DB::table('_db_severities')->insertGetId($arr);
-        $log[] = " - 'info' severity inserted";
+        $this->__log("success", " - 'info' severity inserted");
         
         $arr = array("name" => "warning");
         $viewId = DB::table('_db_severities')->insertGetId($arr);
-        $log[] = " - 'warning' severity inserted";
+        $this->__log("success", " - 'warning' severity inserted");
         
-        $arr = array("name" => "error");
+        $arr = array("name" => "important");
         $viewId = DB::table('_db_severities')->insertGetId($arr);
-        $log[] = " - 'error' severity inserted";
+        $this->__log("success", " - 'error' severity inserted");
         
     }
 
     /**
      * Populate table _db_table_action_views
      * 
-     * @param type $log
      * @param type $viewId
      * @param type $doPermissions Will also populate permissions tables if true
      * 
      */
-    private function __populateTableActions(&$log, $viewId, $doPermissions = false)
+    private function __populateTableActions($viewId, $doPermissions = false)
     {
         try
         {
@@ -397,9 +407,9 @@
         }
         catch (Exception $e)
         {
-            $log[] = $e->getMessage();
+            $this->__log("success", $e->getMessage());
             $message = "Error inserting record into table.";
-            $log[] = $message;
+            $this->__log("success", $message);
             throw new Exception($message, 1, $e);
         }
     }
@@ -407,57 +417,56 @@
     /**
      * 
      * 
-     * @param type $log
      */
-    private function __populateActions(&$log)
+    private function __populateActions()
     {
         $arr = array("name" => "getSelect");
         DB::table('_db_actions')->insert($arr);
-        $log[] = " - getSelect action created";
+        $this->__log("success", " - getSelect action created");
 
         $arr = array("name" => "getInsert");
         DB::table('_db_actions')->insert($arr);
-        $log[] = " - getInsert action created";
+        $this->__log("success", " - getInsert action created");
 
         $arr = array("name" => "getEdit");
         DB::table('_db_actions')->insert($arr);
-        $log[] = " - getEdit action created";
+        $this->__log("success", " - getEdit action created");
 
         $arr = array("name" => "postEdit");
         DB::table('_db_actions')->insert($arr);
-        $log[] = " - postEdit action created";
+        $this->__log("success", " - postEdit action created");
 
         $arr = array("name" => "postDelete");
         DB::table('_db_actions')->insert($arr);
-        $log[] = " - postDelete action created";
+        $this->__log("success", " - postDelete action created");
         
         $arr = array("name" => "getSearch");
         DB::table('_db_actions')->insert($arr);
-        $log[] = " - getSearch action created";
+        $this->__log("success", " - getSearch action created");
     }
 
     /**
      * Populate all tables
      * 
-     * @param type $log
+     * @param type
      */
-    public function populate(&$log)
+    public function populate()
     {
         try
         {
-            $this->__populateSeverities($log);
-            $log[] = "Populated severities";
-            $this->__populateMeta($log);
-            $log[] = "Populated _db_tables and _db_fields";
-            $this->__populateActions($log);
-            $log[] = "Populated _db_actions";
-            $this->__populateViews($log);
-            $log[] = "Populated _db_views";
+            $this->__populateSeverities();
+            $this->__log("success", "Populated severities");
+            $this->__populateMeta();
+            $this->__log("success", "Populated _db_tables and _db_fields");
+            $this->__populateActions();
+            $this->__log("success", "Populated _db_actions");
+            $this->__populateViews();
+            $this->__log("success", "Populated _db_views");
         }
         catch (Exception $e)
         {
-            $log[] = $e->getMessage();
-            $log[] = " x Error populating tables.";
+            $this->__log("success", $e->getMessage());
+            $this->__log("success", " x Error populating tables.");
             throw new Exception("Error populating tables.", 1, $e);
         }
     }
@@ -471,7 +480,7 @@
      * @param type $pkTableName
      * @param type $pkFieldName
      */
-    private function __updateReference(&$log, $fkTableName, $fkFieldName, $pkTableName, $pkFieldName, $pkDisplayFieldName)
+    private function __updateReference($fkTableName, $fkFieldName, $pkTableName, $pkFieldName, $pkDisplayFieldName)
     {
         //get the id of the pkTableName in _db_tables
         $fkTableId = DB::table('_db_tables')->where('name', $fkTableName)->pluck('id');
@@ -495,7 +504,7 @@
                 ->where('name', $fkFieldName)
                 ->pluck('id');
 
-        $log[] = "inserting into _db_fields : where 
+        $this->__log("success", "inserting into _db_fields : where 
             pkTableName = $pkTableName, 
             pkFieldName = $pkFieldName, 
             pkTableId = $pkTableId, 
@@ -504,7 +513,7 @@
             fkTableName = $fkTableName, 
             fkFieldName = $fkFieldName, 
             fkTableId = $fkTableId,
-            fkFieldId = $fkFieldId";
+            fkFieldId = $fkFieldId");
 
 //set the reference on the fk field
         DB::table('_db_fields')
@@ -512,7 +521,7 @@
                 ->where('name', $fkFieldName)
                 ->update(array('pk_field_id' => $pkFieldId, 'pk_display_field_id' => $pkDisplayFieldId));
         /*
-          $log[] = "updating record : {$fkRec->id}";
+          $this->__log("success", "updating record : {$fkRec->id}");
 
           DB::table('_db_fields')
           ->where('_db_table_id', $fkTableId)
@@ -527,33 +536,33 @@
      * @param type $log
      * @throws Exception
      */
-    public function updateReferences(&$log)
+    public function updateReferences()
     {
         try
         {
             // create foreign key references with
             // log, fkTableName, fkFieldName, pkTableName, pkFieldName, pkDisplayFieldName
             
-            $this->__updateReference($log, '_db_fields', '_db_table_id', '_db_tables', 'id', 'name');
+            $this->__updateReference('_db_fields', '_db_table_id', '_db_tables', 'id', 'name');
 
-            $this->__updateReference($log, '_db_table_action_views', 'view_id', '_db_views', 'id', 'name');
-            $this->__updateReference($log, '_db_table_action_views', 'table_id', '_db_tables', 'id', 'name');
-            $this->__updateReference($log, '_db_table_action_views', 'action_id', '_db_actions', 'id', 'name');
+            $this->__updateReference('_db_table_action_views', 'view_id', '_db_views', 'id', 'name');
+            $this->__updateReference('_db_table_action_views', 'table_id', '_db_tables', 'id', 'name');
+            $this->__updateReference('_db_table_action_views', 'action_id', '_db_actions', 'id', 'name');
 
-            $this->__updateReference($log, '_db_user_permissions', 'user_id', 'users', 'id', 'username');
-            $this->__updateReference($log, '_db_user_permissions', 'table_id', '_db_tables', 'id', 'name');
-            $this->__updateReference($log, '_db_user_permissions', 'action_id', '_db_actions', 'id', 'name');
+            $this->__updateReference('_db_user_permissions', 'user_id', 'users', 'id', 'username');
+            $this->__updateReference('_db_user_permissions', 'table_id', '_db_tables', 'id', 'name');
+            $this->__updateReference('_db_user_permissions', 'action_id', '_db_actions', 'id', 'name');
 
-            $this->__updateReference($log, '_db_usergroup_permissions', 'usergroup_id', 'usergroups', 'id', 'group');
-            $this->__updateReference($log, '_db_usergroup_permissions', 'table_id', '_db_tables', 'id', 'name');
-            $this->__updateReference($log, '_db_usergroup_permissions', 'action_id', '_db_actions', 'id', 'name');
+            $this->__updateReference('_db_usergroup_permissions', 'usergroup_id', 'usergroups', 'id', 'group');
+            $this->__updateReference('_db_usergroup_permissions', 'table_id', '_db_tables', 'id', 'name');
+            $this->__updateReference('_db_usergroup_permissions', 'action_id', '_db_actions', 'id', 'name');
 
-            $log[] = "Completed foreign key references";
+            $this->__log("success", "Completed foreign key references");
         }
         catch (Exception $e)
         {
-            $log[] = "Error while inserting foreign key references.";
-            $log[] = $e->getMessage();
+            $this->__log("success", "Error while inserting foreign key references.");
+            $this->__log("success", $e->getMessage());
             throw new Exception($e);
         }
     }
@@ -571,11 +580,11 @@
     /**
      * Returns varchar if fieldType = varchar(100) etc.
      */
-    private function __getFieldType($fieldType, &$log) {
+    private function __getFieldType($fieldType) {
         $start = strpos($fieldType,'(');
         if ($start > 0) {
             $fieldType = substr($fieldType, 0, $start);
-            $log[] = "fieldtype : $fieldType";
+            $this->__log("success", "fieldtype : $fieldType");
         }
         return $fieldType;
     }
@@ -583,13 +592,13 @@
     /**
      * Returns 100 if fieldType = varchar(100) etc.
      */
-    private function __getFieldLength($fieldType, &$log) {
+    private function __getFieldLength($fieldType) {
         $start = strpos($fieldType,'(')+1;
         $len = null;
         if ($start > 0) {
             $count = strpos($fieldType,')')-$start;
             $len = substr($fieldType, $start, $count);
-            //$log[] = "fieldtype : $fieldType, start : $start, count : $count, len : $len";
+            //$this->__log("success", "fieldtype : $fieldType, start : $start, count : $count, len : $len");
         }
 
         return $len;

@@ -4,7 +4,26 @@ use Laravella\Crud\Params;
 class DbController extends Controller {
 
     protected $layout = 'crud::layouts.default';
+    private $log = array();
 
+    /**
+     * 
+     * @param type $severity
+     * @param type $message
+     */
+    private function log($severity, $message) {
+        $this->log[] = array("severity"=>$severity, "message"=>$message);
+    }
+    
+    /**
+     * Getter for $log
+     * 
+     * @return type
+     */
+    public function getLog() {
+        return $this->log();
+    }
+    
     /**
      * The root of the crud application /db
      * 
@@ -80,6 +99,8 @@ class DbController extends Controller {
         //select table data from database
         $table = DB::table($tableName); 
 
+        $this->log("success", "$tableName selected");
+        
         //get related data
         $params = $this->__makeParams($table, $tableName, $action);
         
@@ -132,7 +153,7 @@ class DbController extends Controller {
                     $pktMeta = Table::getMeta($pkTableName);
                     
                     //an array of 
-                    $pkDataA = Table::makeArray($pktMeta, $pkData);
+                    $pkDataA = DbGopher::makeArray($pktMeta, $pkData);
                     
                     $pkDisplayValue = $pkData[0]->$pkdfName;
                     
@@ -209,12 +230,14 @@ class DbController extends Controller {
 
         $prefix = array("id" => "/db/edit/$tableName/");
 
-
         $tableActionViews = $this->__getTableActionView($tableName, $view->id, $action);
         
         $selects = $this->__getPkSelects($tableMeta['fields_array']);
         
-        return new Params($action, $tableMeta, $data, $paginated, $tableActionViews, $pkTables, null, $prefix, $view, $selects);
+        $this->log("info", "__makeParams");
+        
+        return new Params($action, $tableMeta, $data, $paginated, $tableActionViews, 
+                $pkTables, null, $prefix, $view, $selects, $this->log);
         
     }
     
@@ -258,7 +281,7 @@ class DbController extends Controller {
 
         $prefix = array();
 
-        $data = Table::makeArray($meta, $table);
+        $data = DbGopher::makeArray($meta, $table);
 
         $selects = $this->__getPkSelects($metaA);
 

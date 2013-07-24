@@ -12,6 +12,7 @@ class Params {
     public $tableActionViews = null;
     public $view = null;
     public $selects = array();
+    public $log = array();
 
     /**
      * 
@@ -27,23 +28,26 @@ class Params {
      * @param type $view An entry in _db_views
      */
     public function __construct($action, $tableMeta, $data, $paginated, $tableActionViews, 
-            $primaryTables = null, $foreignTables = null, $prefix = "", $view, $selects)
+            $primaryTables = null, $foreignTables = null, $prefix = "", $view, $selects, $log)
     {
         $this->paginated = $paginated;
         $this->action = $action;
         $this->tableMeta = $tableMeta;
         $this->data = $data;
-        $this->pageSize = 11;
+        $this->pageSize = $view->page_size;
         $this->primaryTables = $primaryTables;
         $this->foreignTables = $foreignTables;
         $this->prefix = $prefix;
         $this->tableActionViews = $tableActionViews;
         $this->view = $view;
         $this->selects = $selects;
+        $this->log = $log;
     }
 
     public function asArray()
     {
+        
+        $paginatedA = DbGopher::makeArray($this->tableMeta['fields'], $this->paginated);
         
         $returnA = array("action"=>$this->action,
             "meta"=>$this->tableMeta['fields_array'],
@@ -55,10 +59,11 @@ class Params {
             "fkTables"=>$this->foreignTables,
             "title"=>$this->tableActionViews->title,
             "view"=>$this->view,
-            "selects"=>  $this->selects);
+            "selects"=>$this->selects,
+            "log"=> $this->log);
         
         $paramsA = $returnA;
-        $paramsA['paginated'] = "-- truncated for size --";
+        $paramsA['paginated'] = $paginatedA;
         $paramsA['data'] = "-- truncated for size --";
         
         $returnA['params'] = json_encode($paramsA);

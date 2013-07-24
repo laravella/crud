@@ -2,8 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-@parent
-:: DbView
+@parent :: DbView
 @stop
 
 @section('extra_head')
@@ -40,6 +39,9 @@
 
 
 <style>
+    .label {
+        width: 80px;
+    }
     table.dbtable {
         margin : 0px;
         border : 0px;
@@ -148,9 +150,17 @@
 </div>
 
 <!-- <div class="alert alert-success alert-error alert-block"> -->
-<div class="alert" style="display:none">
+<div class="alert" style="">
   <button type="button" class="close" data-dismiss="alert">&times;</button>
-  <strong>Warning!</strong> Message.
+  <strong>Log</strong>
+    <table>
+  @foreach($log as $logentry)
+    <tr>
+        <td><span class="label label-{{$logentry['severity']}}">{{$logentry['severity']}}</span></td>
+        <td>{{$logentry['message']}}</td>
+    </tr>
+  @endforeach
+    </table>
 </div>
 
 <!-- 

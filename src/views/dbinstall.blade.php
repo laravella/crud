@@ -2,8 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-@parent
-:: DbView
+@parent :: DbView
 @stop
 
 @section('extra_head')
@@ -21,7 +20,7 @@
         </div>
         <table>
         @foreach($log as $logitem)
-            <tr><td><span class="label label-info">Info</span></td><td>{{$logitem}}</td></tr>
+            <tr><td><span class="label label-{{$logitem['severity']}}">{{$logitem['severity']}}</span></td><td>{{$logitem['message']}}</td></tr>
         @endforeach
         </table>
     @endif

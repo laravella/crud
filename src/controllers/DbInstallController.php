@@ -3,7 +3,27 @@
 class DbInstallController extends Controller {
 
     protected $layout = 'crud::layouts.default';
-
+    
+    private $log = array();
+    
+    /**
+     * 
+     * @param type $severity
+     * @param type $message
+     */
+    private function __log($severity, $message) {
+        $this->log[] = array("severity"=>$severity, "message"=>$message);
+    }
+    
+    /**
+     * Getter for $log
+     * 
+     * @return type
+     */
+    public function getLog() {
+        return $this->log();
+    }
+    
     /**
      * The root of the crud application /db
      * 
@@ -17,14 +37,14 @@ class DbInstallController extends Controller {
     /**
      * Drop metadata tables and redo an install
      */
-    public function getReinstall(&$log = array())
+    public function getReinstall()
     {
         foreach (DbInstallController::__getAdminTables(true) as $adminTable)
         {
             Schema::dropIfExists($adminTable);
-            $log[] = "dropped table $adminTable";
+            $this->__log("success", "dropped table $adminTable");
         }
-        return $this->getInstall($log);
+        return $this->getInstall();
     }
 
     /**
@@ -71,39 +91,41 @@ class DbInstallController extends Controller {
      * @param type $table
      * @return type
      */
-    public function getInstall(&$log = array())
+    public function getInstall()
     {
         try
         {
+            set_time_limit(360);
 //create all the tables
             $domain = new Domain();
             foreach (DbInstallController::__getAdminTables() as $adminTable)
             {
-                $domain->create($adminTable, $log);
+                $domain->create($adminTable);
             }
 
             try
             {
-                $domain->populate($log);
-                $domain->updateReferences($log);
+                $domain->populate();
+                $domain->updateReferences();
             }
             catch (Exception $e)
             {
-                $log[] = $e->getMessage();
+                $this->__log("important", $e->getMessage());
                 $message = " x Error populating tables.";
-                $log[] = $message;
+                $this->__log("success", $message);
                 throw new Exception($message, 1, $e);
             }
-            $log[] = "Installation completed successfully.";
+            $this->__log("success", "Installation completed successfully.");
         }
         catch (Exception $e)
         {
-            $log[] = $e->getMessage();
+            $this->__log("important", $e->getMessage());
             $message = " x Error during installation.";
-            $log[] = $message;
+            $this->__log("important", $message);
 //throw new Exception($message, 1, $e);
         }
-        return View::make("crud::dbinstall", array('action' => 'install', 'log' => $log));
+        $totalLog = array_merge($domain->getLog(), $this->log);
+        return View::make("crud::dbinstall", array('action' => 'install', 'log' => $totalLog));
     }
 
     /**
