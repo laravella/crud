@@ -2,13 +2,13 @@
 		<!--                       CSS                       -->
 	  
 		<!-- Reset Stylesheet -->
-		<link rel="stylesheet" href="<?php echo admin_asset('admin/css/reset.css');?>" type="text/css" media="screen" />
+		<!-- <link rel="stylesheet" href="<?php echo admin_asset('admin/css/reset.css');?>" type="text/css" media="screen" /> -->
 	  
 		<!-- Main Stylesheet -->
-		<link rel="stylesheet" href="<?php echo admin_asset('admin/css/style.css');?>" type="text/css" media="screen" />
+		<!-- <link rel="stylesheet" href="<?php echo admin_asset('admin/css/style.css');?>" type="text/css" media="screen" /> -->
 		
 		<!-- world flags -->
-		<link rel="stylesheet" href="<?php echo admin_asset('admin/css/flags/flags.css');?>" type="text/css" media="screen" />
+		<!-- <link rel="stylesheet" href="<?php echo admin_asset('admin/css/flags/flags.css');?>" type="text/css" media="screen" /> -->
 		
 
 		<!-- icons css style -->
@@ -24,7 +24,7 @@
 		<link rel="stylesheet" href="<?php echo admin_asset('admin/scripts/angularjsui/select2/select2.css');?>" type="text/css" media="screen" />
 		
 		<!-- Invalid Stylesheet. This makes stuff look pretty. Remove it if you want the CSS completely valid -->
-		<link rel="stylesheet" href="<?php echo admin_asset('admin/css/invalid.css');?>" type="text/css" media="screen" />	
+		<!-- <link rel="stylesheet" href="<?php echo admin_asset('admin/css/invalid.css');?>" type="text/css" media="screen" />	 -->
 		
 		<!-- Dropzone css -->
 		<link rel="stylesheet" href="<?php echo admin_asset('admin/dropzone/css/dropzone.css');?>" type="text/css" media="screen" />
@@ -34,9 +34,11 @@
 	  
 		Default colour scheme is green. Uncomment prefered stylesheet to use it.
 		
-		<link rel="stylesheet" href="<?php echo admin_asset('admin/css/blue.css');?>" type="text/css" media="screen" />
-		-->
 		<link rel="stylesheet" href="<?php echo admin_asset('admin/css/red.css');?>" type="text/css" media="screen" />  
+		
+                <link rel="stylesheet" href="<?php echo admin_asset('admin/css/blue.css');?>" type="text/css" media="screen" />
+
+                -->
 
 		
 		<!-- Internet Explorer Fixes Stylesheet -->

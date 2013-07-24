@@ -8,6 +8,12 @@
 
 @section('extra_head')
 <style>
+    table.dbtable {
+        margin : 0px;
+        border : 0px;
+        width : auto;
+    }
+    
     table.dbtable td {
         border : 1px solid #dddddd;
     }
@@ -16,6 +22,16 @@
         margin-bottom: 0px;
     }
     
+    div.table_container {
+        width:100%; 
+        overflow-x: auto;
+        padding : 0px;
+    }
+    td.td_toolbox {
+        text-align:center; 
+        width: 51px; 
+        max-width:51px;
+    }
 </style>
 
 <script type="text/javascript">
@@ -76,6 +92,7 @@
         <a href="javascript:sendDelete()" class="btn">Delete</a>
         <a href="#myModal" role="button" class="btn" data-toggle="modal">Search</b></a>
     </div>
+    
     {{-- the search popup box --}}
     <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-header">
@@ -101,42 +118,46 @@
 </div>
 @if(isset($data) && isset($data[0]))
 
-<div style="width:100%; overflow-x: scroll">
+<div class="table_container">
     <table class="table table-striped dbtable">
         {{-- the field titles --}}
         <tr>
             <th></th>
             @foreach($data[0] as $name=>$field)
-            <th>{{$meta[$name]['label']}}</th>
-            @if (isset($meta[$name]['pk']))
-            {{-- this is a foreign key, it contains a reference to a primary key --}}
-            <th>{{$meta[$name]['pk']['label']}}</th>
-            @endif
+                @if ($meta[$name]['display'])
+                    <th>{{$meta[$name]['label']}}</th>
+                    @if (isset($meta[$name]['pk']))
+                    {{-- this is a foreign key, it contains a reference to a primary key --}}
+                    <th>{{$meta[$name]['pk']['label']}}</th>
+                    @endif
+                @endif
             @endforeach
         </tr>
-        <?php $i = 0; ?>
+        <?php $i = 0;?>
         @foreach($data as $record)
-        <tr id="rec_{{$record->id}}">
-            <td>
-                <a data-toggle="button" data-recordid="{{$record->id}}" class="record btn" href="#" id="chkbtn_{{$record->id}}" onclick="javascript:checkRec({{$record->id}})">
-                    <b id="chkico_{{$record->id}}" class="icon-ok-circle"></b>
-                </a>
-            </td>
-            @foreach($record as $name=>$value)
-            @if((isset($prefix) && isset($prefix[$name])) || (isset($meta) && isset($meta[$name]) && $meta[$name]['key'] == 'PRI'))
-            <td><a href="{{$prefix[$name]}}{{$value}}">{{$value}}</a></td>
-            @else
-            {{-- hover-edit : see : https://github.com/mruoss/HoverEdit-jQuery-Plugin --}}
-            
-            <td><input style="width:{{$meta[$name]['width']}}px" type="text" value="{{$value}}" id="" class="hover-edit" /></div></td>
-            @if(isset($meta[$name]['pk']))
-            {{-- this is a foreign key, it contains a reference to a primary key --}}
-                <td><a href="/db/edit/{{$meta[$name]['pk']['tableName']}}/{{$value}}">{{$pkTables[$meta[$name]['pk']['tableName']][$value]}}</a></td> 
-            @endif
+            <tr id="rec_{{$record->id}}">
+                <td class="td_toolbox">
+                    <a data-toggle="button" data-recordid="{{$record->id}}" class="record btn" href="#" id="chkbtn_{{$record->id}}" onclick="javascript:checkRec({{$record->id}})">
+                        <b id="chkico_{{$record->id}}" class="icon-ok-circle"></b>
+                    </a>
+                </td>
+                @foreach($record as $name=>$value)
+                    @if ($meta[$name]['display'])
+                        @if((isset($prefix) && isset($prefix[$name])) || (isset($meta) && isset($meta[$name]) && $meta[$name]['key'] == 'PRI'))
+                            <td><a href="{{$prefix[$name]}}{{$value}}">{{$value}}</a></td>
+                        @else
+                            {{-- hover-edit : see : https://github.com/mruoss/HoverEdit-jQuery-Plugin --}}
 
-            @endif
-            @endforeach
-        </tr>
+                            <td><input style="width:{{$meta[$name]['width']}}px" type="text" value="{{$value}}" id="" class="hover-edit" /></div></td>
+                            @if(isset($meta[$name]['pk']))
+                            {{-- this is a foreign key, it contains a reference to a primary key --}}
+                                <td><a href="/db/edit/{{$meta[$name]['pk']['tableName']}}/{{$value}}">{{$pkTables[$meta[$name]['pk']['tableName']][$value]}}</a></td> 
+                            @endif
+
+                        @endif
+                    @endif
+                @endforeach
+            </tr>
         @endforeach
     </table>
 </div>

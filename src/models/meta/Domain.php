@@ -2,6 +2,12 @@
     
     //a collection of tables as listed in _db_tables
     private $tables = array();
+    
+    private $log = array();
+    
+    private function __log() {
+        
+    }
 
     /**
      * Create the _db_tables table
@@ -258,11 +264,16 @@
                         {
                             try
                             {
+                                // the fields that will go into _db_fields
                                 $colRec = array();
                                 $colRec['_db_table_id'] = $id;
                                 $colRec['name'] = $col->Field;
                                 $colRec['label'] = $this->__makeLabel($col->Field);
-                                $colRec['display'] = 1;
+                                if ($col->Field == "created_at" || $col->Field == "updated_at") {
+                                    $colRec['display'] = 0;
+                                } else {
+                                    $colRec['display'] = 1;
+                                }
                                 $colRec['searchable'] = 1;
                                 $colRec['display_order'] = $displayOrder++;
                                 $colRec['type'] = $this->__getFieldType($col->Type, $log);
@@ -315,6 +326,31 @@
         $viewId = DB::table('_db_views')->insertGetId($arr);
         $log[] = " - crud::dbview view inserted";
         $this->__populateTableActions($log, $viewId, true);
+    }
+
+    /**
+     * Populate _db_severities
+     * 
+     * @param type $log
+     */
+    private function __populateSeverities(&$log)
+    {
+        $arr = array("name" => "success");
+        $viewId = DB::table('_db_severities')->insertGetId($arr);
+        $log[] = " - 'success' severity inserted";
+        
+        $arr = array("name" => "info");
+        $viewId = DB::table('_db_severities')->insertGetId($arr);
+        $log[] = " - 'info' severity inserted";
+        
+        $arr = array("name" => "warning");
+        $viewId = DB::table('_db_severities')->insertGetId($arr);
+        $log[] = " - 'warning' severity inserted";
+        
+        $arr = array("name" => "error");
+        $viewId = DB::table('_db_severities')->insertGetId($arr);
+        $log[] = " - 'error' severity inserted";
+        
     }
 
     /**
@@ -409,6 +445,8 @@
     {
         try
         {
+            $this->__populateSeverities($log);
+            $log[] = "Populated severities";
             $this->__populateMeta($log);
             $log[] = "Populated _db_tables and _db_fields";
             $this->__populateActions($log);
