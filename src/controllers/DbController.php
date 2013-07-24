@@ -185,7 +185,9 @@ class DbController extends Controller {
     }
 
     /**
-     * Create a standard params object that will be passed to the view
+     * Create a standard params object that will be passed to the view.
+     * 
+     * Data is not fetched yet, use data->get(), or data->paginate() to fetch
      * 
      * @param type $data
      * @param type $tableName
@@ -201,8 +203,8 @@ class DbController extends Controller {
         $pkTables = array();
         
         if (is_object($data)) {
-            $data = $data->paginate($view->page_size);
-            $pkTables = $this->__attachPkData($data, $tableMeta['fields_array']);
+            $paginated = $data->paginate($view->page_size);
+            $pkTables = $this->__attachPkData($paginated, $tableMeta['fields_array']);
         }
 
         $prefix = array("id" => "/db/edit/$tableName/");
@@ -212,7 +214,7 @@ class DbController extends Controller {
         
         $selects = $this->__getPkSelects($tableMeta['fields_array']);
         
-        return new Params($action, $tableMeta, $data, $tableActionViews, $pkTables, null, $prefix, $view, $selects);
+        return new Params($action, $tableMeta, $data, $paginated, $tableActionViews, $pkTables, null, $prefix, $view, $selects);
         
     }
     

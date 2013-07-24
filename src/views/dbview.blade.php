@@ -7,6 +7,38 @@
 @stop
 
 @section('extra_head')
+
+        <script type="text/javascript" src="/assets/scripts/js/vendor/jsonconvert.js"></script>
+    
+	<style>
+		#page {min-height:600px;}
+		.package {margin-left:10px;padding:3px;border-radius:2px;margin-top:2px;}
+		.header {cursor:pointer;}
+
+		.name {color:gray;}
+
+		.array {background-color:#FFD8BB;border:thin solid #FFB780;}
+		.object {background-color:#E7F1FE;border:thin solid #7DA2CE;}
+		.string {color:red;}
+		.number {color:blue;}
+		.function {color:green;}
+
+		.open .children {display:block;}
+		.closed .children {display:none;}
+		
+		.arrow {background-image:url("/assets/images/d.png"); background-repeat:no-repeat; background-color:transparent; height:15px; width:15px; display:inline-block;}
+
+		.open .arrow {background-position:-20px 0;}
+		.closed .arrow {background-position:0 0;}
+
+		.type {color:gray;font-size:8pt;float:right;}
+
+		.hide {display:none;}
+
+		#main {width:100%;height:500px;overflow-y:scroll;}
+	</style>
+
+
 <style>
     table.dbtable {
         margin : 0px;
@@ -38,6 +70,18 @@
     
     function alertBox(message) {
         $(".alert").alert();
+    }
+    
+    function debugBox() {
+    
+        //var source = $('#json_source').text();
+        
+        //var transform = "";
+ 
+        //$('#json_html').json2html(source, transform);
+    
+        $('.alert-debug').show();
+        $('.alert-debug').css('opacity', '1');
     }
     
     function sendSearch() {
@@ -98,6 +142,23 @@
         <a href="javascript:sendDelete()" class="btn">Delete</a>
         <a href="#myModal" role="button" class="btn" data-toggle="modal">Search</b></a>
     </div>
+    <div class="btn-group">
+        <a href="#" id="btnVisualize" onclick="javascript:debugBox();" class="btn">Debug</a>
+    </div>
+</div>
+
+<!-- <div class="alert alert-success alert-error alert-block"> -->
+<div class="alert" style="display:none">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <strong>Warning!</strong> Message.
+</div>
+
+<!-- <div class="alert alert-success alert-error alert-block"> -->
+<div class="alert alert-info alert-debug" style="">
+  <button type="button" class="close" onclick="javascript:$('.alert-debug').hide();">&times;</button>
+  <strong>Params</strong>
+  <div id="top"></div>
+  <textarea style="display:none" id="inputJSON"><? print_r($params); ?></textarea>
 </div>
 
 {{-- the search popup box --}}
@@ -122,14 +183,6 @@
       <button class="btn btn-primary" onclick="javascript:sendSearch()">Search</button>
     </div>        
 </div>
-
-<!-- <div class="alert alert-success alert-error"> -->
-<div class="alert" style="display:none">
-  <button type="button" class="close" data-dismiss="alert">&times;</button>
-  <strong>Warning!</strong> Message.
-</div>
-
-
 
 @if(isset($data) && isset($data[0]))
 

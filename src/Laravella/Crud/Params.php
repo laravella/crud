@@ -5,6 +5,7 @@ class Params {
     public $action = "";
     public $tableMeta = null;
     public $data = null;
+    public $paginated = null;
     public $primaryTables = array();
     public $foreignTables = array();
     public $prefix = "";
@@ -25,9 +26,10 @@ class Params {
      * @param type $prefix Used to prepend the href on the primary key
      * @param type $view An entry in _db_views
      */
-    public function __construct($action, $tableMeta, $data, $tableActionViews, 
+    public function __construct($action, $tableMeta, $data, $paginated, $tableActionViews, 
             $primaryTables = null, $foreignTables = null, $prefix = "", $view, $selects)
     {
+        $this->paginated = $paginated;
         $this->action = $action;
         $this->tableMeta = $tableMeta;
         $this->data = $data;
@@ -42,9 +44,10 @@ class Params {
 
     public function asArray()
     {
-        return array("action"=>$this->action,
+        
+        $returnA = array("action"=>$this->action,
             "meta"=>$this->tableMeta['fields_array'],
-            "data"=>$this->data,
+            "data"=>$this->paginated,
             "tableName"=>$this->tableMeta['table']['name'],
             "prefix"=>$this->prefix,
             "pageSize"=>$this->tableActionViews->page_size,
@@ -53,6 +56,14 @@ class Params {
             "title"=>$this->tableActionViews->title,
             "view"=>$this->view,
             "selects"=>  $this->selects);
+        
+        $paramsA = $returnA;
+        $paramsA['paginated'] = "-- truncated for size --";
+        $paramsA['data'] = "-- truncated for size --";
+        
+        $returnA['params'] = json_encode($paramsA);
+        
+        return $returnA;
             
     }
 
