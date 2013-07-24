@@ -15,21 +15,23 @@
 		<link rel="stylesheet" href="<?php echo admin_asset('admin/fontawesome/css/font-awesome.min.css');?>" type="text/css" media="screen" />
 	  
 		<!-- jbar css style -->
-		<link rel="stylesheet" href="<?php echo admin_asset('admin/jbar/css/style.css');?>" type="text/css" media="screen" />
+		<!-- <link rel="stylesheet" href="<?php echo admin_asset('admin/jbar/css/style.css');?>" type="text/css" media="screen" /> -->
 	  
 		<!-- angularjs ui -->
-		<link rel="stylesheet" href="<?php echo admin_asset('admin/css/angularjsui/angular-ui.min.css');?>" type="text/css" media="screen" />
+		<!-- <link rel="stylesheet" href="<?php echo admin_asset('admin/css/angularjsui/angular-ui.min.css');?>" type="text/css" media="screen" /> -->
 		
 		<!--select2 -->
-		<link rel="stylesheet" href="<?php echo admin_asset('admin/scripts/angularjsui/select2/select2.css');?>" type="text/css" media="screen" />
+		<!-- <link rel="stylesheet" href="<?php echo admin_asset('admin/scripts/angularjsui/select2/select2.css');?>" type="text/css" media="screen" /> -->
 		
 		<!-- Invalid Stylesheet. This makes stuff look pretty. Remove it if you want the CSS completely valid -->
 		<!-- <link rel="stylesheet" href="<?php echo admin_asset('admin/css/invalid.css');?>" type="text/css" media="screen" />	 -->
 		
 		<!-- Dropzone css -->
+                <!--
 		<link rel="stylesheet" href="<?php echo admin_asset('admin/dropzone/css/dropzone.css');?>" type="text/css" media="screen" />
 		<link rel="stylesheet" href="<?php echo admin_asset('admin/dropzone/css/basic.css');?>" type="text/css" media="screen" />
-
+                -->
+                
 		<!-- Colour Schemes
 	  
 		Default colour scheme is green. Uncomment prefered stylesheet to use it.
@@ -72,7 +74,9 @@
                 -->
                 
 		<!-- jQuery Configuration -->
+                <!--
 		<script type="text/javascript" src="<?php echo admin_asset('admin/scripts/simpla.jquery.configuration.js');?>"></script>
+                -->
 		
 		<!-- CKEditor -->
 		<script type="text/javascript" src="<?php echo admin_asset('admin/scripts/ckeditor/ckeditor.js');?>"></script>
@@ -81,8 +85,10 @@
                 -->
 
 		<!--jbar jquery plugin -->
+                <!--
 		<script type="text/javascript" src="<?php echo admin_asset('admin/jbar/jquery.bar.js');?>"></script>
-		
+                -->		
+                
 		<!--Dropzone -->
                 <!--
 		<script type="text/javascript" src="<?php echo admin_asset('admin/dropzone/dropzone.min.js');?>"></script>

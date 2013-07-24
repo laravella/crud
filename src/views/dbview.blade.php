@@ -153,8 +153,11 @@
   <strong>Warning!</strong> Message.
 </div>
 
-<!-- <div class="alert alert-success alert-error alert-block"> -->
-<div class="alert alert-info alert-debug" style="">
+<!-- 
+The params debug box 
+
+<div class="alert alert-success alert-error alert-block"> -->
+<div class="alert alert-info alert-debug" style="display:none">
   <button type="button" class="close" onclick="javascript:$('.alert-debug').hide();">&times;</button>
   <strong>Params</strong>
   <div id="top"></div>
