@@ -18,6 +18,7 @@ class DbGopher {
      */
     public static function makeArray($meta, $data)
     {
+        $pkName = "";
         $arr = array();
         //loop through records
         foreach ($data as $rec)
@@ -26,6 +27,10 @@ class DbGopher {
             //for each fieldname in metadata
             foreach ($meta as $metaField)
             {
+                //find the name of the primary key so that we can index the array according to that field's values
+                if ($metaField->key == 'PRI') {
+                    $pkName = $metaField->name;
+                }
                 //get field name
                 $fieldName = $metaField->name;
                 //populate array with value of field

@@ -7,35 +7,35 @@
 
 @section('extra_head')
 
-        <script type="text/javascript" src="/assets/scripts/js/vendor/jsonconvert.js"></script>
-    
-	<style>
-		#page {min-height:600px;}
-		.package {margin-left:10px;padding:3px;border-radius:2px;margin-top:2px;}
-		.header {cursor:pointer;}
+<script type="text/javascript" src="/assets/scripts/js/vendor/jsonconvert.js"></script>
 
-		.name {color:gray;}
+<style>
+    #page {min-height:600px;}
+    .package {margin-left:10px;padding:3px;border-radius:2px;margin-top:2px;}
+    .header {cursor:pointer;}
 
-		.array {background-color:#FFD8BB;border:thin solid #FFB780;}
-		.object {background-color:#E7F1FE;border:thin solid #7DA2CE;}
-		.string {color:red;}
-		.number {color:blue;}
-		.function {color:green;}
+    .name {color:gray;}
 
-		.open .children {display:block;}
-		.closed .children {display:none;}
-		
-		.arrow {background-image:url("/assets/images/d.png"); background-repeat:no-repeat; background-color:transparent; height:15px; width:15px; display:inline-block;}
+    .array {background-color:#FFD8BB;border:thin solid #FFB780;}
+    .object {background-color:#E7F1FE;border:thin solid #7DA2CE;}
+    .string {color:red;}
+    .number {color:blue;}
+    .function {color:green;}
 
-		.open .arrow {background-position:-20px 0;}
-		.closed .arrow {background-position:0 0;}
+    .open .children {display:block;}
+    .closed .children {display:none;}
 
-		.type {color:gray;font-size:8pt;float:right;}
+    .arrow {background-image:url("/assets/images/d.png"); background-repeat:no-repeat; background-color:transparent; height:15px; width:15px; display:inline-block;}
 
-		.hide {display:none;}
+    .open .arrow {background-position:-20px 0;}
+    .closed .arrow {background-position:0 0;}
 
-		#main {width:100%;height:500px;overflow-y:scroll;}
-	</style>
+    .type {color:gray;font-size:8pt;float:right;}
+
+    .hide {display:none;}
+
+    #main {width:100%;height:500px;overflow-y:scroll;}
+</style>
 
 
 <style>
@@ -47,15 +47,15 @@
         border : 0px;
         width : auto;
     }
-    
+
     table.dbtable td {
         border : 1px solid #dddddd;
     }
-    
+
     table.dbtable td input[type="text"] {
         margin-bottom: 0px;
     }
-    
+
     div.table_container {
         width:100%; 
         overflow-x: auto;
@@ -69,56 +69,54 @@
 </style>
 
 <script type="text/javascript">
-    
+
     function alertBox(message) {
-        $(".alert").alert();
+    $(".alert").alert();
     }
-    
+
     function debugBox() {
-    
-        //var source = $('#json_source').text();
-        
-        //var transform = "";
- 
-        //$('#json_html').json2html(source, transform);
-    
-        $('.alert-debug').show();
-        $('.alert-debug').css('opacity', '1');
+    $('.alert-debug').show();
+    $('.alert-debug').css('opacity', '1');
     }
-    
+
+    function logBox() {
+    $('.alert-log').show();
+    $('.alert-log').css('opacity', '1');
+    }
+
     function sendSearch() {
-        var qString = "";
-        var qA = new Object();
-        var comma = '';
-        var table = '';
-        var field = '';
-        //turn the search form into JSON
-        $('.formfield').each(function( index ) {
-            table = $(this).attr('data-table');
-            if (qA[table] == null || qA[table] == 'undefined' || !qA[table]) {
-                qA[table] = new Object();
-            }
-            if ($(this).val().length > 0) {
-                field = $(this).attr('name');
-                qString += comma+'"'+$(this).attr('name')+'" : "'+$(this).val()+'"';
-                qA[table][field] = $(this).val();
-                comma = ',';
-            }
-        });
-        qString = JSON.stringify(qA);
-        window.location.href = "/db/search/"+table+"?q="+qString;
+    var qString = "";
+    var qA = new Object();
+    var comma = '';
+    var table = '';
+    var field = '';
+    //turn the search form into JSON
+    $('.formfield').each(function( index ) {
+    table = $(this).attr('data-table');
+    if (qA[table] == null || qA[table] == 'undefined' || !qA[table]) {
+    qA[table] = new Object();
     }
-    
+    if ($(this).val().length > 0) {
+    field = $(this).attr('name');
+    qString += comma+'"'+$(this).attr('name')+'" : "'+$(this).val()+'"';
+    qA[table][field] = $(this).val();
+    comma = ',';
+    }
+    });
+    qString = JSON.stringify(qA);
+    window.location.href = "/db/search/"+table+"?q="+qString;
+    }
+
     function sendDelete() {
-        alertBox("Howzit");
-        $('a.record.active').each(function( index ) {
-            console.log($(this).attr('id'));
-        });
+    alertBox("Howzit");
+    $('a.record.active').each(function( index ) {
+    console.log($(this).attr('id'));
+    });
     }
-    
+
     function checkRec(recNo) {
-        $('#chkico_'+recNo).toggleClass('icon-ok-sign');
-        $('#chkico_'+recNo).toggleClass('icon-ok-circle');
+    $('#chkico_'+recNo).toggleClass('icon-ok-sign');
+    $('#chkico_'+recNo).toggleClass('icon-ok-circle');
     }
 </script>
 
@@ -146,20 +144,21 @@
     </div>
     <div class="btn-group">
         <a href="#" id="btnVisualize" onclick="javascript:debugBox();" class="btn">Debug</a>
+        <a href="#" id="btnLog" onclick="javascript:logBox();" class="btn">Log</a>
     </div>
 </div>
 
 <!-- <div class="alert alert-success alert-error alert-block"> -->
-<div class="alert" style="">
-  <button type="button" class="close" data-dismiss="alert">&times;</button>
-  <strong>Log</strong>
+<div class="alert alert-log">
+    <button type="button" class="close" onclick="javascript:$('.alert-log').hide();">&times;</button>
+    <strong>Log</strong>
     <table>
-  @foreach($log as $logentry)
-    <tr>
-        <td><span class="label label-{{$logentry['severity']}}">{{$logentry['severity']}}</span></td>
-        <td>{{$logentry['message']}}</td>
-    </tr>
-  @endforeach
+        @foreach($log as $logentry)
+        <tr>
+            <td><span class="label label-{{$logentry['severity']}}">{{$logentry['severity']}}</span></td>
+            <td>{{$logentry['message']}}</td>
+        </tr>
+        @endforeach
     </table>
 </div>
 
@@ -168,10 +167,10 @@ The params debug box
 
 <div class="alert alert-success alert-error alert-block"> -->
 <div class="alert alert-info alert-debug" style="display:none">
-  <button type="button" class="close" onclick="javascript:$('.alert-debug').hide();">&times;</button>
-  <strong>Params</strong>
-  <div id="top"></div>
-  <textarea style="display:none" id="inputJSON"><? print_r($params); ?></textarea>
+    <button type="button" class="close" onclick="javascript:$('.alert-debug').hide();">&times;</button>
+    <strong>Params</strong>
+    <div id="top"></div>
+    <textarea style="display:none" id="inputJSON"><? print_r($params); ?></textarea>
 </div>
 
 {{-- the search popup box --}}
@@ -182,18 +181,18 @@ The params debug box
     <div class="modal-body">
         <div class="row">
             @foreach($meta as $field)
-                @if($field['searchable'] == 1)
-                <div class="span2">{{$field['label']}}</div>
-                <div class="span3"><input style="width:{{$field['width']}}px" 
-                                          class="formfield" type="text" data-table="{{$tableName}}" 
-                                          name="{{$field['name']}}" /></div>
-                @endif
+            @if($field['searchable'] == 1)
+            <div class="span2">{{$field['label']}}</div>
+            <div class="span3"><input style="width:{{$field['width']}}px" 
+                                      class="formfield" type="text" data-table="{{$tableName}}" 
+                                      name="{{$field['name']}}" /></div>
+            @endif
             @endforeach
         </div>
     </div>
     <div class="modal-footer">
-      <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-      <button class="btn btn-primary" onclick="javascript:sendSearch()">Search</button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        <button class="btn btn-primary" onclick="javascript:sendSearch()">Search</button>
     </div>        
 </div>
 
@@ -205,40 +204,40 @@ The params debug box
         <tr>
             <th></th>
             @foreach($data[0] as $name=>$field)
-                @if ($meta[$name]['display'])
-                    <th>{{$meta[$name]['label']}}</th>
-                    @if (isset($meta[$name]['pk']))
-                    {{-- this is a foreign key, it contains a reference to a primary key --}}
-                    <th>{{$meta[$name]['pk']['label']}}</th>
-                    @endif
-                @endif
+            @if ($meta[$name]['display'])
+            <th>{{$meta[$name]['label']}}</th>
+            @if (isset($meta[$name]['pk']))
+            {{-- this is a foreign key, it contains a reference to a primary key --}}
+            <th>{{$meta[$name]['pk']['label']}}</th>
+            @endif
+            @endif
             @endforeach
         </tr>
-        <?php $i = 0;?>
+        <?php $i = 0; ?>
         @foreach($data as $record)
-            <tr id="rec_{{$record->id}}">
-                <td class="td_toolbox">
-                    <a data-toggle="button" data-recordid="{{$record->id}}" class="record btn" href="#" id="chkbtn_{{$record->id}}" onclick="javascript:checkRec({{$record->id}})">
-                        <b id="chkico_{{$record->id}}" class="icon-ok-circle"></b>
-                    </a>
-                </td>
-                @foreach($record as $name=>$value)
-                    @if ($meta[$name]['display'])
-                        @if((isset($prefix) && isset($prefix[$name])) || (isset($meta) && isset($meta[$name]) && $meta[$name]['key'] == 'PRI'))
-                            <td><a href="{{$prefix[$name]}}{{$value}}">{{$value}}</a></td>
-                        @else
-                            {{-- hover-edit : see : https://github.com/mruoss/HoverEdit-jQuery-Plugin --}}
+        <tr id="rec_{{$record->id}}">
+            <td class="td_toolbox">
+                <a data-toggle="button" data-recordid="{{$record->id}}" class="record btn" href="#" id="chkbtn_{{$record->id}}" onclick="javascript:checkRec({{$record->id}})">
+                    <b id="chkico_{{$record->id}}" class="icon-ok-circle"></b>
+                </a>
+            </td>
+            @foreach($record as $name=>$value)
+            @if ($meta[$name]['display'])
+            @if((isset($prefix) && isset($prefix[$name])) || (isset($meta) && isset($meta[$name]) && $meta[$name]['key'] == 'PRI'))
+            <td><a href="{{$prefix[$name]}}{{$value}}">{{$value}}</a></td>
+            @else
+            {{-- hover-edit : see : https://github.com/mruoss/HoverEdit-jQuery-Plugin --}}
 
-                            <td><input style="width:{{$meta[$name]['width']}}px" type="text" value="{{$value}}" id="" class="hover-edit" /></div></td>
-                            @if(isset($meta[$name]['pk']))
-                            {{-- this is a foreign key, it contains a reference to a primary key --}}
-                                <td><a href="/db/edit/{{$meta[$name]['pk']['tableName']}}/{{$value}}">{{$pkTables[$meta[$name]['pk']['tableName']][$value]}}</a></td> 
-                            @endif
+            <td><input style="width:{{$meta[$name]['width']}}px" type="text" value="{{$value}}" id="" class="hover-edit" /></div></td>
+            @if(isset($meta[$name]['pk']))
+            {{-- this is a foreign key, it contains a reference to a primary key --}}
+            <td><a href="/db/edit/{{$meta[$name]['pk']['tableName']}}/{{$value}}">{{$pkTables[$meta[$name]['pk']['tableName']][$value]}}</a></td> 
+            @endif
 
-                        @endif
-                    @endif
-                @endforeach
-            </tr>
+            @endif
+            @endif
+            @endforeach
+        </tr>
         @endforeach
     </table>
 </div>

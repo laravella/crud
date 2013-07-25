@@ -1,4 +1,5 @@
 <?php
+
 use Laravella\Crud\Params;
 
 class DbController extends Controller {
@@ -7,23 +8,33 @@ class DbController extends Controller {
     private $log = array();
 
     /**
+     * A cache of db tables to minimize db requests. See getPkSelects()
+     * 
+     * @var type 
+     */
+    private $dbTables = array();
+    
+    
+    /**
      * 
      * @param type $severity
      * @param type $message
      */
-    private function log($severity, $message) {
-        $this->log[] = array("severity"=>$severity, "message"=>$message);
+    private function log($severity, $message)
+    {
+        $this->log[] = array("severity" => $severity, "message" => $message);
     }
-    
+
     /**
      * Getter for $log
      * 
      * @return type
      */
-    public function getLog() {
+    public function getLog()
+    {
         return $this->log();
     }
-    
+
     /**
      * The root of the crud application /db
      * 
@@ -73,7 +84,7 @@ class DbController extends Controller {
                 ->first();
         return $tva;
     }
-    
+
     /**
      * Check permissions
      * 
@@ -97,75 +108,100 @@ class DbController extends Controller {
         $action = 'getSelect';
 
         //select table data from database
-        $table = DB::table($tableName); 
+        $table = DB::table($tableName);
 
         $this->log("success", "$tableName selected");
-        
+
         //get related data
         $params = $this->__makeParams($table, $tableName, $action);
-        
+
         return View::make($params->view->name, $params->asArray());
+    }
+
+    /**
+     * Index an array of records (of type StdClass) according to the pk value
+     */
+    private function __indexByPk($array, $pkFieldName)
+    {
+        $newArray = array();
+        foreach($array as $key => $rec) {
+            $newArray[$rec->$pkFieldName] = $rec;
+        }
+        return $newArray;
+    }
+
+    /**
+     * Index an array of records according to the value of $fieldName
+     */
+    private function __indexByValue($array, $fieldName)
+    {
+        $newArray = array();
+        foreach($array as $key => $rec) {
+            $newArray[$rec[$fieldName]] = $rec;
+        }
+        return $newArray;
     }
 
     /**
      * 
      * 
-     * @param type $table
+     * @param type $records
      * @param type $ma
      * @return array
      */
-    private function __attachPkData($table, $ma) {
+    private function __attachPkData($records, $ma)
+    {
         $pkTables = array();
-            $pkRec = array();
-        
-        foreach ($table as $record)
+        $pkRec = array();
+
+        foreach ($records as $record)
         {
             foreach ($record as $name => $value)
             {
-                
                 if (isset($ma[$name]['pk']))
                 {
-                    //{{-- $name is a foreign key, it contains a reference to a primary key --}}
-                    $pkFieldId = $ma[$name]['pk_field_id'];
-                    $pkDisplayFieldId = $ma[$name]['pk_display_field_id'];
+                    //$name is a foreign key, it contains a reference to a primary key
                     
                     //pk display field's meta data array
                     $pkdfMetaA = $ma[$name]['pk_display'];
-                    
+
                     //pk meta data array
                     $pkfMetaA = $ma[$name]['pk'];
-                    
+
                     //get the name of the display field
                     $pkdfName = $pkdfMetaA['name'];
-                    
+
                     //get the name of the pk field
                     $pkfName = $pkfMetaA['name'];
-                    
+
+                    //the primary key's tablename
                     $pkTableName = $ma[$name]['pk']['tableName'];
-                    
+
+                    //the value of the foreign key, which is also the value of the pk we are looking for
                     $pkValue = $value;
-                    
-                    //get the actual data of the primary key related to this field (not the meta data)
-                    $pkData = DB::table($pkTableName)->where($pkfName, $pkValue)->get();
-                    
-                    //$pktMeta = Model::getFieldMeta($pkTableName);
-                    
-                    $pktMeta = Table::getMeta($pkTableName);
-                    
-                    //an array of 
-                    $pkDataA = DbGopher::makeArray($pktMeta, $pkData);
-                    
-                    $pkDisplayValue = $pkData[0]->$pkdfName;
-                    
-                    $pkRec[$pkValue] = $pkDisplayValue;
-                    
-                }
-                if (!empty ($pkRec)) {
-                    /*
-                    if (!isset($pkTables[$pkTableName])) {
-                        $pkTables[$pkTableName] = array();
+
+                    if (!array_key_exists($pkTableName, $this->dbTables))
+                    {
+
+                        $pkData = DB::table($pkTableName)->get();
+                        $pkData = $this->__indexByPk($pkData, $pkfName);
+                        $pktMeta = Table::getTableMeta($pkTableName);
+                        
+//an array of 
+                        $pkDataA = DbGopher::makeArray($pktMeta['fields'], $pkData);
+
+                        $this->dbTables[$pkTableName] = array('data'=>$pkData, 'meta'=>$pktMeta, 'dataA' => $pkDataA);
                     }
-                    */
+
+                    //get the actual data of the primary key related to this field (not the meta data)
+                    //$pkData = DB::table($pkTableName)->where($pkfName, $pkValue)->get();
+                    
+                    //get the value of the display field related to the pk
+                    $pkRec[$pkValue] = $this->dbTables[$pkTableName]['data'][$pkValue]->$pkdfName; 
+
+                }
+                if (!empty($pkRec))
+                {
                     $pkTables[$pkTableName] = $pkRec;
                 }
             }
@@ -173,7 +209,7 @@ class DbController extends Controller {
 //        print_r($pkTables);
         return $pkTables;
     }
-    
+
     /**
      * Handle a search request and display it in the select view
      * 
@@ -200,9 +236,8 @@ class DbController extends Controller {
         }
 
         $params = $this->__makeParams($table, $tableName, $action);
-        
-        return View::make($params->view->name, $params->asArray());
 
+        return View::make($params->view->name, $params->asArray());
     }
 
     /**
@@ -215,32 +250,45 @@ class DbController extends Controller {
      * @param type $action
      * @return \Laravella\Crud\Params
      */
-    private function __makeParams($data, $tableName, $action) {
-        
+    private function __makeParams($data, $tableName, $action)
+    {
+
+        $tables = array();
+
         $tableMeta = Table::getTableMeta($tableName);
-        
+
         $view = $this->__getView($tableName, $action);
-        
+
         $pkTables = array();
-        
-        if (is_object($data)) {
+
+        if (is_object($data))
+        {
+
             $paginated = $data->paginate($view->page_size);
+            
+            $dataA = DbGopher::makeArray($tableMeta['fields'], $paginated);
+            
+            $tables[$tableName] = new Table($tableName, $dataA, $tableMeta);
+
             $pkTables = $this->__attachPkData($paginated, $tableMeta['fields_array']);
+            
+            foreach ($pkTables as $pktName => $pkTable)
+            {
+                $tables[$pktName] = new Table($pktName, $this->dbTables[$pktName]['dataA'], $this->dbTables[$pktName]['meta']);
+            }
         }
 
         $prefix = array("id" => "/db/edit/$tableName/");
 
         $tableActionViews = $this->__getTableActionView($tableName, $view->id, $action);
-        
+
         $selects = $this->__getPkSelects($tableMeta['fields_array']);
-        
-        $this->log("info", "__makeParams");
-        
-        return new Params($action, $tableMeta, $data, $paginated, $tableActionViews, 
-                $pkTables, null, $prefix, $view, $selects, $this->log);
-        
+
+        $this->log("info", "makeParams");
+
+        return new Params($action, $tableMeta, $tables, $paginated, $tableActionViews, $pkTables, $prefix, $view, $selects, $this->log);
     }
-    
+
     /**
      * Prompt user to insert a new record
      * 
@@ -251,9 +299,9 @@ class DbController extends Controller {
     public function getInsert($tableName = null)
     {
         $action = 'getInsert';
- 
+
         $params = $this->__makeParams(null, $tableName, $action);
-        
+
         return View::make($params->view->name, $params->asArray());
     }
 
@@ -315,16 +363,16 @@ class DbController extends Controller {
     /**
      * Insert a new record into $tableName
      */
-    public function postInsert($tableName) {
-        
+    public function postInsert($tableName)
+    {
+
         $action = 'postInsert';
-        
+
         $id = Model::getInstance($tableName)->insertRec();
 
-        return Redirect::to("/db/edit/$tableName/$id");    
-        
+        return Redirect::to("/db/edit/$tableName/$id");
     }
-    
+
     /**
      * Loop through foreign keys and generate an array of select boxes for each
      * related primary key
@@ -359,7 +407,7 @@ class DbController extends Controller {
         {
             foreach ($data as $rec)
             {
-                $arr[] = array('value' => $rec->$valueField, 'text' => $rec->$textField);
+                $arr[$rec->$valueField] = array('value' => $rec->$valueField, 'text' => $rec->$textField);
             }
         }
         return $arr;

@@ -3,11 +3,62 @@
 class Table extends Eloquent {
 
     protected $tableName = "";
-    protected $primaryKey;
-    private $tableMetaData;
-    private $records;
-    private $dbFields;
+    public $tableMetaData = null;
+    public $records = array();
 
+    protected $primaryKey;
+    private $dbFields;
+    private $pageSize = 10;
+    private $selectBox = array();
+
+    /**
+     * Constructor
+     * 
+     * @param type $tableName
+     * @param type $tableMeta
+     * @param type $data
+     * @param type $pageSize
+     * @param type $selectBox
+     */
+    public function __construct($tableName, $data, $tableMeta = null, $pageSize = 10, $selectBox = array()) {
+        $this->records = $data;
+        $this->tableName = $tableName;
+        if ($tableMeta == null) {
+            $this->tableMetaData = Table::getTableMeta($tableName);
+        } else {
+            $this->tableMetaData = $tableMeta;
+        }
+        $this->pageSize = $pageSize;
+        $this->selectBox = $selectBox;
+    }
+    
+    /**
+     * Getter for records
+     * 
+     * @return type
+     */
+    public function records() {
+        return $this->records;
+    }
+    
+    /**
+     * Getter for pageSize
+     * 
+     * @return type
+     */
+    public function pageSize() {
+        return $this->pageSize;
+    }
+    
+    /**
+     * Getter for selectBox
+     * 
+     * @return type
+     */
+    public function selectBox() {
+        return $this->selectBox();
+    }
+    
     /*
       'table' => array('name' => $tableName, 'pk_name' => $pkName),
       'fields_array' => $fieldMeta,
@@ -16,11 +67,17 @@ class Table extends Eloquent {
 
     public function meta()
     {
+        if ($this->tableMetaData == null) {
+            $this->tableMetaData = Table::getTableMeta($this->tableName);
+        }        
         return $this->$tableMetaData['fields'];
     }
 
     public function metaA()
     {
+        if ($this->tableMetaData == null) {
+            $this->tableMetaData = Table::getTableMeta($this->tableName);
+        }        
         return $this->$tableMetaData['fields_array'];
     }
 
@@ -147,7 +204,7 @@ class Table extends Eloquent {
     {
         $tableMeta = DB::table("_db_fields")
                         ->join('_db_tables', '_db_fields._db_table_id', '=', '_db_tables.id')
-                        ->select('_db_fields.name', '_db_fields.label', '_db_fields.key', '_db_fields.display', '_db_fields.type', '_db_fields.length', '_db_fields.default', '_db_fields.extra', '_db_fields.href', '_db_fields.pk_field_id', '_db_fields.pk_display_field_id', '_db_fields.display_order', '_db_fields.width', '_db_fields.widget', '_db_fields.searchable')
+                        ->select('_db_fields.id', '_db_fields.name', '_db_fields.label', '_db_fields.key', '_db_fields.display', '_db_fields.type', '_db_fields.length', '_db_fields.default', '_db_fields.extra', '_db_fields.href', '_db_fields.pk_field_id', '_db_fields.pk_display_field_id', '_db_fields.display_order', '_db_fields.width', '_db_fields.widget', '_db_fields.searchable')
                         ->orderBy('display_order', 'desc')
                         ->where("_db_tables.name", "=", $tableName)->get();
 
