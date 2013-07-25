@@ -362,7 +362,27 @@ class DbController extends Controller {
         
         $paramsA['data'] = $paramsA['data'][0];
         */
-                  
+                
+        
+/*
+ * 
+action
+meta
+x tables = array(tableName => Table)
+x data = paginate
+tableName
+x prefix = array(fieldName => String)
+x pageSize = int
+x pkTables
+x view = $dbController->__getView($tableName, $action);
+selects
+x log = array(array('severity'=>String, 'message'=>String))
+status
+message
+pkName
+x title
+
+ */        
         
 $params = array('action' => $action,
                     'data' => $dataA[0],
