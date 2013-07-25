@@ -5,6 +5,8 @@
 @parent :: DbView
 @stop
 
+{{-------------------------------------------------------- extra_head --------------}}
+
 @section('extra_head')
 
 <script type="text/javascript" src="/assets/scripts/js/vendor/jsonconvert.js"></script>
@@ -66,6 +68,9 @@
         width: 51px; 
         max-width:51px;
     }
+    span.h1a {
+        color : #c0c0c0;
+    }
 </style>
 
 <script type="text/javascript">
@@ -122,6 +127,8 @@
 
 @stop
 
+{{-------------------------------------------------------- getIndex --------------}}
+
 @section('getIndex')
 @if($action == 'getIndex')
 <h1>Index</h1>
@@ -131,48 +138,10 @@
 @endif
 @stop
 
-@section('getSelect')
-@if($action == 'getSelect' || @action == 'getSearch')
-<div class="page-header">
-    <h1>{{$title}}</h1>
-</div>
-<div class="well">
-    <div class="btn-group">
-        <a href="/db/insert/{{$tableName}}" class="btn">New</a>
-        <a href="javascript:sendDelete()" class="btn">Delete</a>
-        <a href="#myModal" role="button" class="btn" data-toggle="modal">Search</b></a>
-    </div>
-    <div class="btn-group">
-        <a href="#" id="btnVisualize" onclick="javascript:debugBox();" class="btn">Debug</a>
-        <a href="#" id="btnLog" onclick="javascript:logBox();" class="btn">Log</a>
-    </div>
-</div>
+{{-------------------------------------------------------- getSearch --------------}}
 
-<!-- <div class="alert alert-success alert-error alert-block"> -->
-<div class="alert alert-log">
-    <button type="button" class="close" onclick="javascript:$('.alert-log').hide();">&times;</button>
-    <strong>Log</strong>
-    <table>
-        @foreach($log as $logentry)
-        <tr>
-            <td><span class="label label-{{$logentry['severity']}}">{{$logentry['severity']}}</span></td>
-            <td>{{$logentry['message']}}</td>
-        </tr>
-        @endforeach
-    </table>
-</div>
-
-<!-- 
-The params debug box 
-
-<div class="alert alert-success alert-error alert-block"> -->
-<div class="alert alert-info alert-debug" style="display:none">
-    <button type="button" class="close" onclick="javascript:$('.alert-debug').hide();">&times;</button>
-    <strong>Params</strong>
-    <div id="top"></div>
-    <textarea style="display:none" id="inputJSON"><? print_r($params); ?></textarea>
-</div>
-
+@section('search')
+@if($action == 'getSelect' || $action == 'getSearch')
 {{-- the search popup box --}}
 <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
@@ -195,12 +164,72 @@ The params debug box
         <button class="btn btn-primary" onclick="javascript:sendSearch()">Search</button>
     </div>        
 </div>
+@endif
+@stop
+
+@section('messages')
+<div class="alert alert-{{$status}}">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <strong>{{$status}}</strong>
+    {{$message}}
+</div>
+
+<!-- <div class="alert alert-success alert-error alert-block"> -->
+<div class="alert alert-log"@if($status == "success" || $status == "info") style="display:none"@endif>
+    <button type="button" class="close" onclick="javascript:$('.alert-log').hide();">&times;</button>
+    <strong>Log</strong>
+    <table>
+        @foreach($log as $logentry)
+        <tr>
+            <td><span class="label label-{{$logentry['severity']}}">{{$logentry['severity']}}</span></td>
+            <td>{{$logentry['message']}}</td>
+        </tr>
+        @endforeach
+    </table>
+</div>
+
+<!-- The params debug box -->
+<!-- <div class="alert alert-success alert-error alert-block"> -->
+
+<div class="alert alert-info alert-debug" style="display:none">
+    <button type="button" class="close" onclick="javascript:$('.alert-debug').hide();">&times;</button>
+    <strong>Params</strong>
+    <div id="top"></div>
+    <textarea style="display:none" id="inputJSON"><? print_r($params); ?></textarea>
+</div>
+
+@stop
+
+{{-------------------------------------------------------- getSelect --------------}}
+
+@section('getSelect')
+@if($action == 'getSelect' || @action == 'getSearch')
+<div class="page-header">
+    <h1>{{$title}}</h1>
+</div>
+<div class="well">
+    <div class="btn-group">
+        <a href="/db/insert/{{$tableName}}" class="btn">New</a>
+        <a href="javascript:sendDelete()" class="btn">Delete</a>
+        <a href="#myModal" role="button" class="btn" data-toggle="modal">Search</b></a>
+    </div>
+    <div class="btn-group">
+        <a href="#" id="btnVisualize" onclick="javascript:debugBox();" class="btn">Debug</a>
+        <a href="#" id="btnLog" onclick="javascript:logBox();" class="btn">Log</a>
+    </div>
+</div>
+
+@yield('messages')
+
+@yield('search')
 
 @if(isset($data) && isset($data[0]))
 
 <div class="table_container">
     <table class="table table-striped dbtable">
+        
         {{-- the field titles --}}
+        
         <tr>
             <th></th>
             @foreach($data[0] as $name=>$field)
@@ -213,7 +242,9 @@ The params debug box
             @endif
             @endforeach
         </tr>
-        <?php $i = 0; ?>
+        
+        {{-- the records --}}
+        
         @foreach($data as $record)
         <tr id="rec_{{$record->id}}">
             <td class="td_toolbox">
@@ -246,12 +277,23 @@ The params debug box
 @endif
 @stop
 
+{{-------------------------------------------------------- getEdit --------------}}
+
 @section('getEdit') 
 @if($action == 'getEdit')
 <div class="page-header">
-    <h1>Edit <span class="h1a">[{{$tableName}}::{{$data[$pkName]}}]</span></h1>
+    <h1>Edit <span class="h1a">[{{$tableName}}::{{$pkName}}]</span></h1>
 </div>
-<form method="POST" action="/db/edit/{{$tableName}}/{{$data[$pkName]}}">
+<div class="well">
+    <div class="btn-group">
+        <a href="#" id="btnVisualize" onclick="javascript:debugBox();" class="btn">Debug</a>
+        <a href="#" id="btnLog" onclick="javascript:logBox();" class="btn">Log</a>
+    </div>
+</div>
+
+@yield('messages')
+
+<form method="POST" action="/db/edit/{{$tableName}}/{{$pkName}}">
     @foreach($meta as $field)
     @if($field['display'] == 1) 
     <div class="row">
@@ -281,11 +323,16 @@ The params debug box
 @endif
 @stop
 
+{{-------------------------------------------------------- getInsert --------------}}
+
 @section('getInsert') 
 @if($action == 'getInsert')
 <div class="page-header">
     <h1>New</h1>
 </div>
+
+@yield('messages')
+
 <form method="POST" action="/db/insert/{{$tableName}}">
     @foreach($meta as $field)
     @if($field['display'] == 1) 

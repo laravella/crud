@@ -7,14 +7,17 @@ class DbController extends Controller {
     protected $layout = 'crud::layouts.default';
     private $log = array();
 
+    const SUCCESS = "success";
+    const INFO = "info";
+    const IMPORTANT = "important";
+
     /**
      * A cache of db tables to minimize db requests. See getPkSelects()
      * 
      * @var type 
      */
     private $dbTables = array();
-    
-    
+
     /**
      * 
      * @param type $severity
@@ -110,10 +113,10 @@ class DbController extends Controller {
         //select table data from database
         $table = DB::table($tableName);
 
-        $this->log("success", "$tableName selected");
+        $this->log(self::SUCCESS, "$tableName selected");
 
         //get related data
-        $params = $this->__makeParams($table, $tableName, $action);
+        $params = $this->__makeParams(self::SUCCESS, "Data selected.", $table, $tableName, $action);
 
         return View::make($params->view->name, $params->asArray());
     }
@@ -124,7 +127,8 @@ class DbController extends Controller {
     private function __indexByPk($array, $pkFieldName)
     {
         $newArray = array();
-        foreach($array as $key => $rec) {
+        foreach ($array as $key => $rec)
+        {
             $newArray[$rec->$pkFieldName] = $rec;
         }
         return $newArray;
@@ -136,7 +140,8 @@ class DbController extends Controller {
     private function __indexByValue($array, $fieldName)
     {
         $newArray = array();
-        foreach($array as $key => $rec) {
+        foreach ($array as $key => $rec)
+        {
             $newArray[$rec[$fieldName]] = $rec;
         }
         return $newArray;
@@ -160,8 +165,8 @@ class DbController extends Controller {
             {
                 if (isset($ma[$name]['pk']))
                 {
+                    $this->log(self::INFO, "{$ma[$name]['name']} has a pk");
                     //$name is a foreign key, it contains a reference to a primary key
-                    
                     //pk display field's meta data array
                     $pkdfMetaA = $ma[$name]['pk_display'];
 
@@ -186,23 +191,26 @@ class DbController extends Controller {
                         $pkData = DB::table($pkTableName)->get();
                         $pkData = $this->__indexByPk($pkData, $pkfName);
                         $pktMeta = Table::getTableMeta($pkTableName);
-                        
+
 //an array of 
                         $pkDataA = DbGopher::makeArray($pktMeta['fields'], $pkData);
 
-                        $this->dbTables[$pkTableName] = array('data'=>$pkData, 'meta'=>$pktMeta, 'dataA' => $pkDataA);
+                        $this->dbTables[$pkTableName] = array('data' => $pkData, 'meta' => $pktMeta, 'dataA' => $pkDataA);
                     }
 
                     //get the actual data of the primary key related to this field (not the meta data)
                     //$pkData = DB::table($pkTableName)->where($pkfName, $pkValue)->get();
-                    
                     //get the value of the display field related to the pk
-                    $pkRec[$pkValue] = $this->dbTables[$pkTableName]['data'][$pkValue]->$pkdfName; 
+                    $pkRec[$pkValue] = $this->dbTables[$pkTableName]['data'][$pkValue]->$pkdfName;
 
-                }
-                if (!empty($pkRec))
-                {
-                    $pkTables[$pkTableName] = $pkRec;
+                    $this->log(self::INFO, "{$ma[$name]['name']} : key {$pkTableName}.{$pkfName} = {$pkValue} display : {$pkdfName} = {$pkRec[$pkValue]}");
+
+                    if (!array_key_exists($pkTableName, $pkTables))
+                    {
+                        $pkTables[$pkTableName] = array();
+                    }
+
+                    $pkTables[$pkTableName][$pkValue] = $this->dbTables[$pkTableName]['data'][$pkValue]->$pkdfName;
                 }
             }
         }
@@ -235,7 +243,7 @@ class DbController extends Controller {
             }
         }
 
-        $params = $this->__makeParams($table, $tableName, $action);
+        $params = $this->__makeParams(self::SUCCESS, "Records selected.", $table, $tableName, $action);
 
         return View::make($params->view->name, $params->asArray());
     }
@@ -250,43 +258,49 @@ class DbController extends Controller {
      * @param type $action
      * @return \Laravella\Crud\Params
      */
-    private function __makeParams($data, $tableName, $action)
+    private function __makeParams($status, $message, $data, $tableName, $action)
     {
 
+        $prefix = array("id" => "/db/edit/$tableName/");
+
         $tables = array();
+        $pkTables = array();
 
         $tableMeta = Table::getTableMeta($tableName);
 
         $view = $this->__getView($tableName, $action);
 
-        $pkTables = array();
+        $tableActionViews = $this->__getTableActionView($tableName, $view->id, $action);
+
+        $selects = $this->__getPkSelects($tableMeta['fields_array']);
+
+        $this->log(self::INFO, "makeParams");
 
         if (is_object($data))
         {
 
             $paginated = $data->paginate($view->page_size);
-            
+
             $dataA = DbGopher::makeArray($tableMeta['fields'], $paginated);
-            
+
             $tables[$tableName] = new Table($tableName, $dataA, $tableMeta);
 
             $pkTables = $this->__attachPkData($paginated, $tableMeta['fields_array']);
-            
+
             foreach ($pkTables as $pktName => $pkTable)
             {
                 $tables[$pktName] = new Table($pktName, $this->dbTables[$pktName]['dataA'], $this->dbTables[$pktName]['meta']);
             }
+
+            return new Params($status, $message, $this->log, $view, $action, $tableMeta, $tableActionViews, $prefix, $selects, $tables, $paginated, $pkTables);
         }
+        else
+        {
 
-        $prefix = array("id" => "/db/edit/$tableName/");
+            $p = new Params($status, $message, $this->log, $view, $action, $tableMeta, $tableActionViews, $prefix, $selects);
 
-        $tableActionViews = $this->__getTableActionView($tableName, $view->id, $action);
-
-        $selects = $this->__getPkSelects($tableMeta['fields_array']);
-
-        $this->log("info", "makeParams");
-
-        return new Params($action, $tableMeta, $tables, $paginated, $tableActionViews, $pkTables, $prefix, $view, $selects, $this->log);
+            return $p;
+        }
     }
 
     /**
@@ -300,7 +314,7 @@ class DbController extends Controller {
     {
         $action = 'getInsert';
 
-        $params = $this->__makeParams(null, $tableName, $action);
+        $params = $this->__makeParams(self::INFO, "Enter data to insert.", null, $tableName, $action);
 
         return View::make($params->view->name, $params->asArray());
     }
@@ -317,31 +331,56 @@ class DbController extends Controller {
         $action = 'getEdit';
 
         $model = Model::getInstance($tableName);
-
-        $tableMeta = $model->getMetaData($tableName);
-
+        
+        $tableMeta = $model->getMetaData();
+        
         //get metadata as an array
         $metaA = $tableMeta['fields_array'];
         $meta = $tableMeta['fields'];
         $pkName = $tableMeta['table']['pk_name'];
 
-        $table = DB::table($tableName)->where($pkName, '=', $pkValue)->get();
+        $data = DB::table($tableName)->where($pkName, '=', $pkValue)->get();
 
         $prefix = array();
 
-        $data = DbGopher::makeArray($meta, $table);
+        $dataA = DbGopher::makeArray($meta, $data);
 
         $selects = $this->__getPkSelects($metaA);
 
         $view = $this->__getView($tableName, $action)->name;
 
-        return View::make($view, array('action' => $action,
-                    'data' => $data[0],
+/*        
+        $params = $this->__makeParams(self::INFO, 'Edit data.', $table, $tableName, $action);
+        
+        $paramsA = $params->asArray();
+
+        $model = Model::getInstance($tableName);
+        $tableMeta = $model->getMetaData($tableName);
+        $meta = $tableMeta['fields'];
+        
+        $dataA = DbGopher::makeArray($meta, $paramsA['data']);
+        
+        $paramsA['data'] = $paramsA['data'][0];
+        */
+                  
+        
+$params = array('action' => $action,
+                    'data' => $dataA[0],
                     'meta' => $metaA,
                     'pkName' => $pkName,
                     'prefix' => $prefix,
                     'selects' => $selects,
-                    'tableName' => $tableName));
+                    'tableName' => $tableName,
+                    'status' => 'info',
+                    'message' => 'Edit data.',
+                    'log' => array());
+
+$params['params'] = json_encode($params);
+        
+//print_r($params);
+//die;
+        
+        return View::make($view, $params);
     }
 
     /**
