@@ -81,15 +81,16 @@
     
         @foreach($tables as $tName=>$table)
     
-        $('#acc-{{$tName}}').on('show', {table : 'one'}, function (event) {
-            $(this).html(event.data.table);
+        $('#acc-{{$tName}}').on('show', {table : '{{$tName}}'}, function (event) {
+            $.get('http://localhost/dbapi/select/' + event.data.table, function(data) {$('#acc-{{$tName}}').html(data);});
         });
         
-        $('#acc-{{$tName}}').on('shown', function (event) {
-            $(this).html(event.data.table);
+        $('#acc-{{$tName}}').on('shown', {table : '{{$tName}}'}, function (event) {
+            //$(this).html(event.data.table);
         });
         
         @endforeach
+        
     });
     
     
@@ -227,6 +228,9 @@
 
 @section('getSelect')
 @if($action == 'getSelect' || @action == 'getSearch')
+
+@if($displayType == "text/html")
+
 <div class="page-header">
     <h1>{{$title}}</h1>
 </div>
@@ -245,6 +249,9 @@
 @yield('messages')
 
 @yield('search')
+
+@endif
+
 
 @if(isset($data) && isset($data[0]))
 
@@ -304,6 +311,9 @@
 
 @section('getEdit') 
 @if($action == 'getEdit')
+
+@if($displayType == "text/html")
+
 <div class="page-header">
     <h1>Edit <span class="h1a">[{{$tableName}}::{{$pkName}}]</span></h1>
 </div>
@@ -315,6 +325,8 @@
 </div>
 
 @yield('messages')
+
+@endif
 
 @foreach ($tables[$tableName]['records'] as $recNo=>$record) 
 <form method="POST" action="/db/edit/{{$tableName}}/{{$record[$pkName]}}">

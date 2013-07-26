@@ -11,6 +11,12 @@ class DbController extends Controller {
     const INFO = "info";
     const IMPORTANT = "important";
 
+    const HTML = "text/html";
+    const XML = "text/xml";
+    const JSON = "text/json";
+    
+    public $displayType = self::HTML;
+    
     /**
      * A cache of db tables to minimize db requests. See getPkSelects()
      * 
@@ -293,7 +299,7 @@ class DbController extends Controller {
         }
 
         $p = new Params($status, $message, $this->log, $view, $action, $tableMeta, 
-                $tableActionViews, $prefix, $selects, $tables, $paginated, $pkTables);
+                $tableActionViews, $prefix, $selects, $this->displayType, $tables, $paginated, $pkTables);
         
         return $p;
     }

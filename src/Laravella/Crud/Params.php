@@ -15,6 +15,7 @@ class Params {
     public $selects = array();
     public $log = array();
     public $status = "success";
+    public $displayType = "text/html";
 
     /**
      * 
@@ -29,7 +30,9 @@ class Params {
      * @param type $prefix Used to prepend the href on the primary key
      * @param type $view An entry in _db_views
      */
-    public function __construct($status, $message, $log, $view = null, $action = "", $tableMeta = null, $tableActionViews = null, $prefix = "", $selects = null, $tables = null, $paginated = null, $primaryTables = null)
+    public function __construct($status, $message, $log, $view = null, $action = "", 
+            $tableMeta = null, $tableActionViews = null, $prefix = "", $selects = null, $displayType = "",
+            $tables = null, $paginated = null, $primaryTables = null)
     {
         $this->status = $status;
         $this->message = $message;
@@ -43,6 +46,7 @@ class Params {
         $this->tableActionViews = $tableActionViews;
         $this->view = $view;
         $this->selects = $selects;
+        $this->displayType = $displayType;
         $this->log = $log;
     }
 
@@ -65,7 +69,7 @@ class Params {
      */
     public static function forEdit($status, $message, $log, $view = null, 
             $action = "", $tableMeta = null, $tableActionViews = null, 
-            $prefix = "", $selects = null, 
+            $prefix = "", $selects = null, $displayType="text/html",
             $tables = null, $paginated = null, $primaryTables = null)
     {
         $params = new Params();
@@ -96,7 +100,8 @@ class Params {
             "log" => $this->log,
             "status" => $this->status,
             "message" => $this->message,
-            "pkName" => $this->tableMeta['table']['pk_name']); //$this->tables[$tableName]['tableMetaData']['table']['pk_name']);
+            "pkName" => $this->tableMeta['table']['pk_name'],
+            "displayType" => $this->displayType); //$this->tables[$tableName]['tableMetaData']['table']['pk_name']);
 
         if (isset($this->tableActionViews) && is_object($this->tableActionViews))
         {
