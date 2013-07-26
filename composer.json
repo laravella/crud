@@ -15,7 +15,7 @@
             "src/controllers",
             "src/models",
             "src/models/meta",
-            "src/migrations"
+            "src/database/migrations"
         ],
         "psr-0": {
             "Laravella\\Crud": "src/"
