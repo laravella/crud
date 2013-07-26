@@ -40,16 +40,17 @@ class DbInstallController extends Controller {
     public function getReinstall()
     {
         
-        foreach (DbInstallController::__getAdminTableClasses(true) as $adminTableClass)
-        {
-            $adminTableClass::down();
-        }
-        
-//        foreach (DbInstallController::__getAdminTables(true) as $adminTable)
+//        foreach (DbInstallController::__getAdminTableClasses(true) as $adminTableClass)
 //        {
-//            Schema::dropIfExists($adminTable);
-//            $this->__log("success", "dropped table $adminTable");
+//            $atc = new $adminTableClass();
+//            $atc->down();
 //        }
+        
+        foreach (DbInstallController::__getAdminTables(true) as $adminTable)
+        {
+            Schema::dropIfExists($adminTable);
+            $this->__log("success", "dropped table $adminTable");
+        }
         return $this->getInstall();
     }
 
@@ -102,7 +103,7 @@ class DbInstallController extends Controller {
         if (!$dropSafe)
         {
             return array(
-                "CreateUsersTable",
+//                "CreateUsersTable",
                 "CreateSeveritiesTable",
                 "CreateLogsTable",
                 "CreateAuditTable",
@@ -111,8 +112,8 @@ class DbInstallController extends Controller {
                 "CreateViewsTable",
                 "CreateActionsTable",
                 "CreateTableActionViewsTable",
-                "CreateUserPermissions",
-                "CreateUserGroupPermissions");
+                "CreateUserPermissionsTable",
+                "CreateUserGroupPermissionsTable");
         }
         else
         {
@@ -121,13 +122,13 @@ class DbInstallController extends Controller {
                 "CreateSeveritiesTable",
                 "CreateAuditTable",
                 "CreateTableActionViewsTable",
-                "CreateUserPermissions",
-                "CreateUserGroupPermissions",
+                "CreateUserPermissionsTable",
+                "CreateUserGroupPermissionsTable",
                 "CreateFieldsTable",
                 "CreateViewsTable",
                 "CreateActionsTable",
-                "CreateTablesTable",
-                "CreateUsersTable");
+                "CreateTablesTable"/*,
+                "CreateUsersTable"*/);
         }
     }
 
@@ -144,14 +145,15 @@ class DbInstallController extends Controller {
             set_time_limit(360);
 //create all the tables
             $domain = new Domain();
-            foreach (DbInstallController::__getAdminTableClasses() as $adminTableClass)
-            {
-                $adminTableClass::up();
-            }
-//            foreach (DbInstallController::__getAdminTables() as $adminTable)
+//            foreach (DbInstallController::__getAdminTableClasses() as $adminTableClass)
 //            {
-//                $domain->create($adminTable);
+//                $atc = new $adminTableClass();
+//                $atc->up();
 //            }
+            foreach (DbInstallController::__getAdminTables() as $adminTable)
+            {
+                $domain->create($adminTable);
+            }
 
             try
             {
