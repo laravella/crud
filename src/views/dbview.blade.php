@@ -293,6 +293,23 @@
 
 @yield('messages')
 
+@endif
+@stop
+
+@section('getEditx') 
+@if($action == 'getEditx')
+<div class="page-header">
+    <h1>Edit <span class="h1a">[{{$tableName}}::{{$pkName}}]</span></h1>
+</div>
+<div class="well">
+    <div class="btn-group">
+        <a href="#" id="btnVisualize" onclick="javascript:debugBox();" class="btn">Debug</a>
+        <a href="#" id="btnLog" onclick="javascript:logBox();" class="btn">Log</a>
+    </div>
+</div>
+
+@yield('messages')
+
 <form method="POST" action="/db/edit/{{$tableName}}/{{$pkName}}">
     @foreach($meta as $field)
     @if($field['display'] == 1) 

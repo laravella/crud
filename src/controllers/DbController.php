@@ -330,6 +330,29 @@ class DbController extends Controller {
     {
         $action = 'getEdit';
 
+        $params = $this->__makeParams(self::INFO, 'Edit data.', $table, $tableName, $action);
+        
+        $paramsA = $params->asArray();
+        
+        $params['params'] = json_encode($params);
+
+        //print_r($params);
+        //die;
+        
+        return View::make($view, $params);        
+    }    
+    
+    /**
+     * Display a single record on screen to be edited by the user
+     * 
+     * @param type $table
+     * @param type $pkValue
+     * @return type
+     */
+    public function getEditx($tableName = null, $pkValue = 0)
+    {
+        $action = 'getEdit';
+
         $model = Model::getInstance($tableName);
         
         $tableMeta = $model->getMetaData();
