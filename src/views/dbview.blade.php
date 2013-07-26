@@ -293,50 +293,35 @@
 
 @yield('messages')
 
-@endif
-@stop
-
-@section('getEditx') 
-@if($action == 'getEditx')
-<div class="page-header">
-    <h1>Edit <span class="h1a">[{{$tableName}}::{{$pkName}}]</span></h1>
-</div>
-<div class="well">
-    <div class="btn-group">
-        <a href="#" id="btnVisualize" onclick="javascript:debugBox();" class="btn">Debug</a>
-        <a href="#" id="btnLog" onclick="javascript:logBox();" class="btn">Log</a>
-    </div>
-</div>
-
-@yield('messages')
-
 <form method="POST" action="/db/edit/{{$tableName}}/{{$pkName}}">
     @foreach($meta as $field)
-    @if($field['display'] == 1) 
-    <div class="row">
-        <div class="span4">{{$field['label']}}</div>
-        @if(isset($field['key']) && $field['key'] == 'PRI')
-        <div class="span4"><input type="text" disabled name="{{$field['name']}}" value="{{$data[$field['name']]}}" /></div>
-        @elseif(isset($field['pk']))
-        <div class="span4">
-            <select name="{{$field['name']}}">
-                @foreach($selects[$field['name']] as $option)
-                @if($option['value'] == $data[$field['name']])
-                <option selected value="{{$option['value']}}">{{$option['text']}}</option>
-                @else
-                <option value="{{$option['value']}}">{{$option['text']}}</option>
-                @endif
-                @endforeach
-            </select>
+    
+        @if($field['display'] == 1) 
+        <div class="row">
+            <div class="span4">{{$field['label']}}</div>
+            @if(isset($field['key']) && $field['key'] == 'PRI')
+            <div class="span4"><input type="text" disabled name="{{$field['name']}}" value="{{$tables[$tableName]['records'][0][$field['name']]}}" /></div>
+            @elseif(isset($field['pk']))
+            <div class="span4">
+                <select name="{{$field['name']}}">
+                    @foreach($selects[$field['name']] as $option)
+                        @if($option['value'] == $tables[$tableName]['records'][0][$field['name']])
+                        <option selected value="{{$option['value']}}">{{$option['text']}}</option>
+                        @else
+                        <option value="{{$option['value']}}">{{$option['text']}}</option>
+                        @endif
+                    @endforeach
+                </select>
+            </div>
+            @else
+            <div class="span4"><input type="text" style="width:{{$field['width']}}px" name="{{$field['name']}}" value="{{$tables[$tableName]['records'][0][$field['name']]}}" /></div>
+            @endif
         </div>
-        @else
-        <div class="span4"><input type="text" style="width:{{$field['width']}}px" name="{{$field['name']}}" value="{{$data[$field['name']]}}" /></div>
         @endif
-    </div>
-    @endif
-    @endforeach<br />
-    <div class="well"><input type="submit" class="btn" /></div>
+    
+    @endforeach
 </form>
+
 @endif
 @stop
 

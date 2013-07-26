@@ -330,101 +330,19 @@ class DbController extends Controller {
     {
         $action = 'getEdit';
 
-        $params = $this->__makeParams(self::INFO, 'Edit data.', $table, $tableName, $action);
-        
-        $paramsA = $params->asArray();
-        
-        $params['params'] = json_encode($params);
-
-        //print_r($params);
-        //die;
-        
-        return View::make($view, $params);        
-    }    
-    
-    /**
-     * Display a single record on screen to be edited by the user
-     * 
-     * @param type $table
-     * @param type $pkValue
-     * @return type
-     */
-    public function getEditx($tableName = null, $pkValue = 0)
-    {
-        $action = 'getEdit';
-
-        $model = Model::getInstance($tableName);
-        
-        $tableMeta = $model->getMetaData();
+        $tableMeta = Table::getTableMeta($tableName);
         
         //get metadata as an array
-        $metaA = $tableMeta['fields_array'];
-        $meta = $tableMeta['fields'];
         $pkName = $tableMeta['table']['pk_name'];
 
-        $data = DB::table($tableName)->where($pkName, '=', $pkValue)->get();
-
-        $prefix = array();
-
-        $dataA = DbGopher::makeArray($meta, $data);
-
-        $selects = $this->__getPkSelects($metaA);
-
-        $view = $this->__getView($tableName, $action)->name;
-
-/*        
+        $table = DB::table($tableName)->where($pkName, '=', $pkValue);        
+        
         $params = $this->__makeParams(self::INFO, 'Edit data.', $table, $tableName, $action);
         
         $paramsA = $params->asArray();
-
-        $model = Model::getInstance($tableName);
-        $tableMeta = $model->getMetaData($tableName);
-        $meta = $tableMeta['fields'];
         
-        $dataA = DbGopher::makeArray($meta, $paramsA['data']);
-        
-        $paramsA['data'] = $paramsA['data'][0];
-        */
-                
-        
-/*
- * 
-action
-meta
-x tables = array(tableName => Table)
-x data = paginate
-tableName
-x prefix = array(fieldName => String)
-x pageSize = int
-x pkTables
-x view = $dbController->__getView($tableName, $action);
-selects
-x log = array(array('severity'=>String, 'message'=>String))
-status
-message
-pkName
-x title
-
- */        
-        
-$params = array('action' => $action,
-                    'data' => $dataA[0],
-                    'meta' => $metaA,
-                    'pkName' => $pkName,
-                    'prefix' => $prefix,
-                    'selects' => $selects,
-                    'tableName' => $tableName,
-                    'status' => 'info',
-                    'message' => 'Edit data.',
-                    'log' => array());
-
-$params['params'] = json_encode($params);
-        
-//print_r($params);
-//die;
-        
-        return View::make($view, $params);
-    }
+        return View::make($paramsA['view']->name, $paramsA);        
+    }    
 
     /**
      * Update data to the database
