@@ -19,10 +19,11 @@ class CreateUserPermissionsTable extends Migration
                     $table->integer('table_id')->unsigned();
                     $table->integer('action_id')->unsigned();
                     $table->timestamps();                    
-                    
+                    /*
                     $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
                     $table->foreign('table_id')->references('id')->on('_db_tables')->onDelete('cascade');
                     $table->foreign('action_id')->references('id')->on('_db_actions')->onDelete('cascade');
+                    */
                 });
 	}
 

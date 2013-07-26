@@ -21,10 +21,10 @@ class CreateTableActionViewsTable extends Migration
                     $table->integer('page_size')->unsigned(); //the size of a page (pagination) in a list view
                     $table->string('title',50);
                     $table->timestamps();                    
-
+/*
                     $table->foreign('view_id')->references('id')->on('_db_views')->onDelete('cascade');
                     $table->foreign('table_id')->references('id')->on('_db_tables')->onDelete('cascade');
-                    $table->foreign('action_id')->references('id')->on('_db_actions')->onDelete('cascade');
+                    $table->foreign('action_id')->references('id')->on('_db_actions')->onDelete('cascade'); */
                 });
 	}
 

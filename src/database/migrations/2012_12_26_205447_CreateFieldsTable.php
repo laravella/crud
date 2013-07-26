@@ -34,8 +34,10 @@ class CreateFieldsTable extends Migration {
                     $table->integer('pk_display_field_id')->unsigned();        // links to _db_fields.id (the id of a field in the primary table that will be used as a description of the primary key id)
                     $table->timestamps();
 
+                    /*
                     $table->unique(array('_db_table_id', 'name'));
                     $table->foreign('_db_table_id')->references('id')->on('_db_tables')->onDelete('cascade');
+                    */
                 });
     }
 
