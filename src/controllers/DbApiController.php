@@ -1,4 +1,7 @@
-<?php class DbApiController extends Controller {
+<?php
+
+class DbApiController extends DbController {
+    protected $layout = 'crud::layouts.default';
     
 }
 

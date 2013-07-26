@@ -1,4 +1,4 @@
-@extends('crud::layouts.default')
+{{-- @extends('crud::layouts.default') --}}
 
 {{-- Web site Title --}}
 @section('title')
@@ -75,6 +75,24 @@
 
 <script type="text/javascript">
 
+    
+    
+    $(function() {    
+    
+        @foreach($tables as $tName=>$table)
+    
+        $('#acc-{{$tName}}').on('show', {table : 'one'}, function (event) {
+            $(this).html(event.data.table);
+        });
+        
+        $('#acc-{{$tName}}').on('shown', function (event) {
+            $(this).html(event.data.table);
+        });
+        
+        @endforeach
+    });
+    
+    
     function alertBox(message) {
     $(".alert").alert();
     }
@@ -167,11 +185,14 @@
 @endif
 @stop
 
+{{-------------------------------------------------------- messages --------------}}
+
 @section('messages')
 <div class="alert alert-{{$status}}">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
     <strong>{{$status}}</strong>
     {{$message}}
+    <br />
 </div>
 
 <!-- <div class="alert alert-success alert-error alert-block"> -->
@@ -186,6 +207,7 @@
         </tr>
         @endforeach
     </table>
+    <br />
 </div>
 
 <!-- The params debug box -->
@@ -196,6 +218,7 @@
     <strong>Params</strong>
     <div id="top"></div>
     <textarea style="display:none" id="inputJSON"><? print_r($params); ?></textarea>
+    <br />
 </div>
 
 @stop
@@ -293,19 +316,20 @@
 
 @yield('messages')
 
-<form method="POST" action="/db/edit/{{$tableName}}/{{$pkName}}">
+@foreach ($tables[$tableName]['records'] as $recNo=>$record) 
+<form method="POST" action="/db/edit/{{$tableName}}/{{$record[$pkName]}}">
     @foreach($meta as $field)
     
         @if($field['display'] == 1) 
         <div class="row">
             <div class="span4">{{$field['label']}}</div>
             @if(isset($field['key']) && $field['key'] == 'PRI')
-            <div class="span4"><input type="text" disabled name="{{$field['name']}}" value="{{$tables[$tableName]['records'][0][$field['name']]}}" /></div>
+            <div class="span4"><input type="text" disabled name="{{$field['name']}}" value="{{$record[$field['name']]}}" /></div>
             @elseif(isset($field['pk']))
             <div class="span4">
                 <select name="{{$field['name']}}">
                     @foreach($selects[$field['name']] as $option)
-                        @if($option['value'] == $tables[$tableName]['records'][0][$field['name']])
+                        @if($option['value'] == $record[$field['name']])
                         <option selected value="{{$option['value']}}">{{$option['text']}}</option>
                         @else
                         <option value="{{$option['value']}}">{{$option['text']}}</option>
@@ -314,13 +338,37 @@
                 </select>
             </div>
             @else
-            <div class="span4"><input type="text" style="width:{{$field['width']}}px" name="{{$field['name']}}" value="{{$tables[$tableName]['records'][0][$field['name']]}}" /></div>
+            <div class="span4"><input type="text" style="width:{{$field['width']}}px" name="{{$field['name']}}" value="{{$record[$field['name']]}}" /></div>
             @endif
         </div>
         @endif
     
     @endforeach
+    
+    <div class="accordion" id="accordion2">
+        @foreach($tables as $tableName=>$table)
+        
+        <div class="accordion-group">
+            <div class="accordion-heading">
+              <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#acc-{{$tableName}}">
+                {{$tableName}}
+              </a>
+            </div>
+            <div id="acc-{{$tableName}}" class="accordion-body collapse">
+                <div class="accordion-inner">
+                  
+                </div>
+            </div>            
+        </div>
+        
+        @endforeach
+        
+    </div>
+        
+    <div class="well"><input type="submit" class="btn" /></div>
+    
 </form>
+@endforeach
 
 @endif
 @stop

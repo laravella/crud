@@ -23,7 +23,7 @@ class DbController extends Controller {
      * @param type $severity
      * @param type $message
      */
-    private function log($severity, $message)
+    protected function log($severity, $message)
     {
         $this->log[] = array("severity" => $severity, "message" => $message);
     }
@@ -56,7 +56,7 @@ class DbController extends Controller {
      * @param type $tableName
      * @param type $action
      */
-    private function __getView($tableName, $action)
+    protected function __getView($tableName, $action)
     {
         $views = DB::table('_db_table_action_views')
                 ->join('_db_tables', '_db_table_action_views.table_id', '=', '_db_tables.id')
@@ -76,7 +76,7 @@ class DbController extends Controller {
      * @param type $action
      * @return type
      */
-    private function __getTableActionView($tableName, $viewId, $action)
+    protected function __getTableActionView($tableName, $viewId, $action)
     {
         $tva = DB::table('_db_table_action_views')
                 ->join('_db_tables', '_db_table_action_views.table_id', '=', '_db_tables.id')
@@ -94,7 +94,7 @@ class DbController extends Controller {
      * @param type $tableName
      * @param type $action
      */
-    private function __getPermissions($tableName, $action)
+    protected function __getPermissions($tableName, $action)
     {
         //
         return true;
@@ -118,13 +118,13 @@ class DbController extends Controller {
         //get related data
         $params = $this->__makeParams(self::SUCCESS, "Data selected.", $table, $tableName, $action);
 
-        return View::make($params->view->name, $params->asArray());
+        return View::make($this->layout)->nest('content', $params->view->name, $params->asArray());
     }
 
     /**
      * Index an array of records (of type StdClass) according to the pk value
      */
-    private function __indexByPk($array, $pkFieldName)
+    protected function __indexByPk($array, $pkFieldName)
     {
         $newArray = array();
         foreach ($array as $key => $rec)
@@ -137,7 +137,7 @@ class DbController extends Controller {
     /**
      * Index an array of records according to the value of $fieldName
      */
-    private function __indexByValue($array, $fieldName)
+    protected function __indexByValue($array, $fieldName)
     {
         $newArray = array();
         foreach ($array as $key => $rec)
@@ -154,7 +154,7 @@ class DbController extends Controller {
      * @param type $ma
      * @return array
      */
-    private function __attachPkData($records, $ma)
+    protected function __attachPkData($records, $ma)
     {
         $pkTables = array();
         $pkRec = array();
@@ -245,7 +245,7 @@ class DbController extends Controller {
 
         $params = $this->__makeParams(self::SUCCESS, "Records selected.", $table, $tableName, $action);
 
-        return View::make($params->view->name, $params->asArray());
+        return View::make($this->layout)->nest('content', $params->view->name, $params->asArray());
     }
 
     /**
@@ -258,8 +258,10 @@ class DbController extends Controller {
      * @param type $action
      * @return \Laravella\Crud\Params
      */
-    private function __makeParams($status, $message, $data, $tableName, $action)
+    protected function __makeParams($status, $message, $data, $tableName, $action)
     {
+
+        $this->log(self::INFO, "tableName = $tableName");
 
         $prefix = array("id" => "/db/edit/$tableName/");
 
@@ -276,31 +278,24 @@ class DbController extends Controller {
 
         $this->log(self::INFO, "makeParams");
 
-        if (is_object($data))
+
+        $paginated = $data->paginate($view->page_size);
+
+        $dataA = DbGopher::makeArray($tableMeta['fields'], $paginated);
+
+        $tables[$tableName] = new Table($tableName, $dataA, $tableMeta);
+
+        $pkTables = $this->__attachPkData($paginated, $tableMeta['fields_array']);
+
+        foreach ($pkTables as $pktName => $pkTable)
         {
-
-            $paginated = $data->paginate($view->page_size);
-
-            $dataA = DbGopher::makeArray($tableMeta['fields'], $paginated);
-
-            $tables[$tableName] = new Table($tableName, $dataA, $tableMeta);
-
-            $pkTables = $this->__attachPkData($paginated, $tableMeta['fields_array']);
-
-            foreach ($pkTables as $pktName => $pkTable)
-            {
-                $tables[$pktName] = new Table($pktName, $this->dbTables[$pktName]['dataA'], $this->dbTables[$pktName]['meta']);
-            }
-
-            return new Params($status, $message, $this->log, $view, $action, $tableMeta, $tableActionViews, $prefix, $selects, $tables, $paginated, $pkTables);
+            $tables[$pktName] = new Table($pktName, $this->dbTables[$pktName]['dataA'], $this->dbTables[$pktName]['meta']);
         }
-        else
-        {
 
-            $p = new Params($status, $message, $this->log, $view, $action, $tableMeta, $tableActionViews, $prefix, $selects);
-
-            return $p;
-        }
+        $p = new Params($status, $message, $this->log, $view, $action, $tableMeta, 
+                $tableActionViews, $prefix, $selects, $tables, $paginated, $pkTables);
+        
+        return $p;
     }
 
     /**
@@ -316,7 +311,7 @@ class DbController extends Controller {
 
         $params = $this->__makeParams(self::INFO, "Enter data to insert.", null, $tableName, $action);
 
-        return View::make($params->view->name, $params->asArray());
+        return View::make($this->layout)->nest('content', $params->view->name, $params->asArray());
     }
 
     /**
@@ -331,18 +326,18 @@ class DbController extends Controller {
         $action = 'getEdit';
 
         $tableMeta = Table::getTableMeta($tableName);
-        
+
         //get metadata as an array
         $pkName = $tableMeta['table']['pk_name'];
 
-        $table = DB::table($tableName)->where($pkName, '=', $pkValue);        
-        
+        $table = DB::table($tableName)->where($pkName, '=', $pkValue);
+
         $params = $this->__makeParams(self::INFO, 'Edit data.', $table, $tableName, $action);
-        
+
         $paramsA = $params->asArray();
-        
-        return View::make($paramsA['view']->name, $paramsA);        
-    }    
+
+        return View::make($this->layout)->nest('content', $paramsA['view']->name, $paramsA);
+    }
 
     /**
      * Update data to the database
@@ -379,7 +374,7 @@ class DbController extends Controller {
      * 
      * @param type $meta
      */
-    private function __getPkSelects($meta)
+    protected function __getPkSelects($meta)
     {
         $selectA = array();
         foreach ($meta as $metaField)
@@ -399,7 +394,7 @@ class DbController extends Controller {
     /**
      * Get a select array(object(value, text))
      */
-    private function __getSelect($table, $valueField, $textField)
+    protected function __getSelect($table, $valueField, $textField)
     {
         $data = DB::table($table)->select($valueField, $textField)->get();
         $arr = array();
