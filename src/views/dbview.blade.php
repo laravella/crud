@@ -361,7 +361,7 @@
         @foreach($tables as $tableName=>$table)
         
         <div class="accordion-group">
-            <div class="accordion-heading">
+            <div class="accordion-heading btn btn-block">
               <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#acc-{{$tableName}}">
                 {{$tableName}}
               </a>

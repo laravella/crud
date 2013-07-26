@@ -39,11 +39,17 @@ class DbInstallController extends Controller {
      */
     public function getReinstall()
     {
-        foreach (DbInstallController::__getAdminTables(true) as $adminTable)
+        
+        foreach (DbInstallController::__getAdminTableClasses(true) as $adminTableClass)
         {
-            Schema::dropIfExists($adminTable);
-            $this->__log("success", "dropped table $adminTable");
+            $adminTableClass::down();
         }
+        
+//        foreach (DbInstallController::__getAdminTables(true) as $adminTable)
+//        {
+//            Schema::dropIfExists($adminTable);
+//            $this->__log("success", "dropped table $adminTable");
+//        }
         return $this->getInstall();
     }
 
@@ -86,6 +92,46 @@ class DbInstallController extends Controller {
     }
 
     /**
+     * returns an array with a list of tables that are used for admin purposes
+     * 
+     * @param type $dropSafe Set dropSafe = true if tables should be returned in an order that is safe to drop them 
+     * @return type String[]
+     */
+    private static function __getAdminTableClasses($dropSafe = false)
+    {
+        if (!$dropSafe)
+        {
+            return array(
+                "CreateUsersTable",
+                "CreateSeveritiesTable",
+                "CreateLogsTable",
+                "CreateAuditTable",
+                "CreateTablesTable",
+                "CreateFieldsTable",
+                "CreateViewsTable",
+                "CreateActionsTable",
+                "CreateTableActionViewsTable",
+                "CreateUserPermissions",
+                "CreateUserGroupPermissions");
+        }
+        else
+        {
+            return array(
+                "CreateLogsTable",
+                "CreateSeveritiesTable",
+                "CreateAuditTable",
+                "CreateTableActionViewsTable",
+                "CreateUserPermissions",
+                "CreateUserGroupPermissions",
+                "CreateFieldsTable",
+                "CreateViewsTable",
+                "CreateActionsTable",
+                "CreateTablesTable",
+                "CreateUsersTable");
+        }
+    }
+
+    /**
      * Generate metadata from the database and insert it into _db_tables
      * 
      * @param type $table
@@ -98,10 +144,14 @@ class DbInstallController extends Controller {
             set_time_limit(360);
 //create all the tables
             $domain = new Domain();
-            foreach (DbInstallController::__getAdminTables() as $adminTable)
+            foreach (DbInstallController::__getAdminTableClasses() as $adminTableClass)
             {
-                $domain->create($adminTable);
+                $adminTableClass::up();
             }
+//            foreach (DbInstallController::__getAdminTables() as $adminTable)
+//            {
+//                $domain->create($adminTable);
+//            }
 
             try
             {
