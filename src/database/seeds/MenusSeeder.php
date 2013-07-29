@@ -6,7 +6,7 @@ class SeedMenus extends Seeder
 {
 
         private function __addMenu($label, $href, $iconClass = 'icon-file', $parentId = null) {
-            $group = array('label'=>$label, 'href'=>$href, 'parent_id'=>$parentId, 'icon-class'=>$iconClass);     
+            $group = array('label'=>$label, 'href'=>$href, 'parent_id'=>$parentId, 'icon_class'=>$iconClass);     
             $menuId = DB::table('_db_menus')->insertGetId($group);
             Log::write('info', $label.' menu created');
             return $menuId;

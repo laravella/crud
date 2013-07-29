@@ -17,10 +17,10 @@ class CreateMenusTable extends Migration {
 		Schema::create('_db_menus', function(Blueprint $table)
 		{
 			$table->increments('id');
-			$table->string('icon_class');
+			$table->string('icon_class')->nullable();
 			$table->string('label');
-			$table->string('href');
-			$table->integer('parent_id')->unsigned()->default(0);
+			$table->string('href')->nullable();
+			$table->integer('parent_id')->nullable();
 			$table->timestamps();
 		});
             }

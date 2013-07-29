@@ -88,6 +88,7 @@ class DbInstallController extends Controller {
         if (!$dropSafe)
         {   //order in which to create tables
             return array(
+                "CreateMenusTable",
                 "CreateLogsTable",
                 //"CreateUsergroupsTable",
                 //"CreateUsersTable",
@@ -109,6 +110,7 @@ class DbInstallController extends Controller {
         else
         {   //order in which to drop tables
             return array(
+                "CreateMenusTable",
                 "CreateLogsTable",
                 "CreateSeveritiesTable",
                 "CreateAuditTable",
