@@ -29,7 +29,7 @@ class CreateSentryUsersGroupsPivot extends Migration {
 	 */
 	public function up()
 	{
-            if (!Schema::hasTable('_db_menus'))
+            if (!Schema::hasTable('users_groups'))
             {
 		Schema::create('users_groups', function($table)
 		{

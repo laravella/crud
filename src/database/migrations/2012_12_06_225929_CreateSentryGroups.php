@@ -29,7 +29,7 @@ class CreateSentryGroups extends Migration {
 	 */
 	public function up()
 	{
-            if (!Schema::hasTable('_db_menus'))
+            if (!Schema::hasTable('groups'))
             {
 		Schema::create('groups', function($table)
 		{

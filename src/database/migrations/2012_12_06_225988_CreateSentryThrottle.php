@@ -29,7 +29,7 @@ class CreateSentryThrottle extends Migration {
 	 */
 	public function up()
 	{
-            if (!Schema::hasTable('_db_menus'))
+            if (!Schema::hasTable('throttle'))
             {
 		Schema::create('throttle', function($table)
 		{
