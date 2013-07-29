@@ -145,15 +145,15 @@ class DbInstallController extends Controller {
             set_time_limit(360);
 //create all the tables
             $domain = new Domain();
-//            foreach (DbInstallController::__getAdminTableClasses() as $adminTableClass)
-//            {
-//                $atc = new $adminTableClass();
-//                $atc->up();
-//            }
-            foreach (DbInstallController::__getAdminTables() as $adminTable)
+            foreach (DbInstallController::__getAdminTableClasses() as $adminTableClass)
             {
-                $domain->create($adminTable);
+                $atc = new $adminTableClass();
+                $atc->up();
             }
+//            foreach (DbInstallController::__getAdminTables() as $adminTable)
+//            {
+//                $domain->create($adminTable);
+//            }
 
             try
             {
