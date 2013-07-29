@@ -197,7 +197,6 @@ class DbController extends Controller {
                         $pkData = DB::table($pkTableName)->get();
                         $pkData = $this->__indexByPk($pkData, $pkfName);
                         $pktMeta = Table::getTableMeta($pkTableName);
-
 //an array of 
                         $pkDataA = DbGopher::makeArray($pktMeta['fields'], $pkData);
 
