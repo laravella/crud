@@ -101,10 +101,10 @@ class DbInstallController extends Controller {
                 "CreateUserPermissionsTable",
                 "CreateUserGroupPermissionsTable",
                 //Sentry
-                "MigrationCartalystSentryInstallUsers",
-                "MigrationCartalystSentryInstallGroups",
-                "MigrationCartalystSentryInstallUsersGroupsPivot",
-                "MigrationCartalystSentryInstallThrottle");
+                "CreateSentryThrottle",
+                "CreateSentryGroups",
+                "CreateSentryUsersGroupsPivot",
+                "CreateSentryUsers");
         }
         else
         {   //order in which to drop tables
@@ -122,10 +122,10 @@ class DbInstallController extends Controller {
 //                "CreateUsersTable",
 //                "CreateUsergroupsTable",
                 //Sentry
-                "MigrationCartalystSentryInstallUsers",
-                "MigrationCartalystSentryInstallGroups",
-                "MigrationCartalystSentryInstallUsersGroupsPivot",
-                "MigrationCartalystSentryInstallThrottle");
+                "CreateSentryThrottle",
+                "CreateSentryGroups",
+                "CreateSentryUsersGroupsPivot",
+                "CreateSentryUsers");
         }
     }
 
