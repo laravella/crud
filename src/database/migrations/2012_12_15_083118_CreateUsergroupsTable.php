@@ -12,6 +12,8 @@ class CreateUsergroupsTable extends Migration {
 	 */
 	public function up()
 	{
+            if (!Schema::hasTable('usergroups'))
+            {
 		Schema::create('usergroups', function(Blueprint $table)
 		{
 			$table->increments('id');
@@ -21,6 +23,7 @@ class CreateUsergroupsTable extends Migration {
 
 			$table->unique(array('group','parent_id'));
 		});
+            }
 	}
 
 	/**
@@ -30,7 +33,7 @@ class CreateUsergroupsTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('usergroups');
+            Schema::dropIfExists('usergroups');
 	}
 
 }

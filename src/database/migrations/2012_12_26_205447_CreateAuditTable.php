@@ -13,12 +13,15 @@ class CreateAuditTable extends Migration {
      */
     public function up()
     {
-        Schema::create('_db_audit', function ($table)
-                {
-                    $table->increments('id')->unique();
-                    $table->string('name', 100);
-                    $table->timestamps();
-                });
+        if (!Schema::hasTable('_db_audit'))
+        {
+            Schema::create('_db_audit', function ($table)
+                    {
+                        $table->increments('id')->unique();
+                        $table->string('name', 100);
+                        $table->timestamps();
+                    });
+        }
     }
 
     /**
@@ -29,7 +32,7 @@ class CreateAuditTable extends Migration {
      */
     public function down()
     {
-        Schema::drop('_db_audit');
+        Schema::dropIfExists('_db_audit');
     }
 
 }

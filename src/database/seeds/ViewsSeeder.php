@@ -1,5 +1,7 @@
 <?php
 
+use Laravella\Crud\Log;
+
 class SeedViews extends Seeder {
 
     public function run()
@@ -62,3 +64,4 @@ class SeedViews extends Seeder {
     }
 
 }
+?>

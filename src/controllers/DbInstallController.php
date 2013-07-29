@@ -1,9 +1,11 @@
 <?php
 
+use Laravella\Crud\Log;
+
 class DbInstallController extends Controller {
 
     protected $layout = 'crud::layouts.default';
-    
+
     /**
      * The root of the crud application /db
      * 
@@ -19,18 +21,21 @@ class DbInstallController extends Controller {
      */
     public function getReinstall()
     {
-        
-//        foreach (DbInstallController::__getAdminTableClasses(true) as $adminTableClass)
-//        {
-//            $atc = new $adminTableClass();
-//            $atc->down();
-//        }
-        
-        foreach (DbInstallController::__getAdminTables(true) as $adminTable)
+
+        set_time_limit(360);
+
+        foreach (DbInstallController::__getAdminTableClasses(true) as $adminTableClass)
         {
-            Schema::dropIfExists($adminTable);
-            Log::write("success", "dropped table $adminTable");
+            $atc = new $adminTableClass();
+            $atc->down();
+            Log::write("success", "dropped table $adminTableClass");
         }
+
+//        foreach (DbInstallController::__getAdminTables(true) as $adminTable)
+//        {
+//            Schema::dropIfExists($adminTable);
+//            Log::write("success", "dropped table $adminTable");
+//        }
         return $this->getInstall();
     }
 
@@ -81,12 +86,12 @@ class DbInstallController extends Controller {
     private static function __getAdminTableClasses($dropSafe = false)
     {
         if (!$dropSafe)
-        {
+        {   //order in which to create tables
             return array(
+                "CreateLogsTable",
                 "CreateUsergroupsTable",
                 "CreateUsersTable",
                 "CreateSeveritiesTable",
-                "CreateLogsTable",
                 "CreateAuditTable",
                 "CreateTablesTable",
                 "CreateFieldsTable",
@@ -97,7 +102,7 @@ class DbInstallController extends Controller {
                 "CreateUserGroupPermissionsTable");
         }
         else
-        {
+        {   //order in which to drop tables
             return array(
                 "CreateLogsTable",
                 "CreateSeveritiesTable",
@@ -131,10 +136,10 @@ class DbInstallController extends Controller {
                 $atc = new $adminTableClass();
                 $atc->up();
             }
-            
+
             $dbSeeder = new DatabaseSeeder();
-            $$dbSeeder->run();
-            
+            $dbSeeder->run();
+
             Log::write("success", "Installation completed successfully.");
         }
         catch (Exception $e)
@@ -144,8 +149,8 @@ class DbInstallController extends Controller {
             Log::write("important", $message);
 //throw new Exception($message, 1, $e);
         }
-        $totalLog = array_merge($domain->getLog(), $this->log);
-        return View::make("crud::dbinstall", array('action' => 'install', 'log' => $totalLog));
+        //$totalLog = array_merge($domain->getLog(), $this->log);
+        return View::make("crud::dbinstall", array('action' => 'install', 'log' => array()));
     }
 
     /**

@@ -1,5 +1,7 @@
 <?php
 
+use Laravella\Crud\Log;
+
 class SeedTables extends Seeder {
 
     public function run()
@@ -82,3 +84,4 @@ class SeedTables extends Seeder {
         }
     }
 }
+?>

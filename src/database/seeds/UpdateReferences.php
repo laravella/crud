@@ -1,5 +1,7 @@
 <?php
 
+use Laravella\Crud\Log;
+
 class UpdateReferences extends Seeder {
 
     /**

@@ -1,5 +1,7 @@
 <?php
 
+use Laravella\Crud\Log;
+
 class DatabaseSeeder extends Seeder {
 
     public function run()
@@ -28,3 +30,4 @@ class DatabaseSeeder extends Seeder {
     }
 
 }
+?>

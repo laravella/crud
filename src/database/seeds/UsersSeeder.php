@@ -1,5 +1,7 @@
 <?php
 
+use Laravella\Crud\Log;
+
 class SeedUsers extends Seeder
 {
 
@@ -21,3 +23,4 @@ class SeedUsers extends Seeder
 		
 	}
 }
+?>
