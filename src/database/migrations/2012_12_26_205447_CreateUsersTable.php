@@ -20,10 +20,11 @@ class CreateUsersTable extends Migration {
             Schema::create('users', function($table)
                     {
                         $table->increments('id');
-                        $table->string('email');
-                        $table->string('password');
-                        $table->string('first_name');
-                        $table->string('last_name');
+			$table->string('username',100)->unique();
+                        $table->string('email', 100);
+                        $table->string('password', 100);
+                        $table->string('first_name', 100);
+                        $table->string('last_name', 100);
                         $table->string('api_token');
                         $table->integer('activated');
                         $table->integer('usergroup_id');
