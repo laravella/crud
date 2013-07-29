@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 class CreateUserGroupPermissionsTable extends Migration
@@ -12,7 +13,7 @@ class CreateUserGroupPermissionsTable extends Migration
 	 */
 	public function up()
 	{
-        Schema::create('_db_user_group_permissions', function ($table)
+        Schema::create('_db_usergroup_permissions', function ($table)
                 {
                     $table->increments('id')->unique();
                     $table->integer('usergroup_id')->unsigned();
@@ -36,6 +37,6 @@ class CreateUserGroupPermissionsTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::drop('_db_user_group_permissions');
+		Schema::drop('_db_usergroup_permissions');
 	}
 }

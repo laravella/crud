@@ -1,21 +1,30 @@
+<?php
+
 class DatabaseSeeder extends Seeder {
 
     public function run()
     {
-//        $this->call('UserTableSeeder');
+        $this->call('SeedUsergroups');
+        Log::write("success", "Populated severities");
+        
+        $this->call('SeedUsers');
+        Log::write("success", "Populated severities");
 
-//        $this->command->info('User table seeded!');
-    }
-
-}
-
-class UserTableSeeder extends Seeder {
-
-    public function run()
-    {
-//        DB::table('users')->delete();
-
-//        User::create(array('email' => 'foo@bar.com'));
+        $this->call('SeedSeverities');
+        Log::write("success", "Populated severities");
+        
+        $this->call('SeedTables');
+        Log::write("success", "Populated _db_tables and _db_fields");
+        
+        $this->call('SeedActions');
+        Log::write("success", "Populated _db_actions");
+        
+        $this->call('SeedViews');
+        Log::write("success", "Populated _db_views");
+        
+        $this->call('UpdateReferences');
+        Log::write("success", "References seeded");
+        
     }
 
 }

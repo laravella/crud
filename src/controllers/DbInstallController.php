@@ -4,26 +4,6 @@ class DbInstallController extends Controller {
 
     protected $layout = 'crud::layouts.default';
     
-    private $log = array();
-    
-    /**
-     * 
-     * @param type $severity
-     * @param type $message
-     */
-    private function __log($severity, $message) {
-        $this->log[] = array("severity"=>$severity, "message"=>$message);
-    }
-    
-    /**
-     * Getter for $log
-     * 
-     * @return type
-     */
-    public function getLog() {
-        return $this->log();
-    }
-    
     /**
      * The root of the crud application /db
      * 
@@ -49,7 +29,7 @@ class DbInstallController extends Controller {
         foreach (DbInstallController::__getAdminTables(true) as $adminTable)
         {
             Schema::dropIfExists($adminTable);
-            $this->__log("success", "dropped table $adminTable");
+            Log::write("success", "dropped table $adminTable");
         }
         return $this->getInstall();
     }
@@ -103,7 +83,8 @@ class DbInstallController extends Controller {
         if (!$dropSafe)
         {
             return array(
-//                "CreateUsersTable",
+                "CreateUsergroupsTable",
+                "CreateUsersTable",
                 "CreateSeveritiesTable",
                 "CreateLogsTable",
                 "CreateAuditTable",
@@ -127,8 +108,9 @@ class DbInstallController extends Controller {
                 "CreateFieldsTable",
                 "CreateViewsTable",
                 "CreateActionsTable",
-                "CreateTablesTable"/*,
-                "CreateUsersTable"*/);
+                "CreateTablesTable",
+                "CreateUsersTable",
+                "CreateUsergroupsTable");
         }
     }
 
@@ -144,36 +126,22 @@ class DbInstallController extends Controller {
         {
             set_time_limit(360);
 //create all the tables
-            $domain = new Domain();
             foreach (DbInstallController::__getAdminTableClasses() as $adminTableClass)
             {
                 $atc = new $adminTableClass();
                 $atc->up();
             }
-//            foreach (DbInstallController::__getAdminTables() as $adminTable)
-//            {
-//                $domain->create($adminTable);
-//            }
-
-            try
-            {
-                $domain->populate();
-                $domain->updateReferences();
-            }
-            catch (Exception $e)
-            {
-                $this->__log("important", $e->getMessage());
-                $message = " x Error populating tables.";
-                $this->__log("success", $message);
-                throw new Exception($message, 1, $e);
-            }
-            $this->__log("success", "Installation completed successfully.");
+            
+            $dbSeeder = new DatabaseSeeder();
+            $$dbSeeder->run();
+            
+            Log::write("success", "Installation completed successfully.");
         }
         catch (Exception $e)
         {
-            $this->__log("important", $e->getMessage());
+            Log::write("important", $e->getMessage());
             $message = " x Error during installation.";
-            $this->__log("important", $message);
+            Log::write("important", $message);
 //throw new Exception($message, 1, $e);
         }
         $totalLog = array_merge($domain->getLog(), $this->log);
