@@ -6,12 +6,17 @@ class DatabaseSeeder extends Seeder {
 
     public function run()
     {
+        /*
         $this->call('SeedUsergroups');
         Log::write("success", "Populated severities");
         
         $this->call('SeedUsers');
         Log::write("success", "Populated severities");
-
+        */
+        
+        $this->call('SeedMenus');
+        Log::write("success", "Populated menus");
+        
         $this->call('SeedSeverities');
         Log::write("success", "Populated severities");
         

@@ -5,7 +5,6 @@ use Laravella\Crud\Log;
 class SeedUsers extends Seeder
 {
 
-
 	public function run()
 	{
                 $password = rand(23450987, 234509870);

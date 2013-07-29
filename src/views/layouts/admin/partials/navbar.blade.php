@@ -20,7 +20,9 @@
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown"> Settings<b class="caret"></b></a>
 						<ul class="dropdown-menu">
-							<li {{ (Request::is('admin/settings/users/index') ? 'class="active"' : '') }}><a href="{{ URL::to('admin/settings/users/index') }}"><i class="icon-user"></i> Users</a></li>
+							<li {{ (Request::is('/db/select/users') ? 'class="active"' : '') }}><a href="/db/select/users"><i class="icon-user"></i> Users</a></li>
+                                                        <li class="divider"></li>
+							<li {{ (Request::is('/db/select/_db_menus') ? 'class="active"' : '') }}><a href="/db/select/_db_menus"><i class="icon-user"></i> Menus</a></li>
 						</ul>								
 					</li>
 				</ul>
@@ -39,6 +41,7 @@
 							<li {{ (Request::is('/db/select/_db_log') ? 'class="active"' : '') }}><a href="/db/select/_db_logs"><i class="icon-user"></i> Log</a></li>
 							<li {{ (Request::is('/db/select/_db_audit') ? 'class="active"' : '') }}><a href="/db/select/_db_audit"><i class="icon-user"></i> Audit</a></li>
                                                         <li class="divider"></li>
+							<li {{ (Request::is('/db/select/users') ? 'class="active"' : '') }}><a href="/db/select/users"><i class="icon-user"></i> Users</a></li>
 							<li {{ (Request::is('/db/select/_db_group_permissions') ? 'class="active"' : '') }}><a href="/db/select/_db_usergroup_permissions"><i class="icon-user"></i> Group Permissions</a></li>
 							<li {{ (Request::is('/db/select/_db_user_permissions') ? 'class="active"' : '') }}><a href="/db/select/_db_user_permissions"><i class="icon-user"></i> User Permissions</a></li>
                                                         <li class="divider"></li>

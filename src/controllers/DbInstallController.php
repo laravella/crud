@@ -89,8 +89,8 @@ class DbInstallController extends Controller {
         {   //order in which to create tables
             return array(
                 "CreateLogsTable",
-                "CreateUsergroupsTable",
-                "CreateUsersTable",
+                //"CreateUsergroupsTable",
+                //"CreateUsersTable",
                 "CreateSeveritiesTable",
                 "CreateAuditTable",
                 "CreateTablesTable",
@@ -99,7 +99,12 @@ class DbInstallController extends Controller {
                 "CreateActionsTable",
                 "CreateTableActionViewsTable",
                 "CreateUserPermissionsTable",
-                "CreateUserGroupPermissionsTable");
+                "CreateUserGroupPermissionsTable",
+                //Sentry
+                "MigrationCartalystSentryInstallUsers",
+                "MigrationCartalystSentryInstallGroups",
+                "MigrationCartalystSentryInstallUsersGroupsPivot",
+                "MigrationCartalystSentryInstallThrottle");
         }
         else
         {   //order in which to drop tables
@@ -114,8 +119,13 @@ class DbInstallController extends Controller {
                 "CreateViewsTable",
                 "CreateActionsTable",
                 "CreateTablesTable",
-                "CreateUsersTable",
-                "CreateUsergroupsTable");
+//                "CreateUsersTable",
+//                "CreateUsergroupsTable",
+                //Sentry
+                "MigrationCartalystSentryInstallUsers",
+                "MigrationCartalystSentryInstallGroups",
+                "MigrationCartalystSentryInstallUsersGroupsPivot",
+                "MigrationCartalystSentryInstallThrottle");
         }
     }
 
