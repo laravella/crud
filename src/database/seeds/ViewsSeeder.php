@@ -9,7 +9,7 @@ class SeedViews extends Seeder {
 
         $arr = array("name" => "crud::dbview");
         $viewId = DB::table('_db_views')->insertGetId($arr);
-        $this->__log("success", " - crud::dbview view inserted");
+        Log::write("success", " - crud::dbview view inserted");
         $this->__populateTableActions($viewId, true);
     }
 

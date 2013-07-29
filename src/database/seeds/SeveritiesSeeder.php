@@ -7,7 +7,7 @@ class SeedSeverities extends Seeder {
     public function run()
     {
 
-        DB::table('_db_severities')->delete;
+        DB::table('_db_severities')->delete();
         
         $arr = array("name" => "success");
         $viewId = DB::table('_db_severities')->insertGetId($arr);

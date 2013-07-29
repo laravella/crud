@@ -9,7 +9,7 @@ class SeedUsergroups extends Seeder
 	public function run()
 	{
 
-		DB::table('usersgroups')->delete();
+		DB::table('usergroups')->delete();
                 
                 $group = array('group'=>'SuperAdmins');     //can change permissions
 		DB::table('usergroups')->insert($group);
