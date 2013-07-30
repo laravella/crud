@@ -9,6 +9,9 @@ class DatabaseSeeder extends Seeder {
         $this->call('SeedUsergroups');
         Log::write("success", "Populated severities");
         
+        $this->call('SeedGroups');
+        Log::write("success", "Populated severities");
+        
         $this->call('SeedUsers');
         Log::write("success", "Populated users");
         
