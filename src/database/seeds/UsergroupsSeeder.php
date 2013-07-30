@@ -9,26 +9,26 @@ class SeedUsergroups extends Seeder
 	public function run()
 	{
 
-		DB::table('groups')->delete();
+		DB::table('usergroups')->delete();
                 
-                $group = array('name'=>'SuperAdmins');     //can change permissions
-		DB::table('groups')->insert($group);
+                $group = array('group'=>'SuperAdmins');     //can change permissions
+		DB::table('usergroups')->insert($group);
                 Log::write('info', 'SuperAdmins usergroup created');
                 
-                $group = array('name'=>'Admins');          //can edit admin tables except permissions
-		DB::table('groups')->insert($group);
+                $group = array('group'=>'Admins');          //can edit admin tables except permissions
+		DB::table('usergroups')->insert($group);
                 Log::write('info', 'Admins usergroup created');
                 
-                $group = array('name'=>'SuperUsers');      //can moderate
-		DB::table('groups')->insert($group);
+                $group = array('group'=>'SuperUsers');      //can moderate
+		DB::table('usergroups')->insert($group);
                 Log::write('info', 'SuperUsers usergroup created');
                 
-                $group = array('name'=>'Users');           //can post articles
-		DB::table('groups')->insert($group);
+                $group = array('group'=>'Users');           //can post articles
+		DB::table('usergroups')->insert($group);
                 Log::write('info', 'Users usergroup created');
                 
-                $group = array('name'=>'Guests');          //can make comments
-		DB::table('groups')->insert($group);
+                $group = array('group'=>'Guests');          //can make comments
+		DB::table('usergroups')->insert($group);
                 Log::write('info', 'Guests usergroup created');
 		
 	}
