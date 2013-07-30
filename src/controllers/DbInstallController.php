@@ -103,6 +103,7 @@ class DbInstallController extends Controller {
                 "CreateUserGroupPermissionsTable",
                 //Sentry
                 "CreateSentryThrottle",
+                "CreateUsergroupsTable",
                 "CreateSentryGroups",
                 "CreateSentryUsers",
                 "CreateSentryUsersGroupsPivot");
@@ -125,6 +126,7 @@ class DbInstallController extends Controller {
 //                "CreateUsergroupsTable",
                 //Sentry
                 "CreateSentryThrottle",
+                "CreateUsergroupsTable",
                 "CreateSentryGroups",
                 "CreateSentryUsers",
                 "CreateSentryUsersGroupsPivot");

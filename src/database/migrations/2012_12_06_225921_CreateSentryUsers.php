@@ -36,6 +36,7 @@ class CreateSentryUsers extends Migration {
 			$table->increments('id');
 			$table->string('email');
 			$table->string('username');
+        		$table->integer('usergroup_id')->unsigned();
 			$table->string('api_token');
 			$table->string('password');
 			$table->text('permissions')->nullable();
