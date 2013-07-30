@@ -30,7 +30,7 @@ class SeedViews extends Seeder {
             if ($doPermissions)
             {
                 $users = DB::table('users')->get();
-                $usergroups = DB::table('usergroups')->get();
+                $usergroups = DB::table('groups')->get();
             }
             foreach ($tables as $table)
             {
