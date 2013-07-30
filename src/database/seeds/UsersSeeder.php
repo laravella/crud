@@ -12,7 +12,7 @@ class SeedUsers extends Seeder {
 
         $adminUser = array('username' => 'admin', 'password' => substr($password,0,8), 'email' => 'admin@yourwebsite.com'); //Config::get('crud::app.setup_user');
 
-        $adminGroup = DB::table('usergroups')->where('group', 'Admins')->first();
+        $adminGroup = DB::table('groups')->where('name', 'Admins')->first();
 
         $adminUser['activated'] = true;
         $adminUser['api_token'] = $password;

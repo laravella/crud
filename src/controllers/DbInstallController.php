@@ -104,8 +104,8 @@ class DbInstallController extends Controller {
                 //Sentry
                 "CreateSentryThrottle",
                 "CreateSentryGroups",
-                "CreateSentryUsersGroupsPivot",
-                "CreateSentryUsers");
+                "CreateSentryUsers",
+                "CreateSentryUsersGroupsPivot");
         }
         else
         {   //order in which to drop tables
@@ -126,8 +126,8 @@ class DbInstallController extends Controller {
                 //Sentry
                 "CreateSentryThrottle",
                 "CreateSentryGroups",
-                "CreateSentryUsersGroupsPivot",
-                "CreateSentryUsers");
+                "CreateSentryUsers",
+                "CreateSentryUsersGroupsPivot");
         }
     }
 
