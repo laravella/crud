@@ -15,7 +15,7 @@ class SeedUsers extends Seeder {
         $adminGroup = DB::table('usergroups')->where('group', 'Admins')->first();
 
         $adminUser['activated'] = true;
-        $adminUser['api_token'] = $password;
+        $adminUser['api_token'] = makeApiKey();
 
         DB::table('users')->delete();
 
