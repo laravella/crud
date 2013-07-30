@@ -31,50 +31,7 @@ class DbInstallController extends Controller {
             Log::write("success", "dropped table $adminTableClass");
         }
 
-//        foreach (DbInstallController::__getAdminTables(true) as $adminTable)
-//        {
-//            Schema::dropIfExists($adminTable);
-//            Log::write("success", "dropped table $adminTable");
-//        }
         return $this->getInstall();
-    }
-
-    /**
-     * returns an array with a list of tables that are used for admin purposes
-     * 
-     * @param type $dropSafe Set dropSafe = true if tables should be returned in an order that is safe to drop them 
-     * @return type String[]
-     */
-    private static function __getAdminTables($dropSafe = false)
-    {
-        if (!$dropSafe)
-        {
-            return array(
-                "_db_severities",
-                "_db_logs",
-                "_db_audit",
-                "_db_tables",
-                "_db_fields",
-                "_db_views",
-                "_db_actions",
-                "_db_table_action_views",
-                "_db_user_permissions",
-                "_db_usergroup_permissions");
-        }
-        else
-        {
-            return array(
-                "_db_logs",
-                "_db_severities",
-                "_db_audit",
-                "_db_table_action_views",
-                "_db_user_permissions",
-                "_db_usergroup_permissions",
-                "_db_fields",
-                "_db_views",
-                "_db_actions",
-                "_db_tables");
-        }
     }
 
     /**
