@@ -20,8 +20,6 @@ class CreateUsergroupsTable extends Migration {
 			$table->string('group');
 			$table->integer('parent_id')->unsigned()->default(0);
 			$table->timestamps();
-
-			$table->unique(array('group','parent_id'));
 		});
             }
 	}
