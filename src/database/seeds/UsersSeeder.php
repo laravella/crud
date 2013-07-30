@@ -9,8 +9,14 @@ class SeedUsers extends Seeder {
         $password = rand(23450987, 234509870);
 
         $password = md5($password);
+        
+        $shortPassword = substr($password,0,8);
+        
+        echo "-- password : $shortPassword --";
+        
+        $hashPass = Hash::make($shortPassword);
 
-        $adminUser = array('username' => 'admin', 'password' => substr($password,0,8), 'email' => 'admin@yourwebsite.com'); //Config::get('crud::app.setup_user');
+        $adminUser = array('username' => 'admin', 'password' => $hashPass, 'email' => 'admin@yourwebsite.com'); //Config::get('crud::app.setup_user');
 
         $group = DB::table('groups')->where('name', 'Admins')->first();
         
