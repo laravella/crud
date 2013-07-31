@@ -283,22 +283,30 @@ class DbController extends Controller {
 
         $this->log(self::INFO, "makeParams");
 
+        if (is_object($data)) {
+        
+            $paginated = $data->paginate($view->page_size);
 
-        $paginated = $data->paginate($view->page_size);
+            $dataA = DbGopher::makeArray($tableMeta['fields'], $paginated);
 
-        $dataA = DbGopher::makeArray($tableMeta['fields'], $paginated);
+            $tables[$tableName] = new Table($tableName, $dataA, $tableMeta);
 
-        $tables[$tableName] = new Table($tableName, $dataA, $tableMeta);
+            $pkTables = $this->__attachPkData($paginated, $tableMeta['fields_array']);
 
-        $pkTables = $this->__attachPkData($paginated, $tableMeta['fields_array']);
+            foreach ($pkTables as $pktName => $pkTable)
+            {
+                $tables[$pktName] = new Table($pktName, $this->dbTables[$pktName]['dataA'], $this->dbTables[$pktName]['meta']);
+            }
 
-        foreach ($pkTables as $pktName => $pkTable)
-        {
-            $tables[$pktName] = new Table($pktName, $this->dbTables[$pktName]['dataA'], $this->dbTables[$pktName]['meta']);
+            $p = new Params($status, $message, $this->log, $view, $action, $tableMeta, 
+                    $tableActionViews, $prefix, $selects, $this->displayType, $tables, $paginated, $pkTables);
+        
+        } else {
+            
+            $p = new Params($status, $message, $this->log, $view, $action, $tableMeta, 
+                    $tableActionViews, $prefix, $selects, $this->displayType);
+            
         }
-
-        $p = new Params($status, $message, $this->log, $view, $action, $tableMeta, 
-                $tableActionViews, $prefix, $selects, $this->displayType, $tables, $paginated, $pkTables);
         
         return $p;
     }
