@@ -316,6 +316,23 @@ class DbController extends Controller {
     }
 
     /**
+     * Delete a record
+     * 
+     * @param type $tableName
+     * @param type $recorid
+     * @return type
+     */
+    public function getDelete($tableName = null, $recorid = null)
+    {
+        $action = 'getDelete';
+        
+        DB::table($tableName)->where('id', '=' ,$recorid)->delete();
+        $params = $this->__makeParams(self::INFO, "Enter data to insert.", null, $tableName, $action);
+        return View::make($this->layout)->nest('content', $params->view->name, $params->asArray());
+
+    }
+    
+    /**
      * Prompt user to insert a new record
      * 
      * @param type $table

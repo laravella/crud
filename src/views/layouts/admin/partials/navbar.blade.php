@@ -18,6 +18,8 @@
 					<li {{ (Request::is('/admin') ? 'class="active"' : '') }}><a href="{{ URL::to('/admin') }}"><i class="icon-th"></i> Dashboard</a></li>
 				</ul>
                             -->
+                            
+                                @if (Auth::check())
 				<ul class="nav">
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown"> Settings<b class="caret"></b></a>
@@ -30,6 +32,8 @@
 						</ul>								
 					</li>
 				</ul>
+                                @endif
+                            {{--
 				<ul class="nav">
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown"> Meta Data<b class="caret"></b></a>
@@ -58,6 +62,8 @@
 						</ul>								
 					</li>
 				</ul>
+                            --}}
+                                @if (Auth::check())
 				<ul class="nav">
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Contents<b class="caret"></b></a>
@@ -66,12 +72,14 @@
 							<li {{ (Request::is('/admin/posts/index') ? 'class="active"' : '') }}><a href="{{ URL::to('/admin/posts/index') }}"><i class="icon-pencil"></i> Posts</a></li>
 							<li {{ (Request::is('/admin/categories/index') ? 'class="active"' : '') }}><a href="{{ URL::to('/admin/categories/index') }}"><i class="icon-list"></i> Post Categories</a></li>
 							<li {{ (Request::is('/admin/medias/index') ? 'class="active"' : '') }}><a href="{{ URL::to('/admin/medias/index') }}"><i class="icon-picture"></i> Media Upload</a></li>
-							<li {{ (Request::is('/db/select/mcollection_media') ? 'class="active"' : '') }}><a href="/db/select/mcollection_media"><i class="icon-picture"></i> Media Detail</a></li>
-							<li {{ (Request::is('/db/select/mcollections') ? 'class="active"' : '') }}><a href="/db/select/mcollections"><i class="icon-picture"></i> Media Collections</a></li>
+
+							<li {{ (Request::is('/db/select/medias') ? 'class="active"' : '') }}><a href="/db/select/medias"><i class="icon-picture"></i> Media</a></li>
+							<li {{ (Request::is('/db/select/mcollection_media') ? 'class="active"' : '') }}><a href="/db/select/mcollection_media"><i class="icon-picture"></i> Media Collections</a></li>
+							<li {{ (Request::is('/db/select/mcollections') ? 'class="active"' : '') }}><a href="/db/select/mcollections"><i class="icon-picture"></i> Collections</a></li>
 						</ul>								
 					</li>
 				</ul>
-
+                                @endif
 				<ul class="nav pull-right">
 					@if (Auth::check())
 					<li class="navbar-text">Logged in as {{ Auth::user()->fullName() }}</li>

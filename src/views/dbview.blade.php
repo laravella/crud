@@ -132,10 +132,32 @@
     }
 
     function sendDelete() {
-    alertBox("Howzit");
-    $('a.record.active').each(function( index ) {
-    console.log($(this).attr('id'));
-    });
+        var recNo = null;
+        var tableName = null;
+        $('a.record.active').each(function( index ) {
+            console.log($(this).attr('id'));
+            tableName = $(this).attr('data-tablename');
+            console.log(tableName);
+            recNo = $(this).attr('data-recordid');
+            console.log(recNo);
+
+            console.log('/dbapi/delete/'+tableName+'/'+recNo);
+
+            $.get('/dbapi/delete/'+tableName+'/'+recNo, null,function(data) {console.log(data);});
+
+/*
+            $.ajax({
+                data: encodeURIComponent(data),
+                type: "GET",
+                url: '/dbapi/delete/'+tableName+'/'+recNo,
+                timeout: 20000,
+                contentType: "application/x-www-form-urlencoded;charset=utf-8",
+                dataType: 'json',
+                success: function(data) {console.log(data);}
+            });        
+  */          
+            
+        });
     }
 
     function checkRec(recNo) {
@@ -271,6 +293,14 @@
     <br />
 </div>
 
+@stop
+
+{{-------------------------------------------------------- getDelete --------------}}
+
+@section('getDelete')
+    @if($action == 'getDelete')
+    'success'
+    @endif
 @stop
 
 {{-------------------------------------------------------- getSelect --------------}}
