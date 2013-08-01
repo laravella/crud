@@ -7,6 +7,10 @@ class SeedTables extends Seeder {
     public function run()
     {
 
+        DB::table('_db_tables')->delete();
+        DB::table('_db_fields')->delete();
+        
+        
 //get the list of tables from the database metadata
         $tables = DB::select('show tables');
 //loop through records, each record has a tablename

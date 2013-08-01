@@ -6,6 +6,7 @@ class SeedViews extends Seeder {
 
     public function run()
     {
+        DB::table('_db_views')->delete();
 
         $arr = array("name" => "crud::dbview");
         $viewId = DB::table('_db_views')->insertGetId($arr);

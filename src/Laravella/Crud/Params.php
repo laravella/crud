@@ -32,22 +32,23 @@ class Params {
      */
     public function __construct($status, $message, $log, $view = null, $action = "", 
             $tableMeta = null, $tableActionViews = null, $prefix = "", $selects = null, $displayType = "",
-            $tables = null, $paginated = null, $primaryTables = null)
+            $tables = array(), $paginated = array(), $primaryTables = array())
     {
         $this->status = $status;
         $this->message = $message;
-        $this->paginated = $paginated;
         $this->action = $action;
         $this->tableMeta = $tableMeta;
-        $this->tables = $tables;
         $this->pageSize = $view->page_size;
-        $this->primaryTables = $primaryTables;
         $this->prefix = $prefix;
         $this->tableActionViews = $tableActionViews;
         $this->view = $view;
         $this->selects = $selects;
         $this->displayType = $displayType;
         $this->log = $log;
+        //potentially null
+        $this->paginated = $paginated;
+        $this->tables = $tables;
+        $this->primaryTables = $primaryTables;
     }
 
     /**
@@ -89,20 +90,22 @@ class Params {
 
         $returnA = array("action" => $this->action,
             "meta" => $this->tableMeta['fields_array'],
-            "tables" => $this->tables,
-            "data" => $this->paginated,
             "tableName" => $this->tableMeta['table']['name'],
             "prefix" => $this->prefix,
             "pageSize" => $this->pageSize,
-            "pkTables" => $this->primaryTables,
             "view" => $this->view,
             "selects" => $this->selects,
             "log" => $this->log,
             "status" => $this->status,
             "message" => $this->message,
             "pkName" => $this->tableMeta['table']['pk_name'],
-            "displayType" => $this->displayType); //$this->tables[$tableName]['tableMetaData']['table']['pk_name']);
-
+            "displayType" => $this->displayType,
+            
+            "tables" => $this->tables,
+            "data" => $this->paginated,
+            "pkTables" => $this->primaryTables
+            ); //$this->tables[$tableName]['tableMetaData']['table']['pk_name']);
+        
         if (isset($this->tableActionViews) && is_object($this->tableActionViews))
         {
             $returnA["title"] = $this->tableActionViews->title;

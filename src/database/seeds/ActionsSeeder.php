@@ -6,6 +6,9 @@ class SeedActions extends Seeder {
 
     public function run()
     {
+
+        DB::table('_db_actions')->delete();
+        
         $arr = array("name" => "getSelect");
         DB::table('_db_actions')->insert($arr);
         Log::write("success", " - getSelect action created");

@@ -57,17 +57,11 @@ class Model extends Eloquent {
     }
     
     /**
-     * Update a record
+     * Create an array of key values from http GET data
      * 
-     * @param type $pkValue
-     * @return \Model
+     * @param type $fields
      */
-    public function editRec($pkValue) {
-        
-        $pkName = $this->metaData['table']['pk_name'];
-        
-        $fields = $this->metaData['fields_array'];
-        
+    private function __editGet($fields) {
         $updateA = array();
         foreach($fields as $field) 
         {
@@ -75,6 +69,49 @@ class Model extends Eloquent {
                 $updateA[$field['name']] = Input::get($field['name']);
             }
         }
+        return $updateA;
+    }
+
+    /**
+     * Create an array of key values from http GET data
+     * 
+     * @param type $fields
+     * @param type $json
+     */
+    private function __editJson($fields, $json) {
+        die;
+        
+        $updateA = array();
+        //print_r($json);
+        $json=iconv("windows-1250","UTF-8",$json);
+        $input = json_decode($json);
+        foreach($fields as $field) 
+        {
+            if ($this->isFillable($field['name']) && isset($input[$field['name']])) {
+                $updateA[$field['name']] = $input[$field['name']];
+            }
+        }
+        return $updateA;
+    }
+    
+    /**
+     * Update a record
+     * 
+     * @param type $pkValue
+     * @return \Model
+     */
+    public function editRec($pkValue, $json = null) {
+        
+        $pkName = $this->metaData['table']['pk_name'];
+        
+        $fields = $this->metaData['fields_array'];
+        
+        if (empty($json)) {
+            $updateA = $this->__editGet($fields);
+        } else {
+            $updateA = $this->__editJson($fields, $json);
+        }
+                
         //print_r($updateA);
         DB::table($this->tableName)->where($pkName, '=', $pkValue)->update($updateA);
         

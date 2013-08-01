@@ -60,9 +60,9 @@ class DbInstallController extends Controller {
                 "CreateUserGroupPermissionsTable",
                 //Sentry
                 "CreateSentryThrottle",
-                "CreateUsergroupsTable",
+//                "CreateUsergroupsTable",
                 "CreateSentryGroups",
-                "CreateSentryUsers",
+//                "CreateSentryUsers",
                 "CreateSentryUsersGroupsPivot");
         }
         else
@@ -83,13 +83,40 @@ class DbInstallController extends Controller {
 //                "CreateUsergroupsTable",
                 //Sentry
                 "CreateSentryThrottle",
-                "CreateUsergroupsTable",
+//                "CreateUsergroupsTable",
                 "CreateSentryGroups",
-                "CreateSentryUsers",
+//                "CreateSentryUsers",
                 "CreateSentryUsersGroupsPivot");
         }
     }
 
+    public function getInstallravel() {
+        $ric = new RavelInstallCommand();
+        $ric->fire();
+    }
+    
+    public function getSeeder() {
+        try
+        {
+            set_time_limit(360);
+//create all the tables
+
+            $dbSeeder = new DatabaseSeeder();
+            $dbSeeder->run();
+
+            Log::write("success", "Installation seeded successfully.");
+        }
+        catch (Exception $e)
+        {
+            Log::write("important", $e->getMessage());
+            $message = " x Error during installation.";
+            Log::write("important", $message);
+//throw new Exception($message, 1, $e);
+        }
+        //$totalLog = array_merge($domain->getLog(), $this->log);
+        return View::make("crud::dbinstall", array('action' => 'install', 'log' => array()));        
+    }
+    
     /**
      * Generate metadata from the database and insert it into _db_tables
      * 
@@ -108,8 +135,8 @@ class DbInstallController extends Controller {
                 $atc->up();
             }
 
-            $dbSeeder = new DatabaseSeeder();
-            $dbSeeder->run();
+//            $dbSeeder = new DatabaseSeeder();
+//            $dbSeeder->run();
 
             Log::write("success", "Installation completed successfully.");
         }

@@ -229,12 +229,13 @@ class DbController extends Controller {
      * @param type $tableName
      * @return type
      */
-    public function getSearch($tableName = null)
+    public function getSearch($tableName = null, $q = null)
     {
         $action = 'getSelect';
 
         //get the json string from the http querystring ?q=json
-        $json = Input::get('q');
+//        $json = Input::get('q');
+        $json = $q;
 
         $searchObj = json_decode($json, true);
 
@@ -306,6 +307,9 @@ class DbController extends Controller {
             $p = new Params($status, $message, $this->log, $view, $action, $tableMeta, 
                     $tableActionViews, $prefix, $selects, $this->displayType);
             
+//            print_r($p);
+//            die;
+            
         }
         
         return $p;
@@ -363,7 +367,7 @@ class DbController extends Controller {
     {
         $action = 'postEdit';
 
-        Model::getInstance($tableName)->editRec($pkValue);
+        Model::getInstance($tableName)->editRec($pkValue, Input::get('data'));
 
         return Redirect::to("/db/edit/$tableName/$pkValue");
     }

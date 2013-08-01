@@ -13,16 +13,20 @@
 				<ul class="nav">
 					<li {{ (Request::is('/') ? 'class="active"' : '') }}><a href="{{ URL::to('') }}"><i class="icon-home"></i> Home</a></li>
 				</ul>
+                            <!--
 				<ul class="nav">
 					<li {{ (Request::is('/admin') ? 'class="active"' : '') }}><a href="{{ URL::to('/admin') }}"><i class="icon-th"></i> Dashboard</a></li>
 				</ul>
+                            -->
 				<ul class="nav">
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown"> Settings<b class="caret"></b></a>
 						<ul class="dropdown-menu">
 							<li {{ (Request::is('/db/select/users') ? 'class="active"' : '') }}><a href="/db/select/users"><i class="icon-user"></i> Users</a></li>
+                                                        <!--
                                                         <li class="divider"></li>
 							<li {{ (Request::is('/db/select/_db_menus') ? 'class="active"' : '') }}><a href="/db/select/_db_menus"><i class="icon-user"></i> Menus</a></li>
+                                                        -->
 						</ul>								
 					</li>
 				</ul>
@@ -36,7 +40,9 @@
 							<li {{ (Request::is('/db/select/_db_fields') ? 'class="active"' : '') }}><a href="/db/select/_db_fields"><i class="icon-user"></i> Fields</a></li>
 							<li {{ (Request::is('/db/select/_db_actions') ? 'class="active"' : '') }}><a href="/db/select/_db_actions"><i class="icon-user"></i> Actions</a></li>
 							<li {{ (Request::is('/db/select/_db_views') ? 'class="active"' : '') }}><a href="/db/select/_db_views"><i class="icon-user"></i> Views</a></li>
+                                                        <!--
 							<li {{ (Request::is('/db/select/_db_table_action_views') ? 'class="active"' : '') }}><a href="/db/select/_db_table_action_views"><i class="icon-user"></i> Action Views</a></li>
+                                                        -->
                                                         <li class="divider"></li>
 							<li {{ (Request::is('/db/select/_db_log') ? 'class="active"' : '') }}><a href="/db/select/_db_logs"><i class="icon-user"></i> Log</a></li>
 							<li {{ (Request::is('/db/select/_db_audit') ? 'class="active"' : '') }}><a href="/db/select/_db_audit"><i class="icon-user"></i> Audit</a></li>
@@ -47,6 +53,7 @@
                                                         <li class="divider"></li>
 							<li {{ (Request::is('/dbinstall/install') ? 'class="active"' : '') }}><a href="/dbinstall/install"><i class="icon-user"></i> Install</a></li>
 							<li {{ (Request::is('/dbinstall/reinstall') ? 'class="active"' : '') }}><a href="/dbinstall/reinstall"><i class="icon-user"></i> Reinstall</a></li>
+							<li {{ (Request::is('/dbinstall/seeder') ? 'class="active"' : '') }}><a href="/dbinstall/seeder"><i class="icon-user"></i> Refresh Metadata</a></li>
                                                         
 						</ul>								
 					</li>
@@ -58,7 +65,9 @@
 							<li {{ (Request::is('/admin/pages/index') ? 'class="active"' : '') }}><a href="{{ URL::to('/admin/pages/index') }}"><i class="icon-file"></i> Pages</a></li>
 							<li {{ (Request::is('/admin/posts/index') ? 'class="active"' : '') }}><a href="{{ URL::to('/admin/posts/index') }}"><i class="icon-pencil"></i> Posts</a></li>
 							<li {{ (Request::is('/admin/categories/index') ? 'class="active"' : '') }}><a href="{{ URL::to('/admin/categories/index') }}"><i class="icon-list"></i> Post Categories</a></li>
-							<li {{ (Request::is('/admin/medias/index') ? 'class="active"' : '') }}><a href="{{ URL::to('/admin/medias/index') }}"><i class="icon-picture"></i> Media</a></li>
+							<li {{ (Request::is('/admin/medias/index') ? 'class="active"' : '') }}><a href="{{ URL::to('/admin/medias/index') }}"><i class="icon-picture"></i> Media Upload</a></li>
+							<li {{ (Request::is('/db/select/mcollection_media') ? 'class="active"' : '') }}><a href="/db/select/mcollection_media"><i class="icon-picture"></i> Media Detail</a></li>
+							<li {{ (Request::is('/db/select/mcollections') ? 'class="active"' : '') }}><a href="/db/select/mcollections"><i class="icon-picture"></i> Media Collections</a></li>
 						</ul>								
 					</li>
 				</ul>

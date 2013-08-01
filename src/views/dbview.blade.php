@@ -65,8 +65,8 @@
     }
     td.td_toolbox {
         text-align:center; 
-        width: 51px; 
-        max-width:51px;
+        width: 89px; 
+        max-width:89px;
     }
     span.h1a {
         color : #c0c0c0;
@@ -128,7 +128,7 @@
     }
     });
     qString = JSON.stringify(qA);
-    window.location.href = "/db/search/"+table+"?q="+qString;
+    window.location.href = "/db/search/"+table+"/"+qString;
     }
 
     function sendDelete() {
@@ -141,6 +141,40 @@
     function checkRec(recNo) {
     $('#chkico_'+recNo).toggleClass('icon-ok-sign');
     $('#chkico_'+recNo).toggleClass('icon-ok-circle');
+    }
+    
+    function saveRec(tableName, recNo) {
+//        alert(tableName + " : " + recNo);
+
+        var qA = new Object();
+        //qA[tableName] = new Object();
+
+        $(".fld-" + tableName + "-" + recNo).each(function (index, element) {
+            
+            //var table = $(this).attr('data-tablename');
+            var record = $(this).attr('data-recordid');
+            var fieldName = $(this).attr('data-fieldname');
+            var value = $(this).val();
+            
+            qA[fieldName] = value;
+            //console.log(tableName + fieldName + value);
+            
+        });
+        var data = JSON.stringify(qA);
+        console.log(data);
+        
+        $.ajax({
+            data: encodeURIComponent(data),
+            type: "POST",
+            url: '/db/edit/'+tableName+'/'+recNo,
+            timeout: 20000,
+            contentType: "application/x-www-form-urlencoded;charset=utf-8",
+            dataType: 'json',
+            success: function(data) {console.log(data);}
+        });        
+        
+        //$.post('/db/edit/'+tableName+'/'+recNo, 'data='+encodeURIComponent(data), function(data) {console.log(data);}, 'json');
+        
     }
 </script>
 
@@ -166,14 +200,27 @@
     <div class="modal-header">
         <h3 id="myModalLabel">Search</h3>
     </div>
+    
     <div class="modal-body">
         <div class="row">
             @foreach($meta as $field)
             @if($field['searchable'] == 1)
             <div class="span2">{{$field['label']}}</div>
-            <div class="span3"><input style="width:{{$field['width']}}px" 
-                                      class="formfield" type="text" data-table="{{$tableName}}" 
-                                      name="{{$field['name']}}" /></div>
+
+                @if(isset($meta[$field['name']]['pk']))
+                {{-- this is a foreign key, it contains a reference to a primary key --}}
+                    <div class="span3">
+                        <select name="{{$field['name']}}" class="formfield" data-table="{{$tableName}}">
+                            @foreach($selects[$field['name']] as $option)
+                                <option value="{{$option['value']}}">{{$option['text']}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @else
+                    <div class="span3"><input style="width:{{$field['width']}}px" 
+                                              class="formfield" type="text" data-table="{{$tableName}}" 
+                                              name="{{$field['name']}}" /></div>
+                @endif
             @endif
             @endforeach
         </div>
@@ -189,6 +236,7 @@
 {{-------------------------------------------------------- messages --------------}}
 
 @section('messages')
+<!-- definitive status message -->
 <div class="alert alert-{{$status}}">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
     <strong>{{$status}}</strong>
@@ -196,6 +244,7 @@
     <br />
 </div>
 
+<!-- detailed error messages -->
 <!-- <div class="alert alert-success alert-error alert-block"> -->
 <div class="alert alert-log"@if($status == "success" || $status == "info") style="display:none"@endif>
     <button type="button" class="close" onclick="javascript:$('.alert-log').hide();">&times;</button>
@@ -244,6 +293,9 @@
         <a href="#" id="btnVisualize" onclick="javascript:debugBox();" class="btn">Debug</a>
         <a href="#" id="btnLog" onclick="javascript:logBox();" class="btn">Log</a>
     </div>
+    <div class="btn-group pull-right">
+        <a href="/db/select/{{$tableName}}" id="btnVisualize" class="btn"><i class="icon-remove"></i></a>
+    </div>
 </div>
 
 @yield('messages')
@@ -278,21 +330,35 @@
         @foreach($data as $record)
         <tr id="rec_{{$record->id}}">
             <td class="td_toolbox">
-                <a data-toggle="button" data-recordid="{{$record->id}}" class="record btn" href="#" id="chkbtn_{{$record->id}}" onclick="javascript:checkRec({{$record->id}})">
-                    <b id="chkico_{{$record->id}}" class="icon-ok-circle"></b>
-                </a>
+                <div class="btn-group">
+                    <a data-toggle="button" data-tablename="{{$tableName}}" data-recordid="{{$record->id}}" class="record btn" href="#" id="chkbtn_{{$tableName}}_{{$record->id}}" onclick="javascript:checkRec('{{$tableName}}', {{$record->id}})">
+                        <b id="chkico_{{$record->id}}" class="icon-ok-circle"></b>
+                    </a>
+                    <!--
+                    <a data-recordid="{{$record->id}}" class="save btn" href="#" id="savebtn_{{$tableName}}_{{$record->id}}" onclick="javascript:saveRec('{{$tableName}}', {{$record->id}})">
+                        <b id="saveico_{{$record->id}}" class="icon-save"></b>
+                    </a> -->
+                </div>
             </td>
             @foreach($record as $name=>$value)
             @if ($meta[$name]['display'])
             @if((isset($prefix) && isset($prefix[$name])) || (isset($meta) && isset($meta[$name]) && $meta[$name]['key'] == 'PRI'))
-            <td><a href="{{$prefix[$name]}}{{$value}}">{{$value}}</a></td>
+            <td>
+                <a href="{{$prefix[$name]}}{{$value}}">{{$value}}</a>
+                <input data-tablename="{{$tableName}}" data-recordid="{{$record->id}}" data-fieldname="{{$name}}" type="hidden" value="{{$value}}" id="{{$tableName}}-{{$record->id}}-{{$name}}" class="hover-edit fld-{{$tableName}}-{{$record->id}}" /></div>
+            </td>
             @else
             {{-- hover-edit : see : https://github.com/mruoss/HoverEdit-jQuery-Plugin --}}
 
-            <td><input style="width:{{$meta[$name]['width']}}px" type="text" value="{{$value}}" id="" class="hover-edit" /></div></td>
+            <td>
+                <input data-tablename="{{$tableName}}" data-recordid="{{$record->id}}" data-fieldname="{{$name}}" style="width:{{$meta[$name]['width']}}px" type="text" value="{{$value}}" id="{{$tableName}}-{{$record->id}}-{{$name}}" class="hover-edit fld-{{$tableName}}-{{$record->id}}" /></div>
+            </td>
             @if(isset($meta[$name]['pk']))
             {{-- this is a foreign key, it contains a reference to a primary key --}}
-            <td><a href="/db/edit/{{$meta[$name]['pk']['tableName']}}/{{$value}}">{{$pkTables[$meta[$name]['pk']['tableName']][$value]}}</a></td> 
+            <td>
+                <a href="/db/edit/{{$meta[$name]['pk']['tableName']}}/{{$value}}">{{$pkTables[$meta[$name]['pk']['tableName']][$value]}}</a>
+                <input data-tablename="{{$tableName}}" data-recordid="{{$record->id}}" data-fieldname="{{$name}}" type="hidden" value="{{$value}}" id="{{$tableName}}-{{$record->id}}-{{$name}}" class="hover-edit fld-{{$tableName}}-{{$record->id}}" /></div>
+            </td> 
             @endif
 
             @endif
@@ -321,6 +387,9 @@
     <div class="btn-group">
         <a href="#" id="btnVisualize" onclick="javascript:debugBox();" class="btn">Debug</a>
         <a href="#" id="btnLog" onclick="javascript:logBox();" class="btn">Log</a>
+    </div>
+    <div class="btn-group pull-right">
+        <a href="/db/select/{{$tableName}}" id="btnVisualize" class="btn"><i class="icon-remove"></i></a>
     </div>
 </div>
 
@@ -391,6 +460,16 @@
 @if($action == 'getInsert')
 <div class="page-header">
     <h1>New</h1>
+</div>
+
+<div class="well">
+    <div class="btn-group">
+        <a href="#" id="btnVisualize" onclick="javascript:debugBox();" class="btn">Debug</a>
+        <a href="#" id="btnLog" onclick="javascript:logBox();" class="btn">Log</a>
+    </div>
+    <div class="btn-group pull-right">
+        <a href="/db/select/{{$tableName}}" id="btnVisualize" class="btn"><i class="icon-remove"></i></a>
+    </div>
 </div>
 
 @yield('messages')
