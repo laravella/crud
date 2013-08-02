@@ -38,7 +38,11 @@ class Params {
         $this->message = $message;
         $this->action = $action;
         $this->tableMeta = $tableMeta;
-        $this->pageSize = $view->page_size;
+        if (is_object($view)) {
+            $this->pageSize = $view->page_size;
+        } else {
+            $this->pageSize = 10;
+        }
         $this->prefix = $prefix;
         $this->tableActionViews = $tableActionViews;
         $this->view = $view;

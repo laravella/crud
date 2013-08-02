@@ -12,7 +12,8 @@ class SeedUsers extends Seeder {
         
         $shortPassword = substr($password,0,8);
         
-        echo "-- password : $shortPassword --";
+        //echo ;
+        Log::write(Log::INFO, "-- password : $shortPassword --");
         
         $hashPass = Hash::make($shortPassword);
 

@@ -131,7 +131,11 @@ class Table extends Eloquent {
         //get metadata of a single field from database
         $fieldMeta = DB::table("_db_fields")
                         ->join('_db_tables', '_db_fields._db_table_id', '=', '_db_tables.id')
-                        ->select('_db_fields.name', '_db_tables.name as tableName', '_db_fields.label', '_db_fields.key', '_db_fields.display', '_db_fields.type', '_db_fields.length', '_db_fields.default', '_db_fields.extra', '_db_fields.href', '_db_fields.pk_field_id', '_db_fields.pk_display_field_id', '_db_fields.display_order', '_db_fields.width', '_db_fields.widget', '_db_fields.searchable')
+                        ->select('_db_fields.name', '_db_tables.name as tableName', '_db_fields.label', 
+                                '_db_fields.key', '_db_fields.display_type_id', '_db_fields.type', '_db_fields.length', 
+                                '_db_fields.default', '_db_fields.extra', '_db_fields.href', '_db_fields.pk_field_id', 
+                                '_db_fields.pk_display_field_id', '_db_fields.display_order', '_db_fields.width', 
+                                '_db_fields.widget_type_id', '_db_fields.searchable')
                         ->where("_db_fields.id", $fieldId)->get();
 
         return Table::__field_meta($fieldMeta);
@@ -204,7 +208,7 @@ class Table extends Eloquent {
     {
         $tableMeta = DB::table("_db_fields")
                         ->join('_db_tables', '_db_fields._db_table_id', '=', '_db_tables.id')
-                        ->select('_db_fields.id', '_db_fields.name', '_db_fields.label', '_db_fields.key', '_db_fields.display', '_db_fields.type', '_db_fields.length', '_db_fields.default', '_db_fields.extra', '_db_fields.href', '_db_fields.pk_field_id', '_db_fields.pk_display_field_id', '_db_fields.display_order', '_db_fields.width', '_db_fields.widget', '_db_fields.searchable')
+                        ->select('_db_fields.id', '_db_fields.name', '_db_fields.label', '_db_fields.key', '_db_fields.display_type_id', '_db_fields.type', '_db_fields.length', '_db_fields.default', '_db_fields.extra', '_db_fields.href', '_db_fields.pk_field_id', '_db_fields.pk_display_field_id', '_db_fields.display_order', '_db_fields.width', '_db_fields.widget_type_id', '_db_fields.searchable')
                         ->orderBy('display_order', 'desc')
                         ->where("_db_tables.name", "=", $tableName)->get();
 

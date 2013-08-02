@@ -81,6 +81,8 @@ class UpdateReferences extends Seeder {
             $this->__updateReference('_db_table_action_views', 'table_id', '_db_tables', 'id', 'name');
             $this->__updateReference('_db_table_action_views', 'action_id', '_db_actions', 'id', 'name');
 
+            $this->__updateReference('_db_users', 'usergroup_id', 'usergroups', 'id', 'group');
+            
             $this->__updateReference('_db_user_permissions', 'user_id', 'users', 'id', 'username');
             $this->__updateReference('_db_user_permissions', 'table_id', '_db_tables', 'id', 'name');
             $this->__updateReference('_db_user_permissions', 'action_id', '_db_actions', 'id', 'name');

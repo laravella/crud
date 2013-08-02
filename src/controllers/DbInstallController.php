@@ -45,6 +45,8 @@ class DbInstallController extends Controller {
         if (!$dropSafe)
         {   //order in which to create tables
             return array(
+                "CreateWidgetTypesTable",
+                "CreateDisplayTypesTable",
                 "CreateMenusTable",
                 "CreateLogsTable",
                 //"CreateUsergroupsTable",
@@ -63,7 +65,8 @@ class DbInstallController extends Controller {
 //                "CreateUsergroupsTable",
                 "CreateSentryGroups",
 //                "CreateSentryUsers",
-                "CreateSentryUsersGroupsPivot");
+                "CreateSentryUsersGroupsPivot"            
+                );
         }
         else
         {   //order in which to drop tables
@@ -86,7 +89,9 @@ class DbInstallController extends Controller {
 //                "CreateUsergroupsTable",
                 "CreateSentryGroups",
 //                "CreateSentryUsers",
-                "CreateSentryUsersGroupsPivot");
+                "CreateSentryUsersGroupsPivot",
+                "CreateWidgetTypesTable",
+                "CreateDisplayTypesTable");
         }
     }
 
@@ -147,8 +152,9 @@ class DbInstallController extends Controller {
             Log::write("important", $message);
 //throw new Exception($message, 1, $e);
         }
+        return "Installation complete";
         //$totalLog = array_merge($domain->getLog(), $this->log);
-        return View::make("crud::dbinstall", array('action' => 'install', 'log' => array()));
+        //return View::make("crud::dbinstall", array('action' => 'install', 'log' => array()));
     }
 
     /**

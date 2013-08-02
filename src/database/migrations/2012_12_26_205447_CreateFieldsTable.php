@@ -21,13 +21,13 @@ class CreateFieldsTable extends Migration {
                         $table->increments('id')->unique();
                         $table->string('name', 100);                        // the field's name
                         $table->string('label', 100);                       // the label
-                        $table->integer('display')->nullable();             // the field will be displayed in lists/selects
+                        $table->integer('display_type_id')->nullable();     // how the field will be displayed in lists/selects (see _db_display_types table)
                         $table->integer('searchable')->nullable();          // 1 if the field is display in a search form, else 0
                         $table->integer('display_order')->nullable();       // the order in which field will be displayed in lists/selects
                         $table->string('type', 100)->nullable();            // datatype
                         $table->integer('length')->nullable();              // datalength
                         $table->integer('width')->nullable();               // display width of the field in pixels
-                        $table->string('widget', 250)->nullable();          // json text to define an html widget
+                        $table->integer('widget_type_id')->nullable();      // an html widget (see _db_widget_types table)
                         $table->string('null', 3)->nullable();              // nullable
                         $table->string('key', 50)->nullable();              // type of key
                         $table->string('default', 100)->nullable();         // default value

@@ -74,7 +74,7 @@
 							<li {{ (Request::is('/admin/medias/index') ? 'class="active"' : '') }}><a href="{{ URL::to('/admin/medias/index') }}"><i class="icon-picture"></i> Media Upload</a></li>
 
 							<li {{ (Request::is('/db/select/medias') ? 'class="active"' : '') }}><a href="/db/select/medias"><i class="icon-picture"></i> Media</a></li>
-							<li {{ (Request::is('/db/select/mcollection_media') ? 'class="active"' : '') }}><a href="/db/select/mcollection_media"><i class="icon-picture"></i> Media Collections</a></li>
+<!-- 							<li {{ (Request::is('/db/select/mcollection_media') ? 'class="active"' : '') }}><a href="/db/select/mcollection_media"><i class="icon-picture"></i> Media Collections</a></li> -->
 							<li {{ (Request::is('/db/select/mcollections') ? 'class="active"' : '') }}><a href="/db/select/mcollections"><i class="icon-picture"></i> Collections</a></li>
 						</ul>								
 					</li>

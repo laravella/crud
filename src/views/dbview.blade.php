@@ -12,6 +12,7 @@
 <script type="text/javascript" src="/assets/scripts/js/vendor/jsonconvert.js"></script>
 
 <style>
+    /* ravel */
     #page {min-height:600px;}
     .package {margin-left:10px;padding:3px;border-radius:2px;margin-top:2px;}
     .header {cursor:pointer;}
@@ -71,6 +72,11 @@
     span.h1a {
         color : #c0c0c0;
     }
+    
+    #footer {
+        margin-top : 30px;
+        margin-bottom : 30px;
+    }
 </style>
 
 <script type="text/javascript">
@@ -79,10 +85,12 @@
     
     $(function() {    
     
+        $('#msg-alert').fadeOut(4000);
+    
         @foreach($tables as $tName=>$table)
     
         $('#acc-{{$tName}}').on('show', {table : '{{$tName}}'}, function (event) {
-            $.get('http://localhost/dbapi/select/' + event.data.table, function(data) {$('#acc-{{$tName}}').html(data);});
+            $.get('/dbapi/select/' + event.data.table, function(data) {$('#acc-{{$tName}}').html(data);});
         });
         
         $('#acc-{{$tName}}').on('shown', {table : '{{$tName}}'}, function (event) {
@@ -143,7 +151,10 @@
 
             console.log('/dbapi/delete/'+tableName+'/'+recNo);
 
-            $.get('/dbapi/delete/'+tableName+'/'+recNo, null,function(data) {console.log(data);});
+            $.get('/dbapi/delete/'+tableName+'/'+recNo, '',function(data) { 
+                $('#tr-'+tableName+'-'+recNo).remove(); 
+                //console.log(data);
+            });
 
 /*
             $.ajax({
@@ -233,6 +244,7 @@
                 {{-- this is a foreign key, it contains a reference to a primary key --}}
                     <div class="span3">
                         <select name="{{$field['name']}}" class="formfield" data-table="{{$tableName}}">
+                            <option value="">--{{$field['name']}}--</option>
                             @foreach($selects[$field['name']] as $option)
                                 <option value="{{$option['value']}}">{{$option['text']}}</option>
                             @endforeach
@@ -259,7 +271,7 @@
 
 @section('messages')
 <!-- definitive status message -->
-<div class="alert alert-{{$status}}">
+<div class="alert alert-{{$status}}" id="msg-alert">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
     <strong>{{$status}}</strong>
     {{$message}}
@@ -345,7 +357,7 @@
         <tr>
             <th></th>
             @foreach($data[0] as $name=>$field)
-            @if ($meta[$name]['display'])
+            @if ($meta[$name]['display_type_id'] > 1)
             <th>{{$meta[$name]['label']}}</th>
             @if (isset($meta[$name]['pk']))
             {{-- this is a foreign key, it contains a reference to a primary key --}}
@@ -358,12 +370,19 @@
         {{-- the records --}}
         
         @foreach($data as $record)
-        <tr id="rec_{{$record->id}}">
+        <tr id="tr-{{$tableName}}-{{$record->id}}">
             <td class="td_toolbox">
                 <div class="btn-group">
                     <a data-toggle="button" data-tablename="{{$tableName}}" data-recordid="{{$record->id}}" class="record btn" href="#" id="chkbtn_{{$tableName}}_{{$record->id}}" onclick="javascript:checkRec('{{$tableName}}', {{$record->id}})">
                         <b id="chkico_{{$record->id}}" class="icon-ok-circle"></b>
                     </a>
+                    @foreach($record as $name=>$value)
+                        @if((isset($prefix) && isset($prefix[$name])) || (isset($meta) && isset($meta[$name]) && $meta[$name]['key'] == 'PRI'))
+                            <a data-recordid="{{$record->id}}" class="edit btn" href="{{$prefix[$name]}}{{$value}}" id="editbtn_{{$tableName}}_{{$record->id}}">
+                                <b id="editico_{{$record->id}}" class="icon-edit"></b>
+                            </a>
+                        @endif
+                    @endforeach
                     <!--
                     <a data-recordid="{{$record->id}}" class="save btn" href="#" id="savebtn_{{$tableName}}_{{$record->id}}" onclick="javascript:saveRec('{{$tableName}}', {{$record->id}})">
                         <b id="saveico_{{$record->id}}" class="icon-save"></b>
@@ -371,7 +390,7 @@
                 </div>
             </td>
             @foreach($record as $name=>$value)
-            @if ($meta[$name]['display'])
+            @if ($meta[$name]['display_type_id'] > 1)
             @if((isset($prefix) && isset($prefix[$name])) || (isset($meta) && isset($meta[$name]) && $meta[$name]['key'] == 'PRI'))
             <td>
                 <a href="{{$prefix[$name]}}{{$value}}">{{$value}}</a>
@@ -415,6 +434,11 @@
 </div>
 <div class="well">
     <div class="btn-group">
+        <a href="/db/select/{{$tableName}}" id="btnVisualize" class="btn">Back</a>
+        <a href="#" onclick="javascript:$('#dataForm').submit();" id="btnSubmit" class="btn">Submit</a>
+        <a href="/db/delete/{{$tableName}}/{{$tables[$tableName]['records'][0][$pkName]}}" id="btnDelete" class="btn">Delete</a>
+    </div>
+    <div class="btn-group">
         <a href="#" id="btnVisualize" onclick="javascript:debugBox();" class="btn">Debug</a>
         <a href="#" id="btnLog" onclick="javascript:logBox();" class="btn">Log</a>
     </div>
@@ -428,10 +452,10 @@
 @endif
 
 @foreach ($tables[$tableName]['records'] as $recNo=>$record) 
-<form method="POST" action="/db/edit/{{$tableName}}/{{$record[$pkName]}}">
+<form method="POST" id="dataForm" action="/db/edit/{{$tableName}}/{{$record[$pkName]}}">
     @foreach($meta as $field)
     
-        @if($field['display'] == 1) 
+        @if($field['display_type_id'] > 1)
         <div class="row">
             <div class="span4">{{$field['label']}}</div>
             @if(isset($field['key']) && $field['key'] == 'PRI')
@@ -506,7 +530,7 @@
 
 <form method="POST" action="/db/insert/{{$tableName}}">
     @foreach($meta as $field)
-    @if($field['display'] == 1) 
+    @if($field['display_type_id'] > 1) 
     <div class="row">
         <div class="span4">{{$field['label']}}</div>
         @if(isset($field['key']) && $field['key'] == 'PRI')

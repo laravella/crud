@@ -112,17 +112,21 @@ class DbController extends Controller {
      * @param type $table
      * @return type
      */
-    public function getSelect($tableName = null)
+    public function getSelect($tableName = null, $message = "")
     {
         $action = 'getSelect';
 
         //select table data from database
         $table = DB::table($tableName);
 
+        if (empty($message)) {
+            $message = "Data selected.";
+        }
+        
         $this->log(self::SUCCESS, "$tableName selected");
 
         //get related data
-        $params = $this->__makeParams(self::SUCCESS, "Data selected.", $table, $tableName, $action);
+        $params = $this->__makeParams(self::SUCCESS, $message, $table, $tableName, $action);
 
         return View::make($this->layout)->nest('content', $params->view->name, $params->asArray());
     }
@@ -206,8 +210,14 @@ class DbController extends Controller {
                     //get the actual data of the primary key related to this field (not the meta data)
                     //$pkData = DB::table($pkTableName)->where($pkfName, $pkValue)->get();
                     //get the value of the display field related to the pk
-                    $pkRec[$pkValue] = $this->dbTables[$pkTableName]['data'][$pkValue]->$pkdfName;
-
+                    if (isset($this->dbTables[$pkTableName]['data'][$pkValue])) {
+                        $pkdValue = $this->dbTables[$pkTableName]['data'][$pkValue]->$pkdfName;
+                    } else {
+                        $pkdValue = '';
+                    }
+                    
+                    $pkRec[$pkValue] = $pkdValue;
+                    
                     $this->log(self::INFO, "{$ma[$name]['name']} : key {$pkTableName}.{$pkfName} = {$pkValue} display : {$pkdfName} = {$pkRec[$pkValue]}");
 
                     if (!array_key_exists($pkTableName, $pkTables))
@@ -215,7 +225,8 @@ class DbController extends Controller {
                         $pkTables[$pkTableName] = array();
                     }
 
-                    $pkTables[$pkTableName][$pkValue] = $this->dbTables[$pkTableName]['data'][$pkValue]->$pkdfName;
+                    $pkTables[$pkTableName][$pkValue] = $pkdValue;
+                    
                 }
             }
         }
@@ -278,7 +289,14 @@ class DbController extends Controller {
 
         $view = $this->__getView($tableName, $action);
 
-        $tableActionViews = $this->__getTableActionView($tableName, $view->id, $action);
+        $tableActionViews = array();
+        try {
+            if (is_object($view)) {
+                $tableActionViews = $this->__getTableActionView($tableName, $view->id, $action);
+            }
+        } catch (Exception $e) {
+            $tableActionViews = array();
+        }
 
         $selects = $this->__getPkSelects($tableMeta['fields_array']);
 
@@ -286,7 +304,9 @@ class DbController extends Controller {
 
         if (is_object($data)) {
         
-            $paginated = $data->paginate($view->page_size);
+            $pageSize = (is_object($view))?$view->page_size:10;
+            
+            $paginated = $data->paginate($pageSize);
 
             $dataA = DbGopher::makeArray($tableMeta['fields'], $paginated);
 
@@ -324,12 +344,21 @@ class DbController extends Controller {
      */
     public function getDelete($tableName = null, $recorid = null)
     {
+        //check for foreign key constraints
         $action = 'getDelete';
-        
-        DB::table($tableName)->where('id', '=' ,$recorid)->delete();
-        $params = $this->__makeParams(self::INFO, "Enter data to insert.", null, $tableName, $action);
-        return View::make($this->layout)->nest('content', $params->view->name, $params->asArray());
-
+        $params = null;
+        try {
+            DB::table($tableName)->where('id', '=' ,$recorid)->delete();
+            $params = $this->__makeParams(self::SUCCESS, "Record deleted.", null, $tableName, $action);
+        } catch (Exception $e) {
+            $params = $this->__makeParams(self::IMPORTANT, "Failed to delete record.", null, $tableName, $action);
+        }
+        $res = '{"status":"failed"}';
+        if (is_object($params)) {
+            $res = json_encode($params->asArray());
+        }
+        echo $res;
+        die;
     }
     
     /**
@@ -386,7 +415,7 @@ class DbController extends Controller {
 
         Model::getInstance($tableName)->editRec($pkValue, Input::get('data'));
 
-        return Redirect::to("/db/edit/$tableName/$pkValue");
+        return $this->getSelect($tableName, "Data saved.");//Redirect::to("/db/edit/$tableName/$pkValue");
     }
 
     /**

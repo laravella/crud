@@ -4,12 +4,77 @@ use Laravella\Crud\Log;
 
 class SeedTables extends Seeder {
 
+    private function __addWidgetType($name)
+    {
+        $widgetTypeId = DB::table('_db_widget_types')->insertGetId(array('name' => $name));
+        Log::write(Log::INFO, $name . ' widget type created');
+        return $widgetTypeId;
+    }
+
+    private function __addWidgetTypes()
+    {
+        $wTypes = array();
+        
+        DB::table('_db_widget_types')->delete();
+
+        $wTypes['input:text']       = $this->__addWidgetType('input:text');
+        $wTypes['input:hidden']     = $this->__addWidgetType('input:hidden');
+        $wTypes['input:text']       = $this->__addWidgetType('input:text');
+        $wTypes['input:checkbox']   = $this->__addWidgetType('input:checkbox');
+        $wTypes['input:radio']      = $this->__addWidgetType('input:radio');
+        $wTypes['textarea']         = $this->__addWidgetType('textarea');
+        $wTypes['select']           = $this->__addWidgetType('select');
+        $wTypes['multiselect']      = $this->__addWidgetType('multiselect');
+        $wTypes['ckeditor']         = $this->__addWidgetType('ckeditor');
+        $wTypes['span']             = $this->__addWidgetType('span');
+        $wTypes['password']         = $this->__addWidgetType('password');
+        $wTypes['password:hashed']  = $this->__addWidgetType('password:hashed');
+        $wTypes['password:md5']     = $this->__addWidgetType('password:md5');
+    }    
+    
+   private function __addDisplayType($name)
+    {
+        $displayTypes = array('name' => $name);
+        $displayTypeId = DB::table('_db_display_types')->insertGetId($displayTypes);
+        Log::write(Log::INFO, $name . ' display types created');
+        return $displayTypeId;
+    }
+
+    private function __addDisplayTypes()
+    {
+        $types = array();
+        DB::table('_db_display_types')->delete();
+        
+        $types['nodisplay'] = DB::table('_db_display_types')->insertGetId(array('id'=>0, 'name'=>'nodisplay'));
+
+        $types['edit'] = $this->__addDisplayType('edit');
+        $types['display'] = $this->__addDisplayType('display');
+        $types['hidden'] = $this->__addDisplayType('hidden');
+        $types['link'] = $this->__addDisplayType('link');
+        
+        return $types;
+    }    
+    
+    private function __getDisplayType($colRec, $types) {
+        
+        $displayTypeId = $types['edit'];
+        
+        if ($colRec['name'] == "created_at" || $colRec['name'] == "updated_at")
+        {
+            $displayTypeId = $types['nodisplay'];
+        }
+        return $displayTypeId;
+    }
+    
     public function run()
     {
 
         DB::table('_db_tables')->delete();
         DB::table('_db_fields')->delete();
         
+        $displayTypes = $this->__addDisplayTypes();
+        
+        $widgetTypes = $this->__addWidgetTypes();
         
 //get the list of tables from the database metadata
         $tables = DB::select('show tables');
@@ -39,24 +104,19 @@ class SeedTables extends Seeder {
                                 $colRec['_db_table_id'] = $id;
                                 $colRec['name'] = $col->Field;
                                 $colRec['label'] = $this->__makeLabel($col->Field);
-                                if ($col->Field == "created_at" || $col->Field == "updated_at")
-                                {
-                                    $colRec['display'] = 0;
-                                }
-                                else
-                                {
-                                    $colRec['display'] = 1;
-                                }
                                 $colRec['searchable'] = 1;
                                 $colRec['display_order'] = $displayOrder++;
                                 $colRec['type'] = $this->__getFieldType($col->Type);
                                 $colRec['length'] = $this->__getFieldLength($col->Type);
                                 $colRec['width'] = $this->__getFieldWidth($colRec['type'], $colRec['length']);
-                                $colRec['widget'] = $this->__getFieldWidget($colRec['type'], $colRec['length']);
+                                $colRec['widget_type_id'] = $this->__getFieldWidget($colRec['type'], $colRec['length']);
                                 $colRec['null'] = $col->Null;
                                 $colRec['key'] = $col->Key;
                                 $colRec['default'] = $col->Default;
                                 $colRec['extra'] = $col->Extra;
+                                
+                                $colRec['display_type_id'] = $this->__getDisplayType($colRec, $displayTypes);
+                                        
                                 $fid = DB::table('_db_fields')->insertGetId($colRec);
                                 Log::write("success", " - {$colRec['name']} inserted with id $fid");
                             }
