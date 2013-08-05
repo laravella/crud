@@ -32,7 +32,7 @@
         <link rel="shortcut icon" href="favicon.ico">
 			
         <!-- Ravel CMS -->
-        @include('crud::layouts.admin.partials.assets')
+        @include('crud::layouts.admin.assets')
         @yield('assets_css')
         @yield('assets_js')
 		
@@ -48,7 +48,7 @@
             <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
         <![endif]-->
 		
-        @include('crud::layouts.admin.partials.navbar')
+        @include('crud::layouts.admin.navbar')
 		@yield('navbar') 
 		
         <!-- Wrapper for the radial gradient background -->
@@ -74,9 +74,6 @@
 				<!-- Add your site or application content here -->
 				<!-- Container -->
 				<div class="container">
-					<!-- Notifications -->
-					@include('partials.notifications')
-					<!-- ./ notifications -->
 
 					<!-- Content -->
 					@yield('content')
@@ -85,12 +82,14 @@
 				</div>
 				<!-- ./ container -->
 				
-                @include('crud::layouts.admin.partials.footer')
+                @include('crud::layouts.admin.footer')
 
             </div> <!-- End #main-content -->
 
         </div>
 
+        @yield('bottom')
+        
         <!-- jQuery -->
         <!--
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
@@ -99,8 +98,8 @@
         
         <script src="{{ asset('assets/scripts/js/plugins.js') }}"></script>
         <script src="{{ asset('assets/scripts/js/main.js') }}"></script>
-		
         <script src="{{ asset('assets/scripts/js/vendor/bootstrap.min.js') }}"></script>
+        
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
         <script>
             // var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];

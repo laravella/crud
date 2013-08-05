@@ -190,7 +190,7 @@ class SeedTables extends Seeder {
      * Try and calculate the width of the widget to display the field in 
      */
     private function __getFieldWidth($fieldType, $fieldLength) {
-        return 100;
+        return 220;
     }    
     
     /**

@@ -92,6 +92,10 @@ class UpdateReferences extends Seeder {
             $this->__updateReference('_db_usergroup_permissions', 'action_id', '_db_actions', 'id', 'name');
             
             $this->__updateReference('_db_menus', 'parent_id', '_db_menus', 'id', 'label');
+            
+            $this->__updateReference('medias', 'gallery_id', 'galleries', 'id', 'name');
+            $this->__updateReference('medias', 'mcollection_id', 'mcollections', 'id', 'name');
+            $this->__updateReference('medias', 'user_id', 'users', 'id', 'username');
 
             Log::write("success", "Completed foreign key references");
         }
