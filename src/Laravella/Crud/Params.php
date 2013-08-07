@@ -7,6 +7,7 @@ class Params {
     public $action = "";
     public $tableMeta = null;
     public $tables = null;
+    public $dataA = array();
     public $paginated = null;
     public $primaryTables = array();
     public $prefix = "";
@@ -32,7 +33,7 @@ class Params {
      */
     public function __construct($status, $message, $log, $view = null, $action = "", 
             $tableMeta = null, $tableActionViews = null, $prefix = "", $selects = null, $displayType = "",
-            $tables = array(), $paginated = array(), $primaryTables = array())
+            $dataA = array(), $tables = array(), $paginated = array(), $primaryTables = array())
     {
         $this->status = $status;
         $this->message = $message;
@@ -53,6 +54,7 @@ class Params {
         $this->paginated = $paginated;
         $this->tables = $tables;
         $this->primaryTables = $primaryTables;
+        $this->dataA = $dataA;
     }
 
     /**
@@ -107,6 +109,7 @@ class Params {
             
             "tables" => $this->tables,
             "data" => $this->paginated,
+            "dataA" => $this->dataA,
             "pkTables" => $this->primaryTables
             ); //$this->tables[$tableName]['tableMetaData']['table']['pk_name']);
         

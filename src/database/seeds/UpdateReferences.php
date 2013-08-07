@@ -76,6 +76,9 @@ class UpdateReferences extends Seeder {
             // log, fkTableName, fkFieldName, pkTableName, pkFieldName, pkDisplayFieldName
 
             $this->__updateReference('_db_fields', '_db_table_id', '_db_tables', 'id', 'name');
+            $this->__updateReference('_db_fields', 'pk_field_id', '_db_fields', 'id', 'fullname');
+            $this->__updateReference('_db_fields', 'pk_display_field_id', '_db_fields', 'id', 'fullname');
+            $this->__updateReference('_db_fields', 'display_type_id', '_db_display_types', 'id', 'name');
 
             $this->__updateReference('_db_table_action_views', 'view_id', '_db_views', 'id', 'name');
             $this->__updateReference('_db_table_action_views', 'table_id', '_db_tables', 'id', 'name');
@@ -96,7 +99,7 @@ class UpdateReferences extends Seeder {
             $this->__updateReference('medias', 'gallery_id', 'galleries', 'id', 'name');
             $this->__updateReference('medias', 'mcollection_id', 'mcollections', 'id', 'name');
             $this->__updateReference('medias', 'user_id', 'users', 'id', 'username');
-
+            
             Log::write("success", "Completed foreign key references");
         }
         catch (Exception $e)

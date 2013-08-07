@@ -27,7 +27,12 @@
 
 @endif
 
-@foreach ($tables[$tableName]['records'] as $recNo=>$record) 
+<?php
+    $records = array();
+    $records = $dataA;
+?>
+
+@foreach ($records as $recNo=>$record) 
 <form method="POST" id="dataForm" action="/db/edit/{{$tableName}}/{{$record[$pkName]}}">
     @foreach($meta as $field)
     
@@ -39,6 +44,7 @@
             @elseif(isset($field['pk']))
             <div class="span4">
                 <select name="{{$field['name']}}">
+                    <option value="">-- {{$field['label']}} --</option>
                     @foreach($selects[$field['name']] as $option)
                         @if($option['value'] == $record[$field['name']])
                         <option selected value="{{$option['value']}}">{{$option['text']}}</option>

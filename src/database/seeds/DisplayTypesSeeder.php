@@ -4,12 +4,11 @@ use Laravella\Crud\Log;
 
 class SeedDisplayTypes extends Seeder {
 
-    private function __addDisplayType($name)
+    private function __addDisplayType($id, $name)
     {
-        $displayTypes = array('name' => $name);
-        $displayTypeId = DB::table('_db_display_types')->insertGetId($displayTypes);
+        $displayTypes = array('id' => $id, 'name' => $name);
+        DB::table('_db_display_types')->insert($displayTypes);
         Log::write(Log::INFO, $name . ' display types created');
-        return $displayTypeId;
     }
 
     public function run()
@@ -17,11 +16,11 @@ class SeedDisplayTypes extends Seeder {
 
         DB::table('_db_display_types')->delete();
 
-        $this->__addDisplayType('edit');
-        $this->__addDisplayType('display');
-        $this->__addDisplayType('hidden');
-        $this->__addDisplayType('nodisplay');
-        $this->__addDisplayType('link');
+        $this->__addDisplayType(1, 'nodisplay');
+        $this->__addDisplayType(2, 'edit');
+        $this->__addDisplayType(3, 'display');
+        $this->__addDisplayType(4, 'hidden');
+        $this->__addDisplayType(5, 'link');
     }
 
 }

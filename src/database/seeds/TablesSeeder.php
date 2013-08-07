@@ -103,6 +103,7 @@ class SeedTables extends Seeder {
                                 $colRec = array();
                                 $colRec['_db_table_id'] = $id;
                                 $colRec['name'] = $col->Field;
+                                $colRec['fullname'] = $tableName.".".$col->Field;
                                 $colRec['label'] = $this->__makeLabel($col->Field);
                                 $colRec['searchable'] = 1;
                                 $colRec['display_order'] = $displayOrder++;
