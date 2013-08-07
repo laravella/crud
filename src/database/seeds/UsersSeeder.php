@@ -4,8 +4,31 @@ use Laravella\Crud\Log;
 
 class SeedUsers extends Seeder {
 
+    private function __createUser($name, $password, $email, $firstName, $lastName) {
+        $hashPass = Hash::make($password);
+        
+        $group = DB::table('groups')->where('name', 'Admins')->first();
+        $userGroup = DB::table('usergroups')->where('group', 'Admins')->first();
+
+
+        $adminUser = array('username' => $name, 'password' => $hashPass, 'email' => $email); //Config::get('crud::app.setup_user');
+        $adminUser['activated'] = true;
+        $adminUser['api_token'] = makeApiKey();
+
+        $userId = DB::table('users')->insertGetId($adminUser);
+
+        DB::table('users')->update(array('id' => $userId, 'usergroup_id' => $userGroup->id));
+        
+        DB::table('users_groups')->insert(array('user_id' => $userId, 'group_id' => $group->id));
+        
+        return $userId;
+        
+    }
+    
     public function run()
     {
+        DB::table('users')->delete();
+        
         $password = rand(23450987, 234509870);
 
         $password = md5($password);
@@ -15,24 +38,8 @@ class SeedUsers extends Seeder {
         //echo ;
         Log::write(Log::INFO, "-- password : $shortPassword --");
         
-        $hashPass = Hash::make($shortPassword);
-
-        $adminUser = array('username' => 'admin', 'password' => $hashPass, 'email' => 'admin@yourwebsite.com'); //Config::get('crud::app.setup_user');
-
-        $group = DB::table('groups')->where('name', 'Admins')->first();
+        //admin ravel 'admin@yourwebsite.com'
         
-        $userGroup = DB::table('usergroups')->where('group', 'Admins')->first();
-
-        $adminUser['activated'] = true;
-        $adminUser['api_token'] = makeApiKey();
-
-        DB::table('users')->delete();
-
-        $userId = DB::table('users')->insertGetId($adminUser);
-
-        DB::table('users')->update(array('id' => $userId, 'usergroup_id' => $userGroup->id));
-        
-        DB::table('users_groups')->insert(array('user_id' => $userId, 'group_id' => $group->id));
     }
 
 }

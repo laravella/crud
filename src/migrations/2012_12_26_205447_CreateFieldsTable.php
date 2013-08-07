@@ -20,6 +20,7 @@ class CreateFieldsTable extends Migration {
                     {
                         $table->increments('id')->unique();
                         $table->string('name', 100);                        // the field's name
+                        $table->string('fullname', 100);                    // the field's fully qualified name table.field
                         $table->string('label', 100);                       // the label
                         $table->integer('display_type_id')->nullable();     // how the field will be displayed in lists/selects (see _db_display_types table)
                         $table->integer('searchable')->nullable();          // 1 if the field is display in a search form, else 0
