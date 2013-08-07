@@ -16,7 +16,7 @@
             "src/controllers",
             "src/models",
             "src/models/meta",
-            "src/database/migrations",
+            "src/migrations",
             "src/database/seeds"
         ],
         "psr-0": {
