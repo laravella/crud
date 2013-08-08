@@ -2,7 +2,7 @@
 
 use Laravella\Crud\Log;
 
-class BackupSeeder extends Seeder {
+class CrudBackupSeeder extends Seeder {
 
     public function run()
     {
