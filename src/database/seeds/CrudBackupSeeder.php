@@ -20,7 +20,7 @@ class CrudBackupSeeder extends Seeder {
         $selectMeta = "select distinct $bakId backup_id, t.`id` table_id, t.`name` `table_name`,
     f.`id` field_id, f.`name` field_name, f.`fullname`, f.`label`, f.`display_type_id`,
     f.`searchable`, f.`display_order`, f.`type` field_type, f.`length`, f.`width`, 
-    f.`null` nullable, f.`key`, f.`default`, f.extra, f.href, f.`_db_table_id` table_id,
+    f.`null` nullable, f.`key`, f.`default`, f.extra, f.href, 
     f.pk_field_id, f.pk_display_field_id, 
     f.`widget_type_id`, wt.`name` widget_type_name, wt.`definition` widget_type_definition,
     tav.page_size, tav.title tav_title,
