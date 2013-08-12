@@ -63,7 +63,7 @@ class CrudServiceProvider extends ServiceProvider {
 //            Artisan::add(new InstallCommand);
 //            Artisan::add(new UpdateCommand);
 
-        $commands = array('CrudBackup', 'CrudRestore');
+        $commands = array('CrudBackup', 'CrudInstall', 'CrudRestore');
 
         foreach ($commands as $command)
         {
@@ -71,7 +71,7 @@ class CrudServiceProvider extends ServiceProvider {
         }
 
         $this->commands(
-                'command.crud.backup', 'command.crud.restore'
+                'command.crud.backup', 'command.crud.restore', 'command.crud.install'
         );
     }
 
@@ -80,6 +80,14 @@ class CrudServiceProvider extends ServiceProvider {
         $this->app['command.crud.backup'] = $this->app->share(function($app)
                 {
                     return new CrudBackupCommand();
+                });
+    }
+
+    public function registerCrudInstallCommand()
+    {
+        $this->app['command.crud.install'] = $this->app->share(function($app)
+                {
+                    return new CrudInstallCommand();
                 });
     }
 
