@@ -7,7 +7,7 @@ class CrudRestoreSeeder extends Seeder {
     public function run()
     {
         if (Schema::hasTable('_db_backups'))
-
+        {
         }
 
         if (Schema::hasTable('_db_bak_menus'))
