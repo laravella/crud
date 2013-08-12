@@ -198,6 +198,7 @@ class DbController extends Controller {
                     if (!array_key_exists($pkTableName, $this->dbTables))
                     {
 
+                        /*
                         $pkData = DB::table($pkTableName)->get();
                         $pkData = $this->__indexByPk($pkData, $pkfName);
                         $pktMeta = Table::getTableMeta($pkTableName);
@@ -205,6 +206,9 @@ class DbController extends Controller {
                         $pkDataA = DbGopher::makeArray($pktMeta['fields'], $pkData);
 
                         $this->dbTables[$pkTableName] = array('data' => $pkData, 'meta' => $pktMeta, 'dataA' => $pkDataA);
+                         * 
+                         */
+                        $this->dbTables[$pkTableName] = array();
                     }
 
                     //get the actual data of the primary key related to this field (not the meta data)

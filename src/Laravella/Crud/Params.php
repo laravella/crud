@@ -1,7 +1,10 @@
-<?php
+<?php namespace Laravella\Crud;
 
-namespace Laravella\Crud;
-
+/**
+ * 
+ * Used to pass a consistent set of data to views and prevent "$variable not found" errors.
+ * 
+ */
 class Params {
 
     public $action = "";
@@ -17,6 +20,7 @@ class Params {
     public $log = array();
     public $status = "success";
     public $displayType = "text/html";
+    public $menu = array();
 
     /**
      * 
@@ -31,17 +35,18 @@ class Params {
      * @param type $prefix Used to prepend the href on the primary key
      * @param type $view An entry in _db_views
      */
-    public function __construct($status, $message, $log, $view = null, $action = "", 
-            $tableMeta = null, $tableActionViews = null, $prefix = "", $selects = null, $displayType = "",
-            $dataA = array(), $tables = array(), $paginated = array(), $primaryTables = array())
+    public function __construct($status, $message, $log, $view = null, $action = "", $tableMeta = null, $tableActionViews = null, $prefix = "", $selects = null, $displayType = "", $dataA = array(), $tables = array(), $paginated = array(), $primaryTables = array())
     {
         $this->status = $status;
         $this->message = $message;
         $this->action = $action;
         $this->tableMeta = $tableMeta;
-        if (is_object($view)) {
+        if (is_object($view))
+        {
             $this->pageSize = $view->page_size;
-        } else {
+        }
+        else
+        {
             $this->pageSize = 10;
         }
         $this->prefix = $prefix;
@@ -74,10 +79,7 @@ class Params {
      * @param type $primaryTables
      * @return \Laravella\Crud\Params
      */
-    public static function forEdit($status, $message, $log, $view = null, 
-            $action = "", $tableMeta = null, $tableActionViews = null, 
-            $prefix = "", $selects = null, $displayType="text/html",
-            $tables = null, $paginated = null, $primaryTables = null)
+    public static function forEdit($status, $message, $log, $view = null, $action = "", $tableMeta = null, $tableActionViews = null, $prefix = "", $selects = null, $displayType = "text/html", $tables = null, $paginated = null, $primaryTables = null)
     {
         $params = new Params();
         return $params;
@@ -106,13 +108,12 @@ class Params {
             "message" => $this->message,
             "pkName" => $this->tableMeta['table']['pk_name'],
             "displayType" => $this->displayType,
-            
             "tables" => $this->tables,
             "data" => $this->paginated,
             "dataA" => $this->dataA,
             "pkTables" => $this->primaryTables
-            ); //$this->tables[$tableName]['tableMetaData']['table']['pk_name']);
-        
+        ); //$this->tables[$tableName]['tableMetaData']['table']['pk_name']);
+
         if (isset($this->tableActionViews) && is_object($this->tableActionViews))
         {
             $returnA["title"] = $this->tableActionViews->title;
