@@ -12,6 +12,12 @@ class SeedMenus extends Seeder
             return $menuId;
         }
         
+        private function __addMenuPermissions($menuId, $groupName) {
+            $usergroup = DB::table('usergroups')->where('group', $groupName)->first();
+            $usergroupId = $usergroup->id;
+            DB::table('_db_menu_permissions')->insertGetId(array('menu_id'=>$menuId, 'usergroup_id'=>$usergroupId));
+        }
+        
 	public function run()
 	{
 
@@ -44,6 +50,9 @@ class SeedMenus extends Seeder
                 $this->__addMenu('divider', null, '', $metaDataId);
                 $this->__addMenu('Install', '/dbinstall/install', 'icon-file', $metaDataId);
                 $this->__addMenu('Reinstall', '/dbinstall/reinstall', 'icon-file', $metaDataId);
+                
+                $this->__addMenuPermissions($metaDataId, 'admins');
+                $this->__addMenuPermissions($adminId, 'admins');
                 
                 //tables
                 //fields

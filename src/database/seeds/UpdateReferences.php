@@ -95,6 +95,9 @@ class UpdateReferences extends Seeder {
             $this->__updateReference('_db_usergroup_permissions', 'action_id', '_db_actions', 'id', 'name');
             
             $this->__updateReference('_db_menus', 'parent_id', '_db_menus', 'id', 'label');
+
+            $this->__updateReference('_db_menu_permissions', 'menu_id', '_db_menus', 'id', 'label');
+            $this->__updateReference('_db_menu_permissions', 'usergroup_id', 'usergroups', 'id', 'group');
             
             $this->__updateReference('medias', 'gallery_id', 'galleries', 'id', 'name');
             $this->__updateReference('medias', 'mcollection_id', 'mcollections', 'id', 'name');
