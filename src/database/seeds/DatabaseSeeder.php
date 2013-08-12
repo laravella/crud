@@ -1,6 +1,7 @@
-<?php
+<?php namespace Laravella\Crud;
 
 use Laravella\Crud\Log;
+use \Seeder;
 
 class DatabaseSeeder extends Seeder {
 
@@ -15,12 +16,11 @@ class DatabaseSeeder extends Seeder {
         
         $this->call('SeedUsers');
         Log::write("success", "Populated users");
+         **/
 
         $this->call('SeedMenus');
         Log::write("success", "Populated menus");
 
-         *         */
-        
         $this->call('SeedSeverities');
         Log::write("success", "Populated severities");
         

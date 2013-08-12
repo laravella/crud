@@ -11,14 +11,14 @@ class CrudInstallCommand extends Command {
 	 *
 	 * @var string
 	 */
-	protected $name = 'crud:restore';
+	protected $name = 'crud:install';
 
 	/**
 	 * The console command description.
 	 *
 	 * @var string
 	 */
-	protected $description = 'Restore a previous version of the meta data.';
+	protected $description = 'Install database meta data for CRUD.';
 
 	/**
 	 * Create a new command instance.
@@ -39,11 +39,11 @@ class CrudInstallCommand extends Command {
 	{
                 $this->call('config:publish',array('package'=>'laravella/crud'));
                 $this->call('asset:publish',array('package'=>'laravella/crud'));
+                
                 $this->call('migrate',array('--package'=>'laravella/crud'));
                 
-		$this->call('db:seed',array('--class'=>'DatabaseSeeder'));
-		$this->info('CRUD restore complete.');
-		$this->info('Restore complete.');
+		$this->call('db:seed',array('--class'=>'Laravella\\Crud\\DatabaseSeeder'));
+		$this->info('CRUD installation complete.');
 	}
 
 	/**

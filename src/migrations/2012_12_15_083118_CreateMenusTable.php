@@ -19,6 +19,7 @@ class CreateMenusTable extends Migration {
 			$table->increments('id');
 			$table->string('icon_class')->nullable();
 			$table->string('label');
+			$table->integer('weight')->default(0);
 			$table->string('href')->nullable();
 			$table->integer('parent_id')->nullable();
 			$table->timestamps();
