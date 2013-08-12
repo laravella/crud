@@ -4,7 +4,7 @@ use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
-class CrudRestoreCommand extends Command {
+class CrudInstallCommand extends Command {
 
 	/**
 	 * The console command name.
@@ -37,7 +37,11 @@ class CrudRestoreCommand extends Command {
 	 */
 	public function fire()
 	{
-		$this->call('db:seed',array('--class'=>'CrudRestoreSeeder'));
+                $this->call('config:publish',array('package'=>'laravella/crud'));
+                $this->call('asset:publish',array('package'=>'laravella/crud'));
+                $this->call('migrate',array('--package'=>'laravella/crud'));
+                
+		$this->call('db:seed',array('--class'=>'DatabaseSeeder'));
 		$this->info('CRUD restore complete.');
 		$this->info('Restore complete.');
 	}
