@@ -53,7 +53,10 @@ class SeedMenus extends Seeder
                 $this->__addMenu('Install', '/dbinstall/install', 'icon-file', $metaDataId);
                 $this->__addMenu('Reinstall', '/dbinstall/reinstall', 'icon-file', $metaDataId);
                 
+                $this->__addMenuPermissions($metaDataId, 'superadmin');
                 $this->__addMenuPermissions($metaDataId, 'admin');
+                
+                $this->__addMenuPermissions($adminId, 'superadmin');
                 $this->__addMenuPermissions($adminId, 'admin');
                 
                 //tables
