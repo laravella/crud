@@ -3,7 +3,7 @@
 use Laravella\Crud\Log;
 use \Seeder;
 
-class DatabaseSeeder extends Seeder {
+class CrudDatabaseSeeder extends Seeder {
 
     public function run()
     {
