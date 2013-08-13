@@ -13,23 +13,23 @@ class SeedUsergroups extends Seeder
                 
                 $group = array('group'=>'superadmin');     //can change permissions
 		DB::table('usergroups')->insert($group);
-                Log::write('info', 'SuperAdmddfgadsfjsadf;lkajsdf;lkjadsfl;kjasdfl;kjasdf;lkjasdf;lkjasdf;lkjins usergroup created');
+                Log::write('info', 'superadmin usergroup created');
                 
                 $group = array('group'=>'admin');          //can edit admin tables except permissions
 		DB::table('usergroups')->insert($group);
-                Log::write('info', 'Admins usergroup created');
+                Log::write('info', 'admin usergroup created');
                 
                 $group = array('group'=>'manager');      //can moderate
 		DB::table('usergroups')->insert($group);
-                Log::write('info', 'SuperUsers usergroup created');
+                Log::write('info', 'manager usergroup created');
                 
                 $group = array('group'=>'user');           //can post articles
 		DB::table('usergroups')->insert($group);
-                Log::write('info', 'Users usergroup created');
+                Log::write('info', 'user usergroup created');
                 
                 $group = array('group'=>'guest');          //can make comments
 		DB::table('usergroups')->insert($group);
-                Log::write('info', 'Guests usergroup created');
+                Log::write('info', 'guest usergroup created');
 		
 	}
 }
