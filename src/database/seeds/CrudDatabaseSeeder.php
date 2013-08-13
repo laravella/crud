@@ -8,16 +8,17 @@ class CrudDatabaseSeeder extends Seeder {
     public function run()
     {
         /*
-        $this->call('SeedUsergroups');
+        $this->call('SeedGroups');
         Log::write("success", "Populated severities");
         
-        $this->call('SeedGroups');
+         **/
+
+        $this->call('SeedUsergroups');
         Log::write("success", "Populated severities");
         
         $this->call('SeedUsers');
         Log::write("success", "Populated users");
-         **/
-
+        
         $this->call('SeedMenus');
         Log::write("success", "Populated menus");
 

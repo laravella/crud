@@ -4,12 +4,11 @@ use Laravella\Crud\Log;
 
 class SeedUsers extends Seeder {
 
-    private function __createUser($name, $password, $email, $firstName, $lastName) {
+    private function __createUser($group, $name, $password, $email, $firstName, $lastName) {
         $hashPass = Hash::make($password);
         
-        $group = DB::table('groups')->where('name', 'Admins')->first();
-        $userGroup = DB::table('usergroups')->where('group', 'Admins')->first();
-
+        $group = DB::table('groups')->where('name', $group)->first();
+        $userGroup = DB::table('usergroups')->where('group', $group)->first();
 
         $adminUser = array('username' => $name, 'password' => $hashPass, 'email' => $email); //Config::get('crud::app.setup_user');
         $adminUser['activated'] = true;
@@ -34,6 +33,10 @@ class SeedUsers extends Seeder {
         $password = md5($password);
         
         $shortPassword = substr($password,0,8);
+        
+        $this->__createUser('superadmin', 'superadmin', $shortPassword, 'superadmin@site.com', 'super', 'admin');
+        
+        $this->__createUser('admin', 'admin', 'ravel', 'admin@yourwebsite.com', 'admin', 'admin');
         
         //echo ;
         Log::write(Log::INFO, "-- password : $shortPassword --");

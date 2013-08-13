@@ -1,4 +1,6 @@
-<?php namespace Laravella\Crud;
+<?php
+
+namespace Laravella\Crud;
 
 /**
  * 
@@ -60,6 +62,12 @@ class Params {
         $this->tables = $tables;
         $this->primaryTables = $primaryTables;
         $this->dataA = $dataA;
+        
+        if (Auth::check())
+        {
+            $userId = Auth::user()->id;
+            
+        }
     }
 
     /**
