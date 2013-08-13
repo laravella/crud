@@ -1,6 +1,7 @@
 <?php namespace Laravella\Crud;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 /**
  * 
@@ -70,6 +71,12 @@ class Params {
         }
     }
 
+    /**
+     * Build a menu array from _db_menus
+     * 
+     * @param type $userId
+     * @return type
+     */
     private function __getMenu($userId)
     {
         $menus = DB::table('users as u')->join('usergroups as ug', 'u.usergroup_id', '=', 'ug.id')
@@ -77,14 +84,17 @@ class Params {
                 ->join('_db_menus as m', 'm.id', '=', 'mp.menu_id')
                 ->join('_db_menus as m2', 'm2.parent_id', '=', 'm.id')
                 ->where('u.id', '=', $userId)
-                ->select('u.username', 'ug.`group`', 
+                ->select('u.username', 'ug.group', 
                         'm.id', 'm.icon_class', 'm.label', 'm.href', 'm.parent_id', 
                         'm2.id as m2_id', 'm2.icon_class as m2_icon_class', 'm2.label as m2_label', 
-                        'm2.href as m2_href', 'm2.parent_id as m2_parent_id');
+                        'm2.href as m2_href', 'm2.parent_id as m2_parent_id')->get();
 
         $menuA = array();
         foreach($menus as $menu) {
-            $menuA[] = array('username'=>$menu->username, 'group'=>$menu->group, 
+            if (!isset($menuA[$menu->label])) {
+                $menuA[$menu->label] = array();
+            }
+            $menuA[$menu->label][] = array('username'=>$menu->username, 'group'=>$menu->group, 
                 'id'=>$menu->id, 'icon_class'=>$menu->icon_class, 'label'=>$menu->label, 
                 'href'=>$menu->href, 'parent_id'=>$menu->parent_id, 'm2_id'=>$menu->m2_id, 
                 'm2_icon_class'=>$menu->m2_icon_class, 'm2_label'=>$menu->m2_label, 

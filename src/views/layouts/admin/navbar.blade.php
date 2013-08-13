@@ -80,6 +80,26 @@
 					</li>
 				</ul>
                                 @endif
+                                
+                                @if(isset($menu) && is_array($menu))
+                                    @foreach($menu as $label=>$menuGroup)
+                                    <ul class="nav">
+                                            <li class="dropdown">
+                                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{$label}}<b class="caret"></b></a>
+                                                    <ul class="dropdown-menu">
+                                                        @foreach($menuGroup as $menuItem)
+                                                            @if ($menuItem['m2_label'] == 'divider')
+                                                                <li class="divider"></li>
+                                                            @else
+                                                                <li {{ (Request::is($menuItem['m2_href']) ? 'class="active"' : '') }}><a href="{{ $menuItem['m2_href'] }}"><i class="icon-file"></i> {{$menuItem['m2_label']}}</a></li>
+                                                            @endif
+                                                        @endforeach    
+                                                    </ul>
+                                            </li>
+                                    </ul>
+                                    @endforeach
+                                @endif
+                                
 				<ul class="nav pull-right">
 					@if (Auth::check())
 					<li class="navbar-text">Logged in as {{ Auth::user()->fullName() }}</li>

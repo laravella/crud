@@ -1,5 +1,8 @@
 @include("crud::title")
 @include("crud::extra_head")
+
+@include('crud::layouts.admin.navbar')
+
 @include("crud::getsearch")
 @include("crud::messages")
 

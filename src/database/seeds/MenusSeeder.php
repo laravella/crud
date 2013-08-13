@@ -35,6 +35,9 @@ class SeedMenus extends Seeder
                 $this->__addMenu('Users Groups', '/db/select/users_groups', 'icon-file', $adminId);
                 $this->__addMenu('User Permissions', '/', 'icon-file', $adminId);
                 $this->__addMenu('Group Permissions', '/', 'icon-file', $adminId);
+                $this->__addMenu('divider', null, '', $metaDataId);
+                $this->__addMenu('Menus', '/db/select/_db_menus', 'icon-file', $adminId);
+                $this->__addMenu('Menu Permissions', '/db/select/_db_menu_permissions', 'icon-file', $adminId);
                 //users
                 //group permissions
                 //user permissions
@@ -43,16 +46,16 @@ class SeedMenus extends Seeder
                 $this->__addMenu('Home', '/', 'icon-file', $metaDataId);
                 $this->__addMenu('divider', null, '', $metaDataId);
                 $this->__addMenu('Tables', '/db/select/_db_tables', 'icon-file', $metaDataId);
-                $this->__addMenu('Fields', '/db/select/_db_tables', 'icon-file', $metaDataId);
-                $this->__addMenu('Actions', '/db/select/_db_tables', 'icon-file', $metaDataId);
-                $this->__addMenu('Views', '/db/select/_db_tables', 'icon-file', $metaDataId);
-                $this->__addMenu('Action Views', '/db/select/_db_tables', 'icon-file', $metaDataId);
+                $this->__addMenu('Fields', '/db/select/_db_fields', 'icon-file', $metaDataId);
+                $this->__addMenu('Actions', '/db/select/_db_actions', 'icon-file', $metaDataId);
+                $this->__addMenu('Views', '/db/select/_db_views', 'icon-file', $metaDataId);
+                $this->__addMenu('Action Views', '/db/select/_db_table_action_views', 'icon-file', $metaDataId);
                 $this->__addMenu('divider', null, '', $metaDataId);
                 $this->__addMenu('Log', '/db/select/_db_log', 'icon-file', $metaDataId);
                 $this->__addMenu('Audit', '/db/select/_db_audit', 'icon-file', $metaDataId);
-                $this->__addMenu('divider', null, '', $metaDataId);
-                $this->__addMenu('Install', '/dbinstall/install', 'icon-file', $metaDataId);
-                $this->__addMenu('Reinstall', '/dbinstall/reinstall', 'icon-file', $metaDataId);
+//                $this->__addMenu('divider', null, '', $metaDataId);
+//                $this->__addMenu('Install', '/dbinstall/install', 'icon-file', $metaDataId);
+//                $this->__addMenu('Reinstall', '/dbinstall/reinstall', 'icon-file', $metaDataId);
                 
                 $this->__addMenuPermissions($metaDataId, 'superadmin');
                 $this->__addMenuPermissions($metaDataId, 'admin');

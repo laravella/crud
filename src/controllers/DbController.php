@@ -198,7 +198,7 @@ class DbController extends Controller {
                     if (!array_key_exists($pkTableName, $this->dbTables))
                     {
 
-                        /*
+                        
                         $pkData = DB::table($pkTableName)->get();
                         $pkData = $this->__indexByPk($pkData, $pkfName);
                         $pktMeta = Table::getTableMeta($pkTableName);
@@ -206,13 +206,13 @@ class DbController extends Controller {
                         $pkDataA = DbGopher::makeArray($pktMeta['fields'], $pkData);
 
                         $this->dbTables[$pkTableName] = array('data' => $pkData, 'meta' => $pktMeta, 'dataA' => $pkDataA);
-                         * 
-                         */
-                        $this->dbTables[$pkTableName] = array();
+                        
+//                        $this->dbTables[$pkTableName] = array();
                     }
 
                     //get the actual data of the primary key related to this field (not the meta data)
-                    //$pkData = DB::table($pkTableName)->where($pkfName, $pkValue)->get();
+                    $pkData = DB::table($pkTableName)->where($pkfName, $pkValue)->get();
+                    
                     //get the value of the display field related to the pk
                     if (isset($this->dbTables[$pkTableName]['data'][$pkValue])) {
                         $pkdValue = $this->dbTables[$pkTableName]['data'][$pkValue]->$pkdfName;
@@ -321,6 +321,7 @@ class DbController extends Controller {
             foreach ($pkTables as $pktName => $pkTable)
             {
                 $tables[$pktName] = new Table($pktName, $this->dbTables[$pktName]['dataA'], $this->dbTables[$pktName]['meta']);
+//                $tables[$pktName] = new Table($pktName, array(), array());
             }
 
             $p = new Params($status, $message, $this->log, $view, $action, $tableMeta, 
