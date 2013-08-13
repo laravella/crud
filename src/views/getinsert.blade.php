@@ -20,7 +20,7 @@
 
 <form method="POST" action="/db/insert/{{$tableName}}">
     @foreach($meta as $field)
-    @if($field['display_type_id'] > 1) 
+    @if ($displayTypes[$field['display_type_id']] != 'nodisplay')
     <div class="row">
         <div class="span4">{{$field['label']}}</div>
         @if(isset($field['key']) && $field['key'] == 'PRI')
