@@ -14,7 +14,7 @@ class CrudDatabaseSeeder extends Seeder {
          **/
 
         $this->call('SeedUsergroups');
-        Log::write("success", "Populated severities");
+        Log::write("success", "Populated usergroups");
         
         $this->call('SeedUsers');
         Log::write("success", "Populated users");

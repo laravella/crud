@@ -24,6 +24,7 @@ class SeedMenus extends Seeder
 	{
 
 		DB::table('_db_menus')->delete();
+		DB::table('_db_menu_permissions')->delete();
                 
                 $topMenuId = $this->__addMenu('TopMenu', '', 'icon-file', null);
                 DB::table('_db_menus')->where("id", $topMenuId)->update(array("parent_id"=>$topMenuId));

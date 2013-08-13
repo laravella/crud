@@ -4,12 +4,17 @@ use Laravella\Crud\Log;
 
 class SeedUsers extends Seeder {
 
-    private function __createUser($group, $name, $password, $email, $firstName, $lastName) {
+    private function __createUser($groupName, $name, $password, $email, $firstName, $lastName) {
+        
+        $this->command->info($groupName.' '.$name);
+        
+        Log::write(Log::INFO, '['.$groupName.'] '.$name);
+
         $hashPass = Hash::make($password);
         
-        $group = DB::table('groups')->where('name', $group)->first();
-        $userGroup = DB::table('usergroups')->where('group', $group)->first();
-        
+        $group = DB::table('groups')->where('name', $groupName)->first();
+        $userGroup = DB::table('usergroups')->where('group', $groupName)->first();
+    
         $adminUser = array('username' => $name, 'password' => $hashPass, 'email' => $email); //Config::get('crud::app.setup_user');
         $adminUser['activated'] = true;
         $adminUser['api_token'] = makeApiKey();
@@ -20,7 +25,9 @@ class SeedUsers extends Seeder {
                 
         $userId = DB::table('users')->insertGetId($adminUser);
 
-        DB::table('users_groups')->insert(array('user_id' => $userId, 'group_id' => $group->id));
+        if (is_object($group)) {
+            DB::table('users_groups')->insert(array('user_id' => $userId, 'group_id' => $group->id));
+        }   
         
         return $userId;
         
