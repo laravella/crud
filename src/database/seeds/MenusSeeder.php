@@ -35,7 +35,7 @@ class SeedMenus extends Seeder
                 $this->__addMenu('Users Groups', '/db/select/users_groups', 'icon-file', $adminId);
                 $this->__addMenu('User Permissions', '/', 'icon-file', $adminId);
                 $this->__addMenu('Group Permissions', '/', 'icon-file', $adminId);
-                $this->__addMenu('divider', null, '', $metaDataId);
+                $this->__addMenu('divider', null, '', $adminId);
                 $this->__addMenu('Menus', '/db/select/_db_menus', 'icon-file', $adminId);
                 $this->__addMenu('Menu Permissions', '/db/select/_db_menu_permissions', 'icon-file', $adminId);
                 //users

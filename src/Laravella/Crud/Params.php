@@ -23,6 +23,7 @@ class Params {
     public $log = array();
     public $status = "success";
     public $displayType = "text/html";
+    public $displayTypes = array();
     public $menu = array();
 
     /**
@@ -63,6 +64,7 @@ class Params {
         $this->tables = $tables;
         $this->primaryTables = $primaryTables;
         $this->dataA = $dataA;
+        $this->displayTypes = $this->__getDisplayTypes();
 
         if (Auth::check())
         {
@@ -71,6 +73,15 @@ class Params {
         }
     }
 
+    private function __getDisplayTypes() {
+        $displayTypes = DB::table('_db_display_types')->get();
+        $dtA = array();
+        foreach($displayTypes as $displayType) {
+            $dtA[$displayType->id] = $displayType->name;
+        }
+        return $dtA;
+    }
+    
     /**
      * Build a menu array from _db_menus
      * 
@@ -153,7 +164,8 @@ class Params {
             "data" => $this->paginated,
             "dataA" => $this->dataA,
             "pkTables" => $this->primaryTables,
-            "menu" => $this->menu
+            "menu" => $this->menu,
+            "displayTypes" => $this->displayTypes
         ); //$this->tables[$tableName]['tableMetaData']['table']['pk_name']);
 
         if (isset($this->tableActionViews) && is_object($this->tableActionViews))
