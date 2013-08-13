@@ -13,11 +13,10 @@ class SeedUsers extends Seeder {
         $adminUser = array('username' => $name, 'password' => $hashPass, 'email' => $email); //Config::get('crud::app.setup_user');
         $adminUser['activated'] = true;
         $adminUser['api_token'] = makeApiKey();
-
+        $adminUser['usergroup_id'] = $userGroup->id;
+                
         $userId = DB::table('users')->insertGetId($adminUser);
 
-        DB::table('users')->update(array('id' => $userId, 'usergroup_id' => $userGroup->id));
-        
         DB::table('users_groups')->insert(array('user_id' => $userId, 'group_id' => $group->id));
         
         return $userId;
