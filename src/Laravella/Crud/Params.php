@@ -1,6 +1,6 @@
-<?php
+<?php namespace Laravella\Crud;
 
-namespace Laravella\Crud;
+use \Auth;
 
 /**
  * 
@@ -62,12 +62,32 @@ class Params {
         $this->tables = $tables;
         $this->primaryTables = $primaryTables;
         $this->dataA = $dataA;
-        
+
         if (Auth::check())
         {
             $userId = Auth::user()->id;
-            
+            $this->menu = $this->__getMenu($userId);
         }
+    }
+
+    private function __getMenu($userId)
+    {
+        DB::table('users as u')->join('usergroups as ug', 'u.usergroup_id', '=', 'ug.id')
+                ->join('_db_menu_permissions as mp', 'mp.usergroup_id', '=', 'ug.id')
+                ->join('_db_menus as m', 'm.id', '=', 'mp.menu_id')
+                ->join('_db_menus as m2', 'm2.parent_id', '=', 'm.id')
+                ->where('u.id', '=', $userId)
+                ->select('u.username', 'ug.`group`', 'm.id', 'm.icon_class', 'm.label', 'm.href', 'm.parent_id', 'm2.id', 'm2.icon_class', 'm2.label', 'm2.href', 'm2.parent_id');
+        /*
+          SELECT u.username, ug.`group`,
+          m.id, m.icon_class, m.label, m.href, m.parent_id,
+          m2.id, m2.icon_class, m2.label, m2.href, m2.parent_id
+          FROM users u inner join usergroups ug on u.usergroup_id = ug.id
+          inner join _db_menu_permissions mp on mp.usergroup_id = ug.id
+          inner join _db_menus m on m.id = mp.menu_id
+          inner join _db_menus m2 on m2.parent_id = m.id
+          where username = 'admin';
+         */
     }
 
     /**
