@@ -9,6 +9,9 @@ class SeedUsers extends Seeder {
         
         $group = DB::table('groups')->where('name', $group)->first();
         $userGroup = DB::table('usergroups')->where('group', $group)->first();
+        
+        echo $group;
+        print_r($userGroup);
 
         $adminUser = array('username' => $name, 'password' => $hashPass, 'email' => $email); //Config::get('crud::app.setup_user');
         $adminUser['activated'] = true;
