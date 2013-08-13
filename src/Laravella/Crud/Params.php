@@ -1,6 +1,6 @@
 <?php namespace Laravella\Crud;
 
-use \Auth;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * 
@@ -72,22 +72,25 @@ class Params {
 
     private function __getMenu($userId)
     {
-        DB::table('users as u')->join('usergroups as ug', 'u.usergroup_id', '=', 'ug.id')
+        $menus = DB::table('users as u')->join('usergroups as ug', 'u.usergroup_id', '=', 'ug.id')
                 ->join('_db_menu_permissions as mp', 'mp.usergroup_id', '=', 'ug.id')
                 ->join('_db_menus as m', 'm.id', '=', 'mp.menu_id')
                 ->join('_db_menus as m2', 'm2.parent_id', '=', 'm.id')
                 ->where('u.id', '=', $userId)
-                ->select('u.username', 'ug.`group`', 'm.id', 'm.icon_class', 'm.label', 'm.href', 'm.parent_id', 'm2.id', 'm2.icon_class', 'm2.label', 'm2.href', 'm2.parent_id');
-        /*
-          SELECT u.username, ug.`group`,
-          m.id, m.icon_class, m.label, m.href, m.parent_id,
-          m2.id, m2.icon_class, m2.label, m2.href, m2.parent_id
-          FROM users u inner join usergroups ug on u.usergroup_id = ug.id
-          inner join _db_menu_permissions mp on mp.usergroup_id = ug.id
-          inner join _db_menus m on m.id = mp.menu_id
-          inner join _db_menus m2 on m2.parent_id = m.id
-          where username = 'admin';
-         */
+                ->select('u.username', 'ug.`group`', 
+                        'm.id', 'm.icon_class', 'm.label', 'm.href', 'm.parent_id', 
+                        'm2.id as m2_id', 'm2.icon_class as m2_icon_class', 'm2.label as m2_label', 
+                        'm2.href as m2_href', 'm2.parent_id as m2_parent_id');
+
+        $menuA = array();
+        foreach($menus as $menu) {
+            $menuA[] = array('username'=>$menu->username, 'group'=>$menu->group, 
+                'id'=>$menu->id, 'icon_class'=>$menu->icon_class, 'label'=>$menu->label, 
+                'href'=>$menu->href, 'parent_id'=>$menu->parent_id, 'm2_id'=>$menu->m2_id, 
+                'm2_icon_class'=>$menu->m2_icon_class, 'm2_label'=>$menu->m2_label, 
+                'm2_href'=>$menu->m2_href, 'm2_parent_id'=>$menu->m2_parent_id);
+        }
+        return $menuA;
     }
 
     /**
@@ -139,7 +142,8 @@ class Params {
             "tables" => $this->tables,
             "data" => $this->paginated,
             "dataA" => $this->dataA,
-            "pkTables" => $this->primaryTables
+            "pkTables" => $this->primaryTables,
+            "menu" => $this->menu
         ); //$this->tables[$tableName]['tableMetaData']['table']['pk_name']);
 
         if (isset($this->tableActionViews) && is_object($this->tableActionViews))
