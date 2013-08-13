@@ -40,7 +40,7 @@
         <tr>
             <th></th>
             @foreach($data[0] as $name=>$field)
-            @if ($meta[$name]['display_type_id'] > 1)
+            @if ($displayTypes[$meta[$name]['display_type_id']] != 'nodisplay')
             <th>{{$meta[$name]['label']}}</th>
             @if (isset($meta[$name]['pk']))
             {{-- this is a foreign key, it contains a reference to a primary key --}}
@@ -73,7 +73,7 @@
                 </div>
             </td>
             @foreach($record as $name=>$value)
-            @if ($meta[$name]['display_type_id'] > 1)
+            @if ($displayTypes[$meta[$name]['display_type_id']] != 'nodisplay')
             @if((isset($prefix) && isset($prefix[$name])) || (isset($meta) && isset($meta[$name]) && $meta[$name]['key'] == 'PRI'))
             <td>
                 <a href="{{$prefix[$name]}}{{$value}}">{{$value}}</a>
