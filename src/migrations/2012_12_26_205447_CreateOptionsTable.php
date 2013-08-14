@@ -19,6 +19,7 @@ class CreateOptionsTable extends Migration {
                     {
                         $table->increments('id')->unique();
                         $table->string('name', 100)->nullable();
+                        $table->string('value', 100)->nullable();
                         $table->integer('option_type_id')->nullable();
                         $table->timestamps();
                     });
