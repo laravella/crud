@@ -53,7 +53,7 @@ class DbController extends Controller {
     {
         $action = 'getIndex';
 
-        return View::make("crud::dbinstall", array('action' => $action));
+        return View::make("crud::dbview", array('action' => $action));
     }
 
     /**

@@ -11,6 +11,7 @@
 @include("crud::getindex")
 @include("crud::getinsert")
 @include("crud::getselect")
+@include("crud::getupload")
 
 @include("crud::bottom")
 
