@@ -20,7 +20,10 @@ class CrudDatabaseSeeder extends Seeder {
         Log::write("success", "Populated users");
         
         $this->call('SeedMenus');
-        Log::write("success", "Populated menus");
+        Log::write("success", "Populated _db_menus");
+
+        $this->call('SeedOptions');
+        Log::write("success", "Populated _db_options");
 
         $this->call('SeedSeverities');
         Log::write("success", "Populated severities");

@@ -19,6 +19,7 @@ class CreateOptionTypesTable extends Migration {
                     {
                         $table->increments('id')->unique();
                         $table->string('name', 100);
+                        $table->integer('parent_id')->unsigned();
                         $table->timestamps();
                     });
         }

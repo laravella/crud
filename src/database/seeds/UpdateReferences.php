@@ -103,6 +103,8 @@ class UpdateReferences extends Seeder {
             $this->__updateReference('medias', 'mcollection_id', 'mcollections', 'id', 'name');
             $this->__updateReference('medias', 'user_id', 'users', 'id', 'username');
             
+            $this->__updateReference('_db_options', 'option_type_id', 'option_types', 'id', 'name');
+            
             Log::write("success", "Completed foreign key references");
         }
         catch (Exception $e)
