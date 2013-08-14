@@ -104,6 +104,7 @@ class UpdateReferences extends Seeder {
             $this->__updateReference('medias', 'user_id', 'users', 'id', 'username');
             
             $this->__updateReference('_db_options', 'option_type_id', '_db_option_types', 'id', 'name');
+            $this->__updateReference('_db_option_types', 'parent_id', '_db_option_types', 'id', 'name');
             
             Log::write("success", "Completed foreign key references");
         }
