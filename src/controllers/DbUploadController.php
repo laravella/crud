@@ -11,7 +11,7 @@ class DbUploadController extends DbController {
 
     public function postUpload()
     {
-        
+        $action = 'postUpload';
     }
 
     public function getUpload()

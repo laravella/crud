@@ -21,6 +21,14 @@ class SeedActions extends Seeder {
         DB::table('_db_actions')->insert($arr);
         Log::write("success", " - getEdit action created");
 
+        $arr = array("name" => "getUpload");
+        DB::table('_db_actions')->insert($arr);
+        Log::write("success", " - getUpload action created");
+
+        $arr = array("name" => "postUpload");
+        DB::table('_db_actions')->insert($arr);
+        Log::write("success", " - postUpload action created");
+
         $arr = array("name" => "postEdit");
         DB::table('_db_actions')->insert($arr);
         Log::write("success", " - postEdit action created");
