@@ -18,9 +18,12 @@
 
         <!-- CSS -->
         <link rel="stylesheet" href="{{ asset('assets/styles/css/main.css')}} ">
+        <link rel="stylesheet" href="/packages/laravella/crud/assets/styles/adminstyles.css">
 
         <!-- JS -->
         <script src="{{ asset('assets/scripts/js/vendor/modernizr-2.6.2.min.js') }}"></script>
+        <script type="text/javascript" src="/packages/laravella/crud/assets/scripts/jsonconvert.js"></script>
+        <script type="text/javascript" src="/packages/laravella/crud/assets/scripts/admintools.js"></script>
 
         <!-- Images -->
         <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{ asset('assets/images/apple-touch-icon-144-precomposed.png') }}">
