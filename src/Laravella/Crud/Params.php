@@ -115,7 +115,7 @@ class Params {
     }
 
     /**
-     * For Edit
+     * Instantiate a Params object to use for Editing
      * 
      * @param type $status
      * @param type $message
@@ -131,9 +131,9 @@ class Params {
      * @param type $primaryTables
      * @return \Laravella\Crud\Params
      */
-    public static function forEdit($status, $message, $log, $view = null, $action = "", $tableMeta = null, $tableActionViews = null, $prefix = "", $selects = null, $displayType = "text/html", $tables = null, $paginated = null, $primaryTables = null)
+    public static function forEdit($status = "success", $message = "", $log = array(), $view = null, $action = "", $tableMeta = null, $tableActionViews = null, $prefix = "", $selects = null, $displayType = "text/html", $tables = null, $paginated = null, $primaryTables = null)
     {
-        $params = new Params();
+        $params = new Params($status, $message, $log);
         return $params;
     }
 
