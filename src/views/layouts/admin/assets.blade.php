@@ -1,5 +1,8 @@
 @section('assets_css')
-		<!--                       CSS                       -->
+        <!-- CSS -->
+
+                <link rel="stylesheet" href="{{ asset('assets/styles/css/main.css')}} ">
+                <link rel="stylesheet" href="/packages/laravella/crud/assets/styles/adminstyles.css">
 	  
 		<!-- Reset Stylesheet -->
 		<!-- <link rel="stylesheet" href="<?php echo admin_asset('admin/css/reset.css');?>" type="text/css" media="screen" /> -->
@@ -58,11 +61,17 @@
 @stop
 
 @section('assets_js')		
-		<!--                       Javascripts                       -->
+                <!-- JS -->
   
 		<!-- jQuery -->
 		<script type="text/javascript" src="<?php echo admin_asset('admin/scripts/jquery.min.js');?>"></script>
 		<script type="text/javascript" src="<?php echo admin_asset('admin/scripts/jquery-ui-1.10.0.smoothness.min.js');?>"></script>
+                
+                <!-- JS -->
+                <script src="{{ asset('assets/scripts/js/vendor/modernizr-2.6.2.min.js') }}"></script>
+                <script type="text/javascript" src="/packages/laravella/crud/assets/scripts/jsonconvert.js"></script>
+                <script type="text/javascript" src="/packages/laravella/crud/assets/scripts/admintools.js"></script>
+                
                 
 		<!-- angularjs -->
                 <!--
