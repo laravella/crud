@@ -13,31 +13,31 @@ class CrudDatabaseSeeder extends Seeder {
         
          **/
 
-        $this->call('SeedUsergroups');
+        $this->call('Laravella\Crud\SeedUsergroups');
         Log::write("success", "Populated usergroups");
         
-        $this->call('SeedUsers');
+        $this->call('Laravella\Crud\SeedUsers');
         Log::write("success", "Populated users");
         
-        $this->call('SeedMenus');
+        $this->call('Laravella\Crud\SeedMenus');
         Log::write("success", "Populated _db_menus");
 
-        $this->call('SeedOptions');
+        $this->call('Laravella\Crud\SeedOptions');
         Log::write("success", "Populated _db_options");
 
-        $this->call('SeedSeverities');
+        $this->call('Laravella\Crud\SeedSeverities');
         Log::write("success", "Populated severities");
         
-        $this->call('SeedTables');
+        $this->call('Laravella\Crud\SeedTables');
         Log::write("success", "Populated _db_tables and _db_fields");
         
-        $this->call('SeedActions');
+        $this->call('Laravella\Crud\SeedActions');
         Log::write("success", "Populated _db_actions");
         
-        $this->call('SeedViews');
+        $this->call('Laravella\Crud\SeedViews');
         Log::write("success", "Populated _db_views");
         
-        $this->call('UpdateReferences');
+        $this->call('Laravella\Crud\UpdateReferences');
         Log::write("success", "References seeded");
         
     }

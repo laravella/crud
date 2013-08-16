@@ -1,4 +1,4 @@
-<?php
+<?php  namespace Laravella\Crud;
 
 use Laravella\Crud\Log;
 
