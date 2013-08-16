@@ -1,6 +1,9 @@
 <?php namespace Laravella\Crud;
 
 use Laravella\Crud\Log;
+use \Seeder;
+use \DB;
+
 
 class SeedDisplayTypes extends Seeder {
 

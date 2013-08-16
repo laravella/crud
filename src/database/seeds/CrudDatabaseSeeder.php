@@ -2,6 +2,8 @@
 
 use Laravella\Crud\Log;
 use \Seeder;
+use \DB;
+
 
 class CrudDatabaseSeeder extends Seeder {
 
