@@ -28,6 +28,16 @@ class SeedMenus extends Seeder
                 
                 $topMenuId = $this->__addMenu('TopMenu', '', 'icon-file', null);
                 DB::table('_db_menus')->where("id", $topMenuId)->update(array("parent_id"=>$topMenuId));
+
+                $contentId = $this->__addMenu('Contents', '', 'icon-file', $topMenuId);
+                $this->__addMenu('Pages', '/admin/pages/index', 'icon-file', $contentId);
+                $this->__addMenu('Posts', '/admin/posts/index', 'icon-file', $contentId);
+                $this->__addMenu('Post Categories', '/admin/categories/index', 'icon-file', $contentId);
+                $this->__addMenu('divider', '/db/select/users', 'icon-file', $contentId);
+                $this->__addMenu('Media Upload', '/admin/medias/index', 'icon-file', $contentId);
+                $this->__addMenu('Media', '/db/select/medias', 'icon-file', $contentId);
+                $this->__addMenu('Collections', '/db/select/mcollections', 'icon-file', $contentId);
+                $this->__addMenu('Galleries', '/db/select/galleries', 'icon-file', $contentId);
                 
                 $adminId = $this->__addMenu('Admin', '/db', 'icon-file', $topMenuId);
                 $this->__addMenu('Users', '/db/select/users', 'icon-file', $adminId);
@@ -40,11 +50,6 @@ class SeedMenus extends Seeder
                 $this->__addMenu('Menu Permissions', '/db/select/_db_menu_permissions', 'icon-file', $adminId);
                 $this->__addMenu('divider', null, '', $adminId);
                 $this->__addMenu('Options', '/db/select/_db_options', 'icon-file', $adminId);
-                $this->__addMenu('Option Types', '/db/select/_db_option_types', 'icon-file', $adminId);
-                
-                //users
-                //group permissions
-                //user permissions
                 
                 $metaDataId = $this->__addMenu('Meta Data', '/db', 'icon-file', $topMenuId);
                 $this->__addMenu('Home', '/', 'icon-file', $metaDataId);
@@ -55,11 +60,13 @@ class SeedMenus extends Seeder
                 $this->__addMenu('Views', '/db/select/_db_views', 'icon-file', $metaDataId);
                 $this->__addMenu('Action Views', '/db/select/_db_table_action_views', 'icon-file', $metaDataId);
                 $this->__addMenu('divider', null, '', $metaDataId);
+                $this->__addMenu('Option Types', '/db/select/_db_option_types', 'icon-file', $metaDataId);
+                $this->__addMenu('divider', null, '', $metaDataId);
                 $this->__addMenu('Log', '/db/select/_db_log', 'icon-file', $metaDataId);
                 $this->__addMenu('Audit', '/db/select/_db_audit', 'icon-file', $metaDataId);
-//                $this->__addMenu('divider', null, '', $metaDataId);
-//                $this->__addMenu('Install', '/dbinstall/install', 'icon-file', $metaDataId);
-//                $this->__addMenu('Reinstall', '/dbinstall/reinstall', 'icon-file', $metaDataId);
+                
+                $this->__addMenuPermissions($contentId, 'superadmin');
+                $this->__addMenuPermissions($contentId, 'admin');
                 
                 $this->__addMenuPermissions($metaDataId, 'superadmin');
                 $this->__addMenuPermissions($metaDataId, 'admin');
@@ -67,15 +74,6 @@ class SeedMenus extends Seeder
                 $this->__addMenuPermissions($adminId, 'superadmin');
                 $this->__addMenuPermissions($adminId, 'admin');
                 
-                //tables
-                //fields
-                //actions
-                //views
-                //action views
-                //log
-                //audit
-                //install
-                //reinstall
 		
 	}
 }
