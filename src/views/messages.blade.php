@@ -1,13 +1,14 @@
 {{-------------------------------------------------------- messages --------------}}
 
 @section('messages')
+
 <!-- definitive status message -->
-<div class="alert alert-{{$status}}" id="msg-alert">
+<div class="alert alert-{{$status}}" id="msg-alert" style="margin-top:auto">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
     <strong>{{$status}}</strong>
     {{$message}}
     <br />
-</div>
+</div>   
 
 <!-- detailed error messages -->
 <!-- <div class="alert alert-success alert-error alert-block"> -->

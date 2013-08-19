@@ -1,5 +1,4 @@
 {{-------------------------------------------------------- getEdit --------------}}
-
 @section('getEdit') 
 @if($action == 'getEdit')
 
@@ -18,9 +17,11 @@
         <a href="#" id="btnVisualize" onclick="javascript:debugBox();" class="btn">Debug</a>
         <a href="#" id="btnLog" onclick="javascript:logBox();" class="btn">Log</a>
     </div>
+    
     <div class="btn-group pull-right">
         <a href="/db/select/{{$tableName}}" id="btnVisualize" class="btn"><i class="icon-remove"></i></a>
     </div>
+    
 </div>
 
 @yield('messages')
@@ -55,7 +56,11 @@
                 </select>
             </div>
             @else
-            <div class="span4"><input type="text" style="width:{{$field['width']}}px" name="{{$field['name']}}" value="{{$record[$field['name']]}}" /></div>
+                @if ($displayTypes[$field['display_type_id']] == 'link')
+                    <div class="span4"><a href="{{$record[$field['name']]}}">{{$record[$field['name']]}}</a></div>
+                @else
+                    <div class="span4"><input type="text" style="width:{{$field['width']}}px" name="{{$field['name']}}" value="{{$record[$field['name']]}}" /></div>
+                @endif
             @endif
         </div>
         @endif
@@ -89,3 +94,4 @@
 
 @endif
 @stop
+
