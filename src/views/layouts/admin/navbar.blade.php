@@ -19,6 +19,7 @@
 				</ul>
                             -->
                             
+                            {{--
                                 @if (Auth::check())
 				<ul class="nav">
 					<li class="dropdown">
@@ -33,7 +34,6 @@
 					</li>
 				</ul>
                                 @endif
-                            {{--
 				<ul class="nav">
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown"> Meta Data<b class="caret"></b></a>
@@ -62,7 +62,6 @@
 						</ul>								
 					</li>
 				</ul>
-                            --}}
                                 @if (Auth::check())
 				<ul class="nav">
 					<li class="dropdown">
@@ -80,6 +79,7 @@
 					</li>
 				</ul>
                                 @endif
+                            --}}
                                 
                                 @if(isset($menu) && is_array($menu))
                                     @foreach($menu as $label=>$menuGroup)
