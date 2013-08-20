@@ -73,28 +73,37 @@
                 </div>
             </td>
             @foreach($record as $name=>$value)
-            @if ($displayTypes[$meta[$name]['display_type_id']] != 'nodisplay')
-            @if((isset($prefix) && isset($prefix[$name])) || (isset($meta) && isset($meta[$name]) && $meta[$name]['key'] == 'PRI'))
-            <td>
-                <a href="{{$prefix[$name]}}{{$value}}">{{$value}}</a>
-                <input data-tablename="{{$tableName}}" data-recordid="{{$record->id}}" data-fieldname="{{$name}}" type="hidden" value="{{$value}}" id="{{$tableName}}-{{$record->id}}-{{$name}}" class="hover-edit fld-{{$tableName}}-{{$record->id}}" /></div>
-            </td>
-            @else
-            {{-- hover-edit : see : https://github.com/mruoss/HoverEdit-jQuery-Plugin --}}
+                @if ($displayTypes[$meta[$name]['display_type_id']] == 'nodisplay')
+                @elseif ($displayTypes[$meta[$name]['display_type_id']] == 'thumbnail')
+                    <td>
+                        @if(file_exists('/var/sites/sbidz.digitalpro.co.za/public/uploads/thumbnail/'.$record->file_name))
+                            <a href="{{$prefix[$name]}}{{$value}}"><img src="/uploads/thumbnail/{{$record->file_name}}" class="img-rounded" style="width:80px; height:80px; max-width:80px" /></a>
+                        @else
+                            <i class="icon-file"> </i>
+                        @endif
+                            <input data-tablename="{{$tableName}}" data-recordid="{{$record->id}}" data-fieldname="{{$name}}" type="hidden" value="{{$value}}" id="{{$tableName}}-{{$record->id}}-{{$name}}" class="hover-edit fld-{{$tableName}}-{{$record->id}}" />
+                    </td>
+                @else
+                    @if((isset($prefix) && isset($prefix[$name])) || (isset($meta) && isset($meta[$name]) && $meta[$name]['key'] == 'PRI'))
+                        <td>
+                            <a href="{{$prefix[$name]}}{{$value}}">{{$value}}</a>
+                            <input data-tablename="{{$tableName}}" data-recordid="{{$record->id}}" data-fieldname="{{$name}}" type="hidden" value="{{$value}}" id="{{$tableName}}-{{$record->id}}-{{$name}}" class="hover-edit fld-{{$tableName}}-{{$record->id}}" />
+                        </td>
+                    @else
+                        {{-- hover-edit : see : https://github.com/mruoss/HoverEdit-jQuery-Plugin --}}
 
-            <td>
-                <input data-tablename="{{$tableName}}" data-recordid="{{$record->id}}" data-fieldname="{{$name}}" style="width:{{$meta[$name]['width']}}px" type="text" value="{{$value}}" id="{{$tableName}}-{{$record->id}}-{{$name}}" class="hover-edit fld-{{$tableName}}-{{$record->id}}" /></div>
-            </td>
-            @if(isset($meta[$name]['pk']))
-            {{-- this is a foreign key, it contains a reference to a primary key --}}
-            <td>
-                <a href="/db/edit/{{$meta[$name]['pk']['tableName']}}/{{$value}}">{{$pkTables[$meta[$name]['pk']['tableName']][$value]}}</a>
-                <input data-tablename="{{$tableName}}" data-recordid="{{$record->id}}" data-fieldname="{{$name}}" type="hidden" value="{{$value}}" id="{{$tableName}}-{{$record->id}}-{{$name}}" class="hover-edit fld-{{$tableName}}-{{$record->id}}" /></div>
-            </td> 
-            @endif
-
-            @endif
-            @endif
+                        <td>
+                            <input data-tablename="{{$tableName}}" data-recordid="{{$record->id}}" data-fieldname="{{$name}}" style="width:{{$meta[$name]['width']}}px" type="text" value="{{$value}}" id="{{$tableName}}-{{$record->id}}-{{$name}}" class="hover-edit fld-{{$tableName}}-{{$record->id}}" />
+                        </td>
+                        @if(isset($meta[$name]['pk']))
+                        {{-- this is a foreign key, it contains a reference to a primary key --}}
+                        <td>
+                            <a href="/db/edit/{{$meta[$name]['pk']['tableName']}}/{{$value}}">{{$pkTables[$meta[$name]['pk']['tableName']][$value]}}</a>
+                            <input data-tablename="{{$tableName}}" data-recordid="{{$record->id}}" data-fieldname="{{$name}}" type="hidden" value="{{$value}}" id="{{$tableName}}-{{$record->id}}-{{$name}}" class="hover-edit fld-{{$tableName}}-{{$record->id}}" />
+                        </td> 
+                        @endif
+                    @endif
+                @endif
             @endforeach
         </tr>
         @endforeach
