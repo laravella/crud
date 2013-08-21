@@ -25,17 +25,17 @@ class UpdateReferences extends Seeder {
         //get the id of the primary key field in _db_fields
         //for each field in the _db_fields table there will thus be a reference to 
         $pkFieldId = DB::table('_db_fields')
-                ->where('_db_table_id', $pkTableId)
+                ->where('table_id', $pkTableId)
                 ->where('name', $pkFieldName)
                 ->pluck('id');
 
         $pkDisplayFieldId = DB::table('_db_fields')
-                ->where('_db_table_id', $pkTableId)
+                ->where('table_id', $pkTableId)
                 ->where('name', $pkDisplayFieldName)
                 ->pluck('id');
 
         $fkFieldId = DB::table('_db_fields')
-                ->where('_db_table_id', $fkTableId)
+                ->where('table_id', $fkTableId)
                 ->where('name', $fkFieldName)
                 ->pluck('id');
 
@@ -52,14 +52,14 @@ class UpdateReferences extends Seeder {
 
 //set the reference on the fk field
         DB::table('_db_fields')
-                ->where('_db_table_id', $fkTableId)
+                ->where('table_id', $fkTableId)
                 ->where('name', $fkFieldName)
                 ->update(array('pk_field_id' => $pkFieldId, 'pk_display_field_id' => $pkDisplayFieldId));
         /*
           $this->__log("success", "updating record : {$fkRec->id}");
 
           DB::table('_db_fields')
-          ->where('_db_table_id', $fkTableId)
+          ->where('table_id', $fkTableId)
           ->where('name', $fkFieldName)
           ->update(array('pk_field_id' => $fieldId));
          */
@@ -78,7 +78,7 @@ class UpdateReferences extends Seeder {
             // create foreign key references with
             // log, fkTableName, fkFieldName, pkTableName, pkFieldName, pkDisplayFieldName
 
-            $this->__updateReference('_db_fields', '_db_table_id', '_db_tables', 'id', 'name');
+            $this->__updateReference('_db_fields', 'table_id', '_db_tables', 'id', 'name');
             $this->__updateReference('_db_fields', 'pk_field_id', '_db_fields', 'id', 'fullname');
             $this->__updateReference('_db_fields', 'pk_display_field_id', '_db_fields', 'id', 'fullname');
             $this->__updateReference('_db_fields', 'display_type_id', '_db_display_types', 'id', 'name');

@@ -34,14 +34,14 @@ class CreateFieldsTable extends Migration {
                         $table->string('default', 100)->nullable();         // default value
                         $table->string('extra', 100)->nullable();
                         $table->string('href', 100)->nullable();            //hyperlink this field with the href link
-                        $table->integer('_db_table_id')->unsigned();        // links to _db_tables.id
+                        $table->integer('table_id')->unsigned();        // links to _db_tables.id
                         $table->integer('pk_field_id')->unsigned();                // links to _db_fields.id (the id of the primary key)
                         $table->integer('pk_display_field_id')->unsigned();        // links to _db_fields.id (the id of a field in the primary table that will be used as a description of the primary key id)
                         $table->timestamps();
 
                         /*
-                          $table->unique(array('_db_table_id', 'name'));
-                          $table->foreign('_db_table_id')->references('id')->on('_db_tables')->onDelete('cascade');
+                          $table->unique(array('table_id', 'name'));
+                          $table->foreign('table_id')->references('id')->on('_db_tables')->onDelete('cascade');
                          */
                     });
         }

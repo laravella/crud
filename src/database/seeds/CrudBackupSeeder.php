@@ -30,7 +30,7 @@ class CrudBackupSeeder extends Seeder {
     a.`name` action_name, 
     dt.`name` display_type_name
     from _db_tables t 
-    inner join _db_fields f on f._db_table_id = t.id
+    inner join _db_fields f on f.table_id = t.id
     left outer join _db_widget_types wt on wt.id = f.widget_type_id
     left outer join _db_table_action_views tav on t.id = tav.table_id
     left outer join _db_views v on tav.view_id = v.id

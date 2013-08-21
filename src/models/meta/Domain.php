@@ -113,13 +113,13 @@
                     $table->string('default', 100)->nullable();         // default value
                     $table->string('extra', 100)->nullable();
                     $table->string('href', 100)->nullable();            //hyperlink this field with the href link
-                    $table->integer('_db_table_id')->unsigned();        // links to _db_tables.id
+                    $table->integer('table_id')->unsigned();        // links to _db_tables.id
                     $table->integer('pk_field_id')->unsigned();                // links to _db_fields.id (the id of the primary key)
                     $table->integer('pk_display_field_id')->unsigned();        // links to _db_fields.id (the id of a field in the primary table that will be used as a description of the primary key id)
                     $table->timestamps();                    
                     
-                    $table->unique(array('_db_table_id', 'name'));
-                    $table->foreign('_db_table_id')->references('id')->on('_db_tables')->onDelete('cascade');
+                    $table->unique(array('table_id', 'name'));
+                    $table->foreign('table_id')->references('id')->on('_db_tables')->onDelete('cascade');
                 });
     }
 
@@ -279,7 +279,7 @@
                             {
                                 // the fields that will go into _db_fields
                                 $colRec = array();
-                                $colRec['_db_table_id'] = $id;
+                                $colRec['table_id'] = $id;
                                 $colRec['name'] = $col->Field;
                                 $colRec['label'] = $this->__makeLabel($col->Field);
                                 if ($col->Field == "created_at" || $col->Field == "updated_at") {
@@ -490,17 +490,17 @@
         //get the id of the primary key field in _db_fields
         //for each field in the _db_fields table there will thus be a reference to 
         $pkFieldId = DB::table('_db_fields')
-                ->where('_db_table_id', $pkTableId)
+                ->where('table_id', $pkTableId)
                 ->where('name', $pkFieldName)
                 ->pluck('id');
 
         $pkDisplayFieldId = DB::table('_db_fields')
-                ->where('_db_table_id', $pkTableId)
+                ->where('table_id', $pkTableId)
                 ->where('name', $pkDisplayFieldName)
                 ->pluck('id');
 
         $fkFieldId = DB::table('_db_fields')
-                ->where('_db_table_id', $fkTableId)
+                ->where('table_id', $fkTableId)
                 ->where('name', $fkFieldName)
                 ->pluck('id');
 
@@ -517,14 +517,14 @@
 
 //set the reference on the fk field
         DB::table('_db_fields')
-                ->where('_db_table_id', $fkTableId)
+                ->where('table_id', $fkTableId)
                 ->where('name', $fkFieldName)
                 ->update(array('pk_field_id' => $pkFieldId, 'pk_display_field_id' => $pkDisplayFieldId));
         /*
           $this->__log("success", "updating record : {$fkRec->id}");
 
           DB::table('_db_fields')
-          ->where('_db_table_id', $fkTableId)
+          ->where('table_id', $fkTableId)
           ->where('name', $fkFieldName)
           ->update(array('pk_field_id' => $fieldId));
          */
@@ -543,7 +543,7 @@
             // create foreign key references with
             // log, fkTableName, fkFieldName, pkTableName, pkFieldName, pkDisplayFieldName
             
-            $this->__updateReference('_db_fields', '_db_table_id', '_db_tables', 'id', 'name');
+            $this->__updateReference('_db_fields', 'table_id', '_db_tables', 'id', 'name');
 
             $this->__updateReference('_db_table_action_views', 'view_id', '_db_views', 'id', 'name');
             $this->__updateReference('_db_table_action_views', 'table_id', '_db_tables', 'id', 'name');

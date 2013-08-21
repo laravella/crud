@@ -103,7 +103,7 @@ class SeedTables extends Seeder {
                             {
 // the fields that will go into _db_fields
                                 $colRec = array();
-                                $colRec['_db_table_id'] = $id;
+                                $colRec['table_id'] = $id;
                                 $colRec['name'] = $col->Field;
                                 $colRec['fullname'] = $tableName.".".$col->Field;
                                 $colRec['label'] = $this->__makeLabel($col->Field);
