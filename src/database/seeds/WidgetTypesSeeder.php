@@ -32,6 +32,7 @@ class SeedWidgetTypes extends Seeder {
         $this->__addWidgetType('password');
         $this->__addWidgetType('password:hashed');
         $this->__addWidgetType('password:md5');
+        $this->__addWidgetType('thumbnail');
     }
 
 }
