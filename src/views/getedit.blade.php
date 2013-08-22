@@ -41,25 +41,14 @@
         <div class="row">
             <div class="span4">{{$field['label']}}</div>
             @if(isset($field['key']) && $field['key'] == 'PRI')
-            <div class="span4"><input type="text" disabled name="{{$field['name']}}" value="{{$record[$field['name']]}}" /></div>
+                @include("crud::widgets.input")
             @elseif(isset($field['pk']))
-            <div class="span4">
-                <select name="{{$field['name']}}">
-                    <option value="">-- {{$field['label']}} --</option>
-                    @foreach($selects[$field['name']] as $option)
-                        @if($option['value'] == $record[$field['name']])
-                        <option selected value="{{$option['value']}}">{{$option['text']}}</option>
-                        @else
-                        <option value="{{$option['value']}}">{{$option['text']}}</option>
-                        @endif
-                    @endforeach
-                </select>
-            </div>
+                @include("crud::widgets.select")
             @else
                 @if ($displayTypes[$field['display_type_id']] == 'link')
-                    <div class="span4"><a href="{{$record[$field['name']]}}">{{$record[$field['name']]}}</a></div>
+                    @include("crud::widgets.link")
                 @else
-                    <div class="span4"><input type="text" style="width:{{$field['width']}}px" name="{{$field['name']}}" value="{{$record[$field['name']]}}" /></div>
+                    @include("crud::widgets.input")
                 @endif
             @endif
         </div>

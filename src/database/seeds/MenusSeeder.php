@@ -52,6 +52,8 @@ class SeedMenus extends Seeder
                 $this->__addMenu('Menu Permissions', '/db/select/_db_menu_permissions', 'icon-file', $adminId);
                 $this->__addMenu('divider', null, '', $adminId);
                 $this->__addMenu('Options', '/db/select/_db_options', 'icon-file', $adminId);
+                $this->__addMenu('Display Types', '/db/select/_db_display_types', 'icon-file', $adminId);
+                $this->__addMenu('Widget Types', '/db/select/_db_widget_types', 'icon-file', $adminId);
                 
                 $metaDataId = $this->__addMenu('Meta Data', '/db', 'icon-file', $topMenuId);
                 $this->__addMenu('Home', '/', 'icon-file', $metaDataId);

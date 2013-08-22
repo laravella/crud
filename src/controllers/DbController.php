@@ -1,7 +1,9 @@
-<?php
+<?php use Laravella\Crud\Params;
 
-use Laravella\Crud\Params;
-
+/**
+ * All database requests are handled by this controller, 
+ * even the DbApiController ones, although DbApiController is leaner on the response i.e. json.
+ */
 class DbController extends Controller {
 
     protected $layout = 'crud::layouts.default';

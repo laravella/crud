@@ -24,6 +24,7 @@ class Params {
     public $status = "success";
     public $displayType = "text/html";
     public $displayTypes = array();
+    public $widgetTypes = array();
     public $menu = array();
 
     /**
@@ -65,6 +66,7 @@ class Params {
         $this->primaryTables = $primaryTables;
         $this->dataA = $dataA;
         $this->displayTypes = $this->__getDisplayTypes();
+        $this->widgetTypes = $this->__getWidgetTypes();
 
         if (Auth::check())
         {
@@ -73,11 +75,32 @@ class Params {
         }
     }
 
+    /**
+     * get all entries from _db_display_types
+     * This determines under which conditions a field will be displayed
+     * 
+     * @return type
+     */
     private function __getDisplayTypes() {
         $displayTypes = DB::table('_db_display_types')->get();
         $dtA = array();
         foreach($displayTypes as $displayType) {
             $dtA[$displayType->id] = $displayType->name;
+        }
+        return $dtA;
+    }
+    
+    /**
+     * get all entries from _db_widget_types
+     * This determines how a field will be displayed, what it will look like
+     * 
+     * @return type
+     */
+    private function __getWidgetTypes() {
+        $widgetTypes = DB::table('_db_widget_types')->get();
+        $dtA = array();
+        foreach($widgetTypes as $widgetType) {
+            $dtA[$widgetType->id] = $widgetType->name;
         }
         return $dtA;
     }
@@ -144,10 +167,8 @@ class Params {
      * pagesize
      * selects
      */
-
     public function asArray()
     {
-
         $returnA = array("action" => $this->action,
             "meta" => $this->tableMeta['fields_array'],
             "tableName" => $this->tableMeta['table']['name'],
@@ -165,7 +186,8 @@ class Params {
             "dataA" => $this->dataA,
             "pkTables" => $this->primaryTables,
             "menu" => $this->menu,
-            "displayTypes" => $this->displayTypes
+            "displayTypes" => $this->displayTypes,
+            "widgetTypes" => $this->widgetTypes
         ); //$this->tables[$tableName]['tableMetaData']['table']['pk_name']);
 
         if (isset($this->tableActionViews) && is_object($this->tableActionViews))

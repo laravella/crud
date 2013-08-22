@@ -25,6 +25,7 @@ class SeedDisplayTypes extends Seeder {
         $this->__addDisplayType(4, 'hidden');
         $this->__addDisplayType(5, 'link');
         $this->__addDisplayType(6, 'thumbnail');
+        $this->__addDisplayType(7, 'widget');
     }
 
 }

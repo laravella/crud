@@ -28,6 +28,7 @@
         @elseif(isset($field['pk']))
         <div class="span4">
             <select name="{{$field['name']}}">
+                <option value="">-- {{$field['label']}} --</option>
                 @foreach($selects[$field['name']] as $option)
                 @if($option['value'] == $field['default'])
                 <option selected value="{{$option['value']}}">{{$option['text']}}</option>
