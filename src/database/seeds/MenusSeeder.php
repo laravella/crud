@@ -52,8 +52,6 @@ class SeedMenus extends Seeder
                 $this->__addMenu('Menu Permissions', '/db/select/_db_menu_permissions', 'icon-file', $adminId);
                 $this->__addMenu('divider', null, '', $adminId);
                 $this->__addMenu('Options', '/db/select/_db_options', 'icon-file', $adminId);
-                $this->__addMenu('Display Types', '/db/select/_db_display_types', 'icon-file', $adminId);
-                $this->__addMenu('Widget Types', '/db/select/_db_widget_types', 'icon-file', $adminId);
                 
                 $metaDataId = $this->__addMenu('Meta Data', '/db', 'icon-file', $topMenuId);
                 $this->__addMenu('Home', '/', 'icon-file', $metaDataId);
@@ -65,6 +63,8 @@ class SeedMenus extends Seeder
                 $this->__addMenu('Action Views', '/db/select/_db_table_action_views', 'icon-file', $metaDataId);
                 $this->__addMenu('divider', null, '', $metaDataId);
                 $this->__addMenu('Option Types', '/db/select/_db_option_types', 'icon-file', $metaDataId);
+                $this->__addMenu('Display Types', '/db/select/_db_display_types', 'icon-file', $metaDataId);
+                $this->__addMenu('Widget Types', '/db/select/_db_widget_types', 'icon-file', $metaDataId);
                 $this->__addMenu('divider', null, '', $metaDataId);
                 $this->__addMenu('Log', '/db/select/_db_log', 'icon-file', $metaDataId);
                 $this->__addMenu('Audit', '/db/select/_db_audit', 'icon-file', $metaDataId);
