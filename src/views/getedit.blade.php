@@ -40,15 +40,43 @@
         @if ($displayTypes[$field['display_type_id']] != 'nodisplay')
         <div class="row">
             <div class="span4">{{$field['label']}}</div>
+            
             @if(isset($field['key']) && $field['key'] == 'PRI')
-                @include("crud::widgets.input")
+                <div class="span4"><input type="text" disabled name="{{$field['name']}}" value="{{$record[$field['name']]}}" /></div>
             @elseif(isset($field['pk']))
-                @include("crud::widgets.select")
+                <div class="span4">
+                    <select name="{{$field['name']}}">
+                        <option value="">-- {{$field['label']}} --</option>
+                        @foreach($selects[$field['name']] as $option)
+                            @if($option['value'] == $record[$field['name']])
+                            <option selected value="{{$option['value']}}">{{$option['text']}}</option>
+                            @else
+                            <option value="{{$option['value']}}">{{$option['text']}}</option>
+                            @endif
+                        @endforeach
+                    </select>
+                </div>
             @else
                 @if ($displayTypes[$field['display_type_id']] == 'link')
-                    @include("crud::widgets.link")
+                    <div class="span4"><a href="{{$record[$field['name']]}}">{{$record[$field['name']]}}</a></div>
+                @elseif ($displayTypes[$field['display_type_id']] == 'widget')
+                    @if ($widgetTypes[$field['widget_type_id']] == 'textarea')
+                        <div class="span6">
+                            <textarea style="width:{{$field['width']}}px" name="{{$field['name']}}">
+                                {{$record[$field['name']]}}
+                            </textarea>
+                        </div>
+                    @elseif ($widgetTypes[$field['widget_type_id']] == 'ckeditor')
+                        <div class="span6">
+                            <textarea style="width:{{$field['width']}}px" name="{{$field['name']}}">
+                                {{$record[$field['name']]}}
+                            </textarea>
+                        </div>
+                    @else
+                        <div class="span4"><input type="text" style="width:{{$field['width']}}px" name="{{$field['name']}}" value="{{$record[$field['name']]}}" /></div>
+                    @endif
                 @else
-                    @include("crud::widgets.input")
+                    <div class="span4"><input type="text" style="width:{{$field['width']}}px" name="{{$field['name']}}" value="{{$record[$field['name']]}}" /></div>
                 @endif
             @endif
         </div>
