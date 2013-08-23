@@ -68,9 +68,10 @@
                         </div>
                     @elseif ($widgetTypes[$field['widget_type_id']] == 'ckeditor')
                         <div class="span6">
-                            <textarea style="width:{{$field['width']}}px" name="{{$field['name']}}">
+                            <textarea class="ckeditor" style="width:{{$field['width']}}px" name="{{$field['name']}}">
                                 {{$record[$field['name']]}}
                             </textarea>
+                            <br />
                         </div>
                     @else
                         <div class="span4"><input type="text" style="width:{{$field['width']}}px" name="{{$field['name']}}" value="{{$record[$field['name']]}}" /></div>
