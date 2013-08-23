@@ -1,5 +1,5 @@
 <div class="container" id="footer">
 	<small>
-			&#169; Copyright 
+			<a style="color:#c0c0c0" href="http://laravella.github.io/docs/">laravella</a>
 	</small>
 </div><!-- End #footer -->

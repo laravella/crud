@@ -40,10 +40,17 @@ class CrudServiceProvider extends ServiceProvider {
                     return new DbGopher;
                 });
 
+        // Register 'underlyingclass' instance container to our UnderlyingClass object
+        $this->app['options'] = $this->app->share(function($app)
+                {
+                    return new Options;
+                });
+
         $this->app->booting(function()
                 {
                     $loader = \Illuminate\Foundation\AliasLoader::getInstance();
                     $loader->alias('DbGopher', 'Laravella\Crud\Facades\DbGopher');
+                    $loader->alias('Options', 'Laravella\Crud\Facades\Options');
                 });
     }
 

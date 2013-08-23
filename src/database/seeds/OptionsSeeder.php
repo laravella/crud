@@ -36,6 +36,9 @@ class SeedOptions extends Seeder {
         
         $optionTypeId = $this->__addOptionType('installation');
         $this->__addOption($optionTypeId, 'status', 0);
+        
+        //'site_root'
+        $this->__addOption($optionTypeId, 'site_root', '/var/sites');
     }
 
 }

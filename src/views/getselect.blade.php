@@ -76,7 +76,7 @@
                 @if ($displayTypes[$meta[$name]['display_type_id']] == 'nodisplay')
                 @elseif ($displayTypes[$meta[$name]['display_type_id']] == 'thumbnail')
                     <td>
-                        @if(file_exists('/var/sites/sbidz.digitalpro.co.za/public/uploads/thumbnail/'.$record->file_name))
+                        @if(file_exists('/uploads/thumbnail/'.$record->file_name))
                             <a href="{{$prefix[$name]}}{{$value}}"><img src="/uploads/thumbnail/{{$record->file_name}}" class="img-rounded" style="width:80px; height:80px; max-width:80px" /></a>
                         @else
                             <i class="icon-file"> </i>

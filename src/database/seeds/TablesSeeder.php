@@ -46,13 +46,18 @@ class SeedTables extends Seeder {
     {
         $types = array();
         DB::table('_db_display_types')->delete();
-        
+
+        /**
+         * force 0 for nodisplay (possibly obsolete)
+         */
         $types['nodisplay'] = DB::table('_db_display_types')->insertGetId(array('id'=>0, 'name'=>'nodisplay'));
 
         $types['edit'] = $this->__addDisplayType('edit');
         $types['display'] = $this->__addDisplayType('display');
         $types['hidden'] = $this->__addDisplayType('hidden');
         $types['link'] = $this->__addDisplayType('link');
+        $types['widget'] = $this->__addDisplayType('widget');
+        $types['thumbnail'] = $this->__addDisplayType('thumbnail');
         
         return $types;
     }    
