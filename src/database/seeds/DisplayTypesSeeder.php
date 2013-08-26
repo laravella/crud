@@ -4,7 +4,9 @@ use Laravella\Crud\Log;
 use \Seeder;
 use \DB;
 
-
+/**
+ * @deprecated see TablesSeeder.php
+ */
 class SeedDisplayTypes extends Seeder {
 
     private function __addDisplayType($id, $name)

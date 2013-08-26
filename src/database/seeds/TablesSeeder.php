@@ -32,6 +32,7 @@ class SeedTables extends Seeder {
         $wTypes['password']         = $this->__addWidgetType('password');
         $wTypes['password:hashed']  = $this->__addWidgetType('password:hashed');
         $wTypes['password:md5']     = $this->__addWidgetType('password:md5');
+        $wTypes['thumbnail']        = $this->__addWidgetType('thumbnail');
     }    
     
    private function __addDisplayType($name)

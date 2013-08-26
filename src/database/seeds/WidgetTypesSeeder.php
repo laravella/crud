@@ -5,6 +5,9 @@ use \Seeder;
 use \DB;
 
 
+/**
+ * @deprecated see TablesSeeder.php
+ */
 class SeedWidgetTypes extends Seeder {
 
     private function __addWidgetType($name)
