@@ -20,7 +20,7 @@ class SeedUsers extends Seeder {
     
         $adminUser = array('username' => $name, 'password' => $hashPass, 'email' => $email); //Config::get('crud::app.setup_user');
         $adminUser['activated'] = true;
-        $adminUser['api_token'] = makeApiKey();
+        $adminUser['api_token'] = $this->__makeApiKey();
         if (is_object($userGroup)) {
             $adminUser['usergroup_id'] = $userGroup->id;
             $this->command->info('usergroup id is : '.$userGroup->id);
@@ -36,13 +36,18 @@ class SeedUsers extends Seeder {
         
     }
     
+    private function __makeApiKey() {
+        $password = rand(23450987, 234509870);
+        $password = md5($password);
+        return $password;
+        
+    }
+    
     public function run()
     {
         DB::table('users')->delete();
         
-        $password = rand(23450987, 234509870);
-
-        $password = md5($password);
+        $password = $this->__makeApiKey();
         
         $shortPassword = substr($password,0,8);
         
