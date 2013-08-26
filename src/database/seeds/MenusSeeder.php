@@ -32,14 +32,22 @@ class SeedMenus extends Seeder
                 DB::table('_db_menus')->where("id", $topMenuId)->update(array("parent_id"=>$topMenuId));
 
                 $contentId = $this->__addMenu('Contents', '', 'icon-file', $topMenuId);
-                $this->__addMenu('Pages', '/admin/pages/index', 'icon-file', $contentId);
-                $this->__addMenu('Posts', '/admin/posts/index', 'icon-file', $contentId);
-                $this->__addMenu('Post Categories', '/admin/categories/index', 'icon-file', $contentId);
+                $this->__addMenu('Pages', '/db/select/contents', 'icon-file', $contentId);
+                $this->__addMenu('Post Categories', '/db/select/categories', 'icon-file', $contentId);
                 $this->__addMenu('divider', '/db/select/users', 'icon-file', $contentId);
-                $this->__addMenu('Media Upload', '/admin/medias/index', 'icon-file', $contentId);
                 $this->__addMenu('Media', '/db/select/medias', 'icon-file', $contentId);
                 $this->__addMenu('Collections', '/db/select/mcollections', 'icon-file', $contentId);
                 $this->__addMenu('Galleries', '/db/select/galleries', 'icon-file', $contentId);
+                
+//                $contentId = $this->__addMenu('Contents', '', 'icon-file', $topMenuId);
+//                $this->__addMenu('Pages', '/admin/pages/index', 'icon-file', $contentId);
+//                $this->__addMenu('Posts', '/admin/posts/index', 'icon-file', $contentId);
+//                $this->__addMenu('Post Categories', '/admin/categories/index', 'icon-file', $contentId);
+//                $this->__addMenu('divider', '/db/select/users', 'icon-file', $contentId);
+//                $this->__addMenu('Media Upload', '/admin/medias/index', 'icon-file', $contentId);
+//                $this->__addMenu('Media', '/db/select/medias', 'icon-file', $contentId);
+//                $this->__addMenu('Collections', '/db/select/mcollections', 'icon-file', $contentId);
+//                $this->__addMenu('Galleries', '/db/select/galleries', 'icon-file', $contentId);
                 
                 $adminId = $this->__addMenu('Admin', '/db', 'icon-file', $topMenuId);
                 $this->__addMenu('Users', '/db/select/users', 'icon-file', $adminId);
