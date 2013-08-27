@@ -4,7 +4,36 @@ use Laravella\Crud\Log;
 use \Seeder;
 use \DB;
 
+/*
+ * 
+ * 
+create table _db_bak_meta as select df.fullname, df.label, dt.`name` 
+from sbidz._db_fields df inner join _db_display_types dt on df.display_type_id = dt.id
 
+;
+
+update idz._db_fields iff 
+inner join idz._db_display_types dt on iff.display_type_id = dt.id
+inner join sbidz._db_bak_meta bk on iff.fullname = bk.fullname
+ set iff.label = bk.label 
+where iff.label <> bk.label;
+
+update idz._db_fields iff 
+inner join idz._db_display_types dt on iff.display_type_id = dt.id
+inner join sbidz._db_bak_meta bk on iff.fullname = bk.fullname
+inner join idz._db_display_types dtbk on dtbk.`name` = bk.`name`
+set iff.display_type_id = dtbk.id
+where dt.`name` <> bk.`name`;
+
+select iff.fullname, dt.`name`, dtbk.id, dtbk.name, iff.label, bk.*
+from idz._db_fields iff 
+inner join idz._db_display_types dt on iff.display_type_id = dt.id
+inner join sbidz._db_bak_meta bk on iff.fullname = bk.fullname
+inner join idz._db_display_types dtbk on dtbk.`name` = bk.name
+where iff.label <> bk.label or dt.name <> bk.name
+;
+
+ */
 class CrudBackupSeeder extends Seeder {
 
     public function run()
