@@ -13,6 +13,11 @@ Route::filter('crudauth', function()
             if (Auth::guest())
                 return Redirect::to('/account/login');
         });
+Route::get('admin', function()
+        {
+            Auth::logout();
+            return Redirect::to('/db/select/contents');
+        });
         
 Route::when('db/*', 'crudauth');
 Route::when('dbapi/*', 'crudauth');
