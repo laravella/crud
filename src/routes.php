@@ -11,7 +11,7 @@ Route::filter('crudauth', function()
             }
 
             if (Auth::guest())
-                return Redirect::to('/admin/login');
+                return Redirect::to('/account/login');
         });
         
 Route::when('db/*', 'crudauth');
