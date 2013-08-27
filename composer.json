@@ -1,6 +1,8 @@
 {
     "name": "laravella/crud",
     "description": "crud",
+    "keywords": ["laravel","cms","radiate","laravella","ravel"],
+    "license": "MIT",
     "authors": [
         {
             "name": "laravella",
