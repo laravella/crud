@@ -211,7 +211,7 @@ class Table extends Eloquent {
                         ->join('_db_display_types', '_db_fields.display_type_id', '=', '_db_display_types.id')
                         ->select('_db_fields.id', '_db_fields.name', '_db_fields.label', '_db_fields.key', 
                                 '_db_fields.display_type_id', '_db_fields.type', '_db_fields.length', '_db_fields.default', '_db_fields.extra', '_db_fields.href', '_db_fields.pk_field_id', '_db_fields.pk_display_field_id', '_db_fields.display_order', '_db_fields.width', '_db_fields.widget_type_id', '_db_fields.searchable')
-                        ->orderBy('display_order', 'desc')
+                        ->orderBy('display_order', 'asc')
                         ->where("_db_tables.name", "=", $tableName)->get();
 
         return $tableMeta;
