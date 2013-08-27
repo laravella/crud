@@ -39,7 +39,26 @@
             </select>
         </div>
         @else
-        <div class="span4"><input type="text" name="{{$field['name']}}" value="{{$field['default']}}" /></div>
+            @if ($displayTypes[$field['display_type_id']] == 'widget')
+                @if ($widgetTypes[$field['widget_type_id']] == 'textarea')
+                    <div class="span6">
+                        <textarea style="width:{{$field['width']}}px" name="{{$field['name']}}">
+                            {{$field['default']}}
+                        </textarea>
+                    </div>
+                @elseif ($widgetTypes[$field['widget_type_id']] == 'ckeditor')
+                    <div class="span6">
+                        <textarea class="ckeditor" style="width:{{$field['width']}}px" name="{{$field['name']}}">
+                            {{$field['default']}}
+                        </textarea>
+                        <br />
+                    </div>
+                @else
+                    <div class="span4"><input type="text" style="width:{{$field['width']}}px" name="{{$field['name']}}" value="{{$field['default']}}" /></div>
+                @endif
+            @else
+                <div class="span4"><input type="text" style="width:{{$field['width']}}px" name="{{$field['name']}}" value="{{$field['default']}}" /></div>
+            @endif
         @endif
     </div>
     @endif

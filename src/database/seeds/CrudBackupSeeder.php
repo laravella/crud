@@ -6,7 +6,6 @@ use \DB;
 
 /*
  * 
- * 
 create table _db_bak_meta as select df.fullname, df.label, dt.`name` 
 from sbidz._db_fields df inner join _db_display_types dt on df.display_type_id = dt.id
 

@@ -63,13 +63,13 @@
                     @if ($widgetTypes[$field['widget_type_id']] == 'textarea')
                         <div class="span6">
                             <textarea style="width:{{$field['width']}}px" name="{{$field['name']}}">
-                                {{$record[$field['name']]}}
+                                {{htmlentities($record[$field['name']])}}
                             </textarea>
                         </div>
                     @elseif ($widgetTypes[$field['widget_type_id']] == 'ckeditor')
                         <div class="span6">
                             <textarea class="ckeditor" style="width:{{$field['width']}}px" name="{{$field['name']}}">
-                                {{$record[$field['name']]}}
+                                {{htmlentities($record[$field['name']])}}
                             </textarea>
                             <br />
                         </div>

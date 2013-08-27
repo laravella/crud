@@ -40,13 +40,7 @@
         <tr>
             <th></th>
             @foreach($data[0] as $name=>$field)
-            @if ($displayTypes[$meta[$name]['display_type_id']] == 'nodisplay')
-            
-            @elseif ($displayTypes[$meta[$name]['display_type_id']] == 'widget' && $widgetTypes[$meta[$name]['widget_type_id']] == 'ckeditor')
-
-            @elseif ($displayTypes[$meta[$name]['display_type_id']] == 'widget' && $widgetTypes[$meta[$name]['widget_type_id']] == 'textarea')
-            
-            @else
+            @if ($displayTypes[$meta[$name]['display_type_id']] != 'nodisplay')
             <th>{{$meta[$name]['label']}}</th>
             @if (isset($meta[$name]['pk']))
             {{-- this is a foreign key, it contains a reference to a primary key --}}
@@ -82,16 +76,13 @@
                 @if ($displayTypes[$meta[$name]['display_type_id']] == 'nodisplay')
                 @elseif ($displayTypes[$meta[$name]['display_type_id']] == 'thumbnail')
                     <td>
-                        @if(file_exists(Options::get('site_root').'/public/uploads/thumbnail/'.$record->file_name))
+                        @if(file_exists('/var/sites/sbidz.digitalpro.co.za/public/uploads/thumbnail/'.$record->file_name))
                             <a href="{{$prefix[$name]}}{{$value}}"><img src="/uploads/thumbnail/{{$record->file_name}}" class="img-rounded" style="width:80px; height:80px; max-width:80px" /></a>
                         @else
                             <i class="icon-file"> </i>
                         @endif
                             <input data-tablename="{{$tableName}}" data-recordid="{{$record->id}}" data-fieldname="{{$name}}" type="hidden" value="{{$value}}" id="{{$tableName}}-{{$record->id}}-{{$name}}" class="hover-edit fld-{{$tableName}}-{{$record->id}}" />
                     </td>
-                @elseif ($displayTypes[$meta[$name]['display_type_id']] == 'widget' && $widgetTypes[$meta[$name]['widget_type_id']] == 'ckeditor')
-                
-                @elseif ($displayTypes[$meta[$name]['display_type_id']] == 'widget' && $widgetTypes[$meta[$name]['widget_type_id']] == 'textarea')
                 @else
                     @if((isset($prefix) && isset($prefix[$name])) || (isset($meta) && isset($meta[$name]) && $meta[$name]['key'] == 'PRI'))
                         <td>
