@@ -478,6 +478,34 @@ class DbController extends Controller {
         return $arr;
     }
 
+    protected function _customAction($parameters) {
+        $action = 'get'.$parameters[0];
+        $tableName = $parameters[1];
+        $identifier = (isset($parameters[2]))?$parameters[2]:'';
+
+        $tableMeta = Table::getTableMeta($tableName);
+
+        //get metadata as an array
+        $pkName = $tableMeta['table']['pk_name'];
+        
+        $table = null;
+        $pkName = ($tableName == 'contents')?'slug':'id';
+        
+        if (!empty($identifier)) {
+            $table = DB::table($tableName)->where($pkName, '=', $identifier);
+        } else if ($action == 'getRegister') {
+            $table = array();
+        } else {
+            $table = DB::table($tableName);
+        }
+        
+        $params = $this->__makeParams(self::INFO, 'Edit data.', $table, $tableName, $action);
+        $paramsA = $params->asArray();
+        
+        return View::make($paramsA['view']->name)->with($paramsA);
+//        return View::make('cart::layouts.frontend')->nest('content', $paramsA['view']->name, $paramsA);
+    }
+    
     /**
      * If method is not found
      * 
@@ -486,8 +514,9 @@ class DbController extends Controller {
      */
     public function missingMethod($parameters)
     {
-        print_r($parameters);
-        return "missing";
+        return $this->_customAction($parameters);
+//        print_r($parameters);
+//        return "missing";
     }
 
 }
