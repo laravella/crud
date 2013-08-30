@@ -2,7 +2,7 @@
 
 use Laravella\Crud\Log;
 use Seeder;
-use \Illuminate\Database\Schema as Schema;
+use \Schema;
 
 
 class CrudRestoreSeeder extends Seeder {
