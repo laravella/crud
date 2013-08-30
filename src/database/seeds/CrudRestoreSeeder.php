@@ -1,8 +1,8 @@
 <?php  namespace Laravella\Crud;
 
 use Laravella\Crud\Log;
-use \Seeder;
-use \DB;
+use Seeder;
+use \Illuminate\Database\Schema as Schema;
 
 
 class CrudRestoreSeeder extends Seeder {
