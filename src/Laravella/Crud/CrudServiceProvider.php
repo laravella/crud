@@ -1,8 +1,7 @@
-<?php
-
-namespace Laravella\Crud;
+<?php namespace Laravella\Crud;
 
 use Illuminate\Support\ServiceProvider;
+use Laravella\Crud;
 
 class CrudServiceProvider extends ServiceProvider {
 

@@ -37,7 +37,7 @@ class CrudBackupCommand extends Command {
 	 */
 	public function fire()
 	{
-		$this->call('db:seed',array('--class'=>'CrudBackupSeeder'));
+		$this->call('db:seed',array('--class'=>'Laravella\\Crud\\CrudBackupSeeder'));
 		$this->info('CRUD backup complete.');
 	}
 

@@ -37,7 +37,7 @@ class CrudRestoreCommand extends Command {
 	 */
 	public function fire()
 	{
-		$this->call('db:seed',array('--class'=>'CrudRestoreSeeder'));
+		$this->call('db:seed',array('--class'=>'Laravella\\Crud\\CrudRestoreSeeder'));
 		$this->info('CRUD restore complete.');
 		$this->info('Restore complete.');
 	}
