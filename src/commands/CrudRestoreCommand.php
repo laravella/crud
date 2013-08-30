@@ -50,7 +50,8 @@ class CrudRestoreCommand extends Command {
 	protected function getArguments()
 	{
 		return array(
-			//array('example', InputArgument::REQUIRED, 'An example argument.'),
+			array('list', InputArgument::OPTIONAL, 'List all available backups.'),
+			array('restore', InputArgument::OPTIONAL, 'Restore a specific backup, or the latest one if no id is specified.'),
 		);
 	}
 
@@ -62,7 +63,7 @@ class CrudRestoreCommand extends Command {
 	protected function getOptions()
 	{
 		return array(
-			//array('example', null, InputOption::VALUE_OPTIONAL, 'An example option.', null),
+			array('id', 'i', InputOption::VALUE_OPTIONAL, 'The id of the backup to restore. Use list argument to list available ids.', null),
 		);
 	}
 
