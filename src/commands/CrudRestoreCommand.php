@@ -41,7 +41,6 @@ class CrudRestoreCommand extends SeedCommand {
     {
         parent::__construct($resolver);
 
-        $this->resolver = $resolver;
     }
 
     /**
@@ -56,7 +55,11 @@ class CrudRestoreCommand extends SeedCommand {
 
         $backId = isset($options['id']) ? $this->option('id') : null;
 
-        parent::fire();
+        $this->resolver->setDefaultConnection($this->getDatabase());
+
+        $this->getSeeder()->run($backId);
+
+        $this->info('Database seeded!');
 
         //$this->call('db:seed', array('--class' => 'Laravella\\Crud\\CrudRestoreSeeder', '--id' => $backId));
         $this->info('CRUD restore complete.');

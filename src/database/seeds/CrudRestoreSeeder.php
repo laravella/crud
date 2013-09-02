@@ -8,7 +8,7 @@ use \DB;
 class CrudRestoreSeeder extends Seeder {
 
 
-    public function run()
+    public function run($bakId=null)
     {
         DB::transaction(function()
         {
