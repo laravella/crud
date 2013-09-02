@@ -11,13 +11,15 @@ class CrudBackupSeeder extends Seeder {
 
     public function run()
     {
+        DB::transaction(function()
+        {
         $pdo = DB::connection()->getPdo();
         $bakId = $this->makeBackup($pdo);
         $this->tableBackup($bakId, $pdo);
         $this->fieldBackup($bakId, $pdo);
         $this->menuBackup($bakId, $pdo);
         $this->permissionsBackup($bakId, $pdo);
-
+        });
     }
 
     public function tableBackup($bakId, $pdo)
@@ -27,7 +29,7 @@ class CrudBackupSeeder extends Seeder {
 from _db_tables t left outer join _db_table_action_views tav on t.id = tav.table_id
 left outer join _db_views v on tav.view_id = v.id
 left outer join _db_actions a on tav.action_id = a.id;";
-        
+
         if (!Schema::hasTable('_db_bak_tables'))
         {
             $sql = "create table _db_bak_tables as " . $selectMeta;
@@ -38,7 +40,7 @@ left outer join _db_actions a on tav.action_id = a.id;";
             $sql = "insert into _db_bak_tables " . $selectMeta;
             $pdo->query($sql);
         }
-        
+
         echo "tables backed up\n";
     }
 
@@ -88,7 +90,6 @@ left outer join _db_actions a on tav.action_id = a.id;";
             $pdo->query($sql);
         }
         echo "fields backed up\n";
-        
     }
 
     public function menuBackup($bakId, $pdo)
@@ -104,10 +105,10 @@ left outer join _db_actions a on tav.action_id = a.id;";
             $pdo->query($sql);
         }
         echo "menus backed up\n";
-        
     }
 
-    private function permissionsBackup($bakId, $pdo) {
+    private function permissionsBackup($bakId, $pdo)
+    {
         $selectPermissions = "select $bakId backup_id, u.username, u.email, u.`password`,
                 u.first_name, u.last_name, api_token, usergroup_id, ug.`group`,
                 deleted_at, t.`name` `table_name`, a.`name` action_name 
@@ -128,7 +129,6 @@ left outer join _db_actions a on tav.action_id = a.id;";
             $pdo->query($sql);
         }
         echo "permissions backed up\n";
-
     }
-    
+
 }

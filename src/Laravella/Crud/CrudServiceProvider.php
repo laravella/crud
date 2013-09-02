@@ -101,7 +101,7 @@ class CrudServiceProvider extends ServiceProvider {
     {
         $this->app['command.crud.restore'] = $this->app->share(function($app)
                 {
-                    return new CrudRestoreCommand();
+                    return new CrudRestoreCommand($app['db']);
                 });
     }
 
