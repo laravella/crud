@@ -39,7 +39,7 @@ class CrudRestoreCommand extends SeedCommand {
      */
     public function __construct(Resolver $resolver)
     {
-        parent::__construct();
+        parent::__construct($resolver);
 
         $this->resolver = $resolver;
     }
