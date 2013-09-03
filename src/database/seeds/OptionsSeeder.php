@@ -28,8 +28,13 @@ class SeedOptions extends Seeder {
         DB::table('_db_options')->delete();
 
         $optionTypeId = $this->__addOptionType('database');
+        
         $optionTypeId = $this->__addOptionType('admin');
         $this->__addOption($optionTypeId, 'skin', 'default');
+        $this->__addOption($optionTypeId, 'debug', '');
+        $this->__addOption($optionTypeId, 'show-pk-tables', '');
+        $this->__addOption($optionTypeId, 'show-fk-tables', '');
+        $this->__addOption($optionTypeId, 'attach-params', '');
         
         $optionTypeId = $this->__addOptionType('frontend');
         $this->__addOption($optionTypeId, 'skin', 'default');

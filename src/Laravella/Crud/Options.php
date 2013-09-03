@@ -7,7 +7,7 @@ use \DB;
  */
 class Options {
 
-    public function get($name) {
+    public static function get($name) {
         $setting = '';
         $option = DB::table('_db_options')->where('name', $name)->first();
         if (is_object($option)) {

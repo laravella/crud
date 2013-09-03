@@ -199,7 +199,9 @@ class Params {
             $returnA["title"] = "";
         }
 
-        $returnA['params'] = json_encode($returnA);
+        if (Options::get('debug')){
+            $returnA['params'] = json_encode($returnA);
+        }
 
         return $returnA;
     }

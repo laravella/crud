@@ -2,6 +2,7 @@
 
 @section('messages')
 
+@if(Options::get('debug'))
 <!-- definitive status message -->
 <div class="alert alert-{{$status}}" id="msg-alert" style="margin-top:auto">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -9,6 +10,7 @@
     {{$message}}
     <br />
 </div>   
+@endif
 
 <!-- detailed error messages -->
 <!-- <div class="alert alert-success alert-error alert-block"> -->

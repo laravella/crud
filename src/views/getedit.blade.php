@@ -85,6 +85,7 @@
     
     @endforeach
     
+    @if(Options::get('show-pk-tables'))
     <div class="accordion" id="accordion2">
         @foreach($tables as $tableName=>$table)
         
@@ -100,11 +101,10 @@
                 </div>
             </div>            
         </div>
-        
         @endforeach
-        
     </div>
-        
+    @endif
+    
     <div class="well"><input type="submit" class="btn" /></div>
     
 </form>

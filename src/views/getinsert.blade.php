@@ -27,8 +27,12 @@
         <div class="span4"><input type="text" disabled name="{{$field['name']}}" value="" /></div>
         @elseif(isset($field['pk']))
         <div class="span4">
+        @if(!empty($field['widget_type_id']) && $widgetTypes[$field['widget_type_id']] == 'multiselect')
+            <select name="{{$field['name']}}" multiple>
+        @else 
             <select name="{{$field['name']}}">
                 <option value="">-- {{$field['label']}} --</option>
+        @endif 
                 @foreach($selects[$field['name']] as $option)
                 @if($option['value'] == $field['default'])
                 <option selected value="{{$option['value']}}">{{$option['text']}}</option>

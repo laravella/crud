@@ -478,6 +478,13 @@ class DbController extends Controller {
         return $arr;
     }
 
+    /**
+     * This is for custom front-end actions that simply needs the Params object 
+     * and defines it's own view via the table_action_view table
+     * 
+     * @param type $parameters
+     * @return type
+     */
     protected function _customAction($parameters) {
         $action = 'get'.$parameters[0];
         $tableName = $parameters[1];
@@ -504,6 +511,18 @@ class DbController extends Controller {
         
         return View::make($paramsA['view']->name)->with($paramsA);
 //        return View::make('cart::layouts.frontend')->nest('content', $paramsA['view']->name, $paramsA);
+    }
+    
+    public function getTest() {
+        
+        $tables = Model::getInstance('_db_tables', array('name' => 'noTable'));
+
+        $field = Model::getInstance('_db_fields', array('id'=>1000, 'name' => 'noTable', 
+            'fullname'=>'asdf', 'label'=>'asdf', 'table_id'=>0, 'pk_field_id'=>0, 'pk_display_field_id'=>0));
+        
+        $field = $tables->fields()->save($field);
+        
+        echo var_dump($field);
     }
     
     /**
