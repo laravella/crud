@@ -1,6 +1,4 @@
-<?php
-
-namespace Laravella\Crud;
+<?php namespace Laravella\Crud;
 
 //use Illuminate\Console\Command;
 use Illuminate\Database\Console\SeedCommand;
@@ -40,7 +38,6 @@ class CrudRestoreCommand extends SeedCommand {
     public function __construct(Resolver $resolver)
     {
         parent::__construct($resolver);
-
     }
 
     /**
@@ -55,13 +52,14 @@ class CrudRestoreCommand extends SeedCommand {
 
         $backId = isset($options['id']) ? $this->option('id') : null;
 
-        $this->resolver->setDefaultConnection($this->getDatabase());
+        $database = $this->laravel['config']['database.default'];
+        
+        $this->resolver->setDefaultConnection($database);
 
-        $this->getSeeder()->run($backId);
+        $class = $this->laravel->make('Laravella\\Crud\\CrudRestoreSeeder');
 
-        $this->info('Database seeded!');
+        $class->setContainer($this->laravel)->setCommand($this)->run($backId);
 
-        //$this->call('db:seed', array('--class' => 'Laravella\\Crud\\CrudRestoreSeeder', '--id' => $backId));
         $this->info('CRUD restore complete.');
         $this->info('Restore complete.');
     }
@@ -74,7 +72,6 @@ class CrudRestoreCommand extends SeedCommand {
     protected function getArguments()
     {
         return array(
-            array('id', InputArgument::OPTIONAL, 'List all available backups.'),
             array('list', InputArgument::OPTIONAL, 'List all available backups.'),
             array('restore', InputArgument::OPTIONAL, 'Restore a specific backup, or the latest one if no id is specified.'),
         );
@@ -88,8 +85,6 @@ class CrudRestoreCommand extends SeedCommand {
     protected function getOptions()
     {
         return array(
-            array('class', null, InputOption::VALUE_OPTIONAL, 'The class name of the root seeder', 'DatabaseSeeder'),
-            array('database', null, InputOption::VALUE_OPTIONAL, 'The database connection to seed'),
             array('id', 'i', InputOption::VALUE_OPTIONAL, 'The id of the backup to restore. Use list argument to list available ids.', null)
         );
     }

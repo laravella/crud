@@ -7,71 +7,54 @@ use \DB;
 
 class CrudRestoreSeeder extends Seeder {
 
+    private $backupId = null;
+    private $pdo = null;
 
     public function run($bakId=null)
     {
+        $this->pdo = DB::connection()->getPdo();
+        $this->backupId = empty($bakId)?$this->getMaxId():$bakId;
+        
+        echo "Restoring backup : ".$this->backupId."\n";
+        
         DB::transaction(function()
         {
-        $pdo = DB::connection()->getPdo();
-        $this->tableRestore($bakId, $pdo);
-        $this->fieldRestore($bakId, $pdo);
-        $this->menuRestore($bakId, $pdo);
-        $this->permissionsRestore($bakId, $pdo);
+        $this->bakId = empty($this->backupId)?$this->getMaxId():$this->backupId;
+        $this->tableRestore();
+        $this->fieldRestore();
+        $this->menuRestore();
+        $this->permissionsRestore();
         });
     }
 
-    private function tableRestore($bakId, $pdo) {
-        $sql = "select t.`name` as `table_name`, tav.page_size, tav.title,
-a.name as action_name, v.name as view_name
-from _db_table_action_views tav
-inner join _db_tables t on tav.table_id = t.id
-inner join _db_actions a on tav.action_id = a.id
-inner join _db_views v on tav.view_id = v.id";
+    private function getMaxId() {
+        $sql = "SELECT max(id) as backup_id FROM _db_backups";
+        $bu = DB::select($sql);
+        $bid = (is_array($bu))?$bu[0]->backup_id:null;
+        return $bid;
+    }
+    
+    private function tableRestore() {
+        $sql = "select * from _db_bak_tables where backup_id = {$this->backupId}";
         
-        $tavs = $pdo->query($sql);
+        $tavs = $this->pdo->query($sql);
         
         foreach($tavs as $tav) {
-            echo $tav->table_name."\n";
+            echo $tav['table_name'].' '.$tav['action_name'].' '.$tav['view_name']."\n";
         }
         
     }
     
-    private function fieldRestore($bakId, $pdo) {
+    private function fieldRestore() {
         
     }
     
-    private function menuRestore($bakId, $pdo) {
+    private function menuRestore() {
         
     }
     
-    private function permissionsRestore($bakId, $pdo) {
+    private function permissionsRestore() {
         
-    }
-    
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return array(
-            array('id', InputArgument::OPTIONAL, 'List all available backups.'),
-            array('list', InputArgument::OPTIONAL, 'List all available backups.'),
-            array('restore', InputArgument::OPTIONAL, 'Restore a specific backup, or the latest one if no id is specified.'),
-        );
-    }
-    
-    /**
-     * Get the console command options.
-     *
-     * @return array
-     */
-    protected function getOptions()
-    {
-        return array(
-            array('id', 'i', InputOption::VALUE_OPTIONAL, 'The id of the backup to restore. Use list argument to list available ids.', null),
-        );
     }
     
 }
