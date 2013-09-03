@@ -94,14 +94,19 @@ left outer join _db_actions a on tav.action_id = a.id;";
 
     public function menuBackup($bakId, $pdo)
     {
+        $sql = "select $bakId backup_id, m.id, m.icon_class, m.label, m.href, m.parent_id,
+ug.group as group_name
+from _db_menus m left outer join _db_menu_permissions mp on mp.menu_id = m.id
+left outer join usergroups ug on mp.usergroup_id = ug.id;";
+        
         if (!Schema::hasTable('_db_bak_menus'))
         {
-            $sql = "create table _db_bak_menus as select $bakId backup_id, id, icon_class, label, href, parent_id from _db_menus";
+            $sql = "create table _db_bak_menus as $sql";
             $pdo->query($sql);
         }
         else
         {
-            $sql = "insert into _db_bak_menus select $bakId backup_id, id, icon_class, label, href, parent_id from _db_menus;";
+            $sql = "insert into _db_bak_menus $sql";
             $pdo->query($sql);
         }
         echo "menus backed up\n";

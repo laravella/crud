@@ -75,6 +75,17 @@ class DbGopher {
         return $arr;
     }
 
+    /**
+     * check if a StdObj exists as an object and then returns a field from it.
+     */
+    public static function pick($result, $fieldName) {
+        $value = null;
+        if (is_object($result)) {
+            $value = $result->$fieldName;
+        }
+        return $value;
+    }
+    
 }
 
 ?>
