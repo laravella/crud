@@ -43,23 +43,23 @@ class CrudRestoreSeeder extends Seeder {
      * @param type $updateTable
      * @param type $setField
      * @param type $setValue
-     * @param type $whereField Could be a field name or an array of key value pairs , in which case whereValue would be excluded
-     * @param type $whereValue Used as a single value if whereField is a string, else excluded
+     * @param type $whereValues an array of key value pairs , or an id
+     * @param type $insertValues Used as a single value if whereField is a string, else excluded
      */
-    private function __updateOrInsert($updateTable, $setField, $setValue, $whereField, $whereValue = null)
+    private function __updateOrInsert($updateTable, $whereValues, array $insertValues)
     {
-        $m = Model::getInstance(array(), $updateTable);
-        if (is_array($whereField))
+        $m = Model::getInstance($insertValues, $updateTable);
+        if (is_array($whereValues))
         {
             //$whereField is an array of key-value pairs
-            foreach ($whereField as $key => $value)
+            foreach ($whereValues as $key => $value)
             {
                 $m->where($key, $value);
             }
         }
         else
         {
-            $m->where($whereField, $whereValue);
+            $m->where('id', $whereValues);
         }
         $recs = $m->get();
         if (is_object($recs))
@@ -67,12 +67,14 @@ class CrudRestoreSeeder extends Seeder {
             //records exist so update
             foreach ($recs as $rec)
             {
-                echo 'updating '.$updateTable . ' ' . $rec->id . ' ' . $setField .'='. $setValue . PHP_EOL;
+                echo 'updating '.$updateTable . ' ' . $rec->id . PHP_EOL;
+                $user = $m->save();
             }
         }
         else
         {
-            echo 'inserting '.$updateTable . ' ' . $rec->id . ' ' . $setField .'='. $setValue . PHP_EOL;
+            echo 'inserting '.$updateTable . ' ' . $rec->id . PHP_EOL;
+            $user = $m->create($insertValues);
         }
     }
 
@@ -139,8 +141,10 @@ class CrudRestoreSeeder extends Seeder {
                 $actionId = $this->getId('_db_actions', 'name', $tav['action_name']);
                 $viewId = $this->getId('_db_views', 'name', $tav['view_name']);
 
-                $this->__updateOrInsert('_db_table_action_views', 'page_size', $tav['page_size'], 
-                        array('table_id'=>$tableId, 'action_id'=>$actionId, 'view_id'=>$viewId));
+                $this->__updateOrInsert('_db_table_action_views',
+                        array('table_id'=>$tableId, 'action_id'=>$actionId),
+                        array('table_id'=>$tableId, 'action_id'=>$actionId, 
+                            'view_id'=>$viewId, 'page_size'=>$tav['page_size'], 'title'=>$tav['tav_title']));
 
             }
             catch (DBException $e)

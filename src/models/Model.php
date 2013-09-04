@@ -167,7 +167,7 @@ class Model extends Eloquent {
             }
         }
 
-        $id = DB::table($this->tableName)->insertGetId($updateA);
+        $id = DB::table($this->table)->insertGetId($updateA);
 
         return $id;
     }
@@ -237,7 +237,7 @@ class Model extends Eloquent {
         }
 
         //print_r($updateA);
-        DB::table($this->tableName)->where($pkName, '=', $pkValue)->update($updateA);
+        DB::table($this->table)->where($pkName, '=', $pkValue)->update($updateA);
 
         return $this;
     }
@@ -249,34 +249,7 @@ class Model extends Eloquent {
      */
     public function setTable($tableName)
     {
-        $this->tableName = $tableName;
-    }
-
-    /**
-     * Save the model and all of its relationships.
-     *
-     * @return bool
-     */
-    public function push()
-    {
-        if (!$this->save())
-            return false;
-
-        // To sync all of the relationships to the database, we will simply spin through
-        // the relationships and save each model via this "push" method, which allows
-        // us to recurse into all of these nested relations for the model instance.
-        foreach ($this->relations as $models)
-        {
-            echo $models->tableName;
-
-            foreach (Collection::make($models) as $model)
-            {
-                if (!$model->push())
-                    return false;
-            }
-        }
-
-        return true;
+        $this->table = $tableName;
     }
 
     /**
