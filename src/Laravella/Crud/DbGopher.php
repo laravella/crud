@@ -1,6 +1,6 @@
-<?php
+<?php namespace Laravella\Crud;
 
-namespace Laravella\Crud;
+use Laravella\Crud\Exceptions\DBException;
 
 /**
  * Description of DbGopher
@@ -82,6 +82,8 @@ class DbGopher {
         $value = null;
         if (is_object($result)) {
             $value = $result->$fieldName;
+        } else {
+            throw new DBException('Empty record.');
         }
         return $value;
     }

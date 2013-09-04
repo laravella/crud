@@ -520,9 +520,11 @@ class DbController extends Controller {
         $field = Model::getInstance('_db_fields', array('id'=>1000, 'name' => 'noTable', 
             'fullname'=>'asdf', 'label'=>'asdf', 'table_id'=>0, 'pk_field_id'=>0, 'pk_display_field_id'=>0));
         
-        $field = $tables->fields()->save($field);
+        return "save";
         
-        echo var_dump($field);
+//        $field = $tables->push($field);
+        
+//        echo var_dump($field);
     }
     
     /**

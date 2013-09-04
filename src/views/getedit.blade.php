@@ -14,7 +14,9 @@
         <a href="/db/delete/{{$tableName}}/{{$tables[$tableName]['records'][0][$pkName]}}" id="btnDelete" class="btn">Delete</a>
     </div>
     <div class="btn-group">
+        @if(Options::get('debug'))
         <a href="#" id="btnVisualize" onclick="javascript:debugBox();" class="btn">Debug</a>
+        @endif
         <a href="#" id="btnLog" onclick="javascript:logBox();" class="btn">Log</a>
     </div>
     
