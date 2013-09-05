@@ -22,7 +22,7 @@ class CrudRestoreSeeder extends Seeder {
         DB::transaction(function()
                 {
                     $this->bakId = empty($this->backupId) ? $this->__getMaxId() : $this->backupId;
-                    $this->tableRestore();
+//                    $this->tableRestore();
                     $this->fieldRestore();
                     $this->menuRestore();
                     $this->permissionsRestore();
@@ -48,33 +48,39 @@ class CrudRestoreSeeder extends Seeder {
      */
     private function __updateOrInsert($updateTable, $whereValues, array $insertValues)
     {
-        $m = Model::getInstance($insertValues, $updateTable);
+        $m = Model::getInstance($updateTable);
         if (is_array($whereValues))
         {
             //$whereField is an array of key-value pairs
             foreach ($whereValues as $key => $value)
             {
-                $m->where($key, $value);
+                $m = $m->where($key, $value);
             }
         }
         else
         {
-            $m->where('id', $whereValues);
+            $m = $m->where('id', $whereValues);
         }
-        $recs = $m->get();
-        if (is_object($recs))
+        $recs = $m->distinct()->get();
+        
+//$queries = DB::getQueryLog();
+//$last_query = end($queries);
+//echo var_dump($last_query);
+//echo 'last query';
+        
+        if (is_object($recs) && count($recs->modelKeys()) > 0)
         {
             //records exist so update
             foreach ($recs as $rec)
             {
-                echo 'updating '.$updateTable . ' ' . $rec->id . PHP_EOL;
-                $user = $m->save();
+                echo 'updating '.$updateTable . ' ' . $rec->id . ' ' . PHP_EOL;
+                $updateM = DB::table($updateTable)->where('id', $rec->id)->update($insertValues);
             }
         }
         else
         {
-            echo 'inserting '.$updateTable . ' ' . $rec->id . PHP_EOL;
-            $user = $m->create($insertValues);
+            echo 'inserting '.$updateTable . ' ' . PHP_EOL;
+            $i = DB::table($updateTable)->insert($insertValues);
         }
     }
 
@@ -109,7 +115,8 @@ class CrudRestoreSeeder extends Seeder {
             $recs = $m->get();
             if (count($recs) != 1)
             {
-                throw new DBException(count($recs) . ' Unique id not found where ' . $query);
+//                throw new DBException(count($recs) . ' Unique id not found where ' . $query);
+                return null;
             }
             else
             {
@@ -189,13 +196,34 @@ class CrudRestoreSeeder extends Seeder {
      */
     private function fieldRestore()
     {
-        $sql = "select * from _db_bak_fields where backup_id = {$this->backupId}";
-
-        $fields = DB::select($sql);
+        $fields = Model::getInstance('_db_bak_fields')->where('backup_id', $this->backupId)->get()->toArray();
 
         foreach ($fields as $field)
         {
-            //echo $field['table_name'].' '.$tav['action_name'].' '.$tav['view_name']."\n";
+            try
+            {
+                $displayId = $this->getId('_db_display_types', 'name', $field['display_type_name']);
+                $widgetId = $this->getId('_db_widget_types', 'name', $field['widget_type_name']);
+                $pkFieldId = $this->getId('_db_fields', 'fullname', $field['pk_name']);
+                $pkdFieldId = $this->getId('_db_fields', 'fullname', $field['pk_display_name']);
+                
+                $this->__updateOrInsert('_db_fields',
+                        array('id'=>$field['field_id']),
+                        array('display_type_id'=>$displayId, 
+                            'widget_type_id'=>$widgetId, 
+                            'label'=>$field['label'],
+                            'display_order'=>$field['display_order'],
+                            'href'=>$field['href'],
+                            'pk_field_id'=>$pkFieldId,
+                            'pk_display_field_id'=>$pkdFieldId,
+                            'searchable'=>$field['searchable'])
+                        );
+
+            }
+            catch (DBException $e)
+            {
+                echo $e->getMessage() . "\n";
+            }
         }
     }
 
