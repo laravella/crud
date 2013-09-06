@@ -422,7 +422,7 @@ class DbController extends Controller {
 
         Model::getInstance($tableName)->editRec($pkValue, Input::get('data'));
 
-        return $this->getSelect($tableName, "Data saved.");//Redirect::to("/db/edit/$tableName/$pkValue");
+        return Redirect::to("db/select/$tableName");
     }
 
     /**
