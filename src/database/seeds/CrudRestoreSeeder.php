@@ -202,10 +202,18 @@ class CrudRestoreSeeder extends Seeder {
         {
             try
             {
+                
                 $displayId = $this->getId('_db_display_types', 'name', $field['display_type_name']);
                 $widgetId = $this->getId('_db_widget_types', 'name', $field['widget_type_name']);
-                $pkFieldId = $this->getId('_db_fields', 'fullname', $field['pk_name']);
-                $pkdFieldId = $this->getId('_db_fields', 'fullname', $field['pk_display_name']);
+                
+                $pkName = empty($field['pk_table_name'])?'':$field['pk_table_name'].'.'.$field['pk_name'];
+                $pkdName = empty($field['pk_table_name'])?'':$field['pk_table_name'].'.'.$field['pk_display_name'];
+                $pkFieldId = $this->getId('_db_fields', 'fullname', $pkName);
+                $pkdFieldId = $this->getId('_db_fields', 'fullname', $pkdName);
+                
+                if (!empty($pkName)) {
+                    echo $pkFieldId.' : '.$pkName." | ".$pkdFieldId.' : '.$pkdName."\n";
+                }
                 
                 $this->__updateOrInsert('_db_fields',
                         array('fullname'=>$field['fullname']),

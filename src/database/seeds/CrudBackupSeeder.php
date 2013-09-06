@@ -94,7 +94,7 @@ left outer join _db_actions a on tav.action_id = a.id;";
 
     public function menuBackup($bakId, $pdo)
     {
-        $sql = "select $bakId backup_id, m.id, m.icon_class, m.label, m.href, m.parent_id,
+        $sql = "select $bakId backup_id, m.id, m.icon_class, m.label, m.weight, m.href, m.parent_id,
 ug.group as group_name
 from _db_menus m left outer join _db_menu_permissions mp on mp.menu_id = m.id
 left outer join usergroups ug on mp.usergroup_id = ug.id;";
