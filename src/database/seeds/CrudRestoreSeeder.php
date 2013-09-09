@@ -62,24 +62,24 @@ class CrudRestoreSeeder extends Seeder {
             $m = $m->where('id', $whereValues);
         }
         $recs = $m->distinct()->get();
-        
+
 //$queries = DB::getQueryLog();
 //$last_query = end($queries);
 //echo var_dump($last_query);
 //echo 'last query';
-        
+
         if (is_object($recs) && count($recs->modelKeys()) > 0)
         {
             //records exist so update
             foreach ($recs as $rec)
             {
-                echo 'updating '.$updateTable . ' ' . $rec->id . ' ' . PHP_EOL;
+                echo 'updating ' . $updateTable . ' ' . $rec->id . ' ' . PHP_EOL;
                 $updateM = DB::table($updateTable)->where('id', $rec->id)->update($insertValues);
             }
         }
         else
         {
-            echo 'inserting '.$updateTable . ' ' . PHP_EOL;
+            echo 'inserting ' . $updateTable . ' ' . PHP_EOL;
             $i = DB::table($updateTable)->insert($insertValues);
         }
     }
@@ -148,11 +148,8 @@ class CrudRestoreSeeder extends Seeder {
                 $actionId = $this->getId('_db_actions', 'name', $tav['action_name']);
                 $viewId = $this->getId('_db_views', 'name', $tav['view_name']);
 
-                $this->__updateOrInsert('_db_table_action_views',
-                        array('table_id'=>$tableId, 'action_id'=>$actionId),
-                        array('table_id'=>$tableId, 'action_id'=>$actionId, 
-                            'view_id'=>$viewId, 'page_size'=>$tav['page_size'], 'title'=>$tav['tav_title']));
-
+                $this->__updateOrInsert('_db_table_action_views', array('table_id' => $tableId, 'action_id' => $actionId), array('table_id' => $tableId, 'action_id' => $actionId,
+                    'view_id' => $viewId, 'page_size' => $tav['page_size'], 'title' => $tav['tav_title']));
             }
             catch (DBException $e)
             {
@@ -202,31 +199,29 @@ class CrudRestoreSeeder extends Seeder {
         {
             try
             {
-                
+
                 $displayId = $this->getId('_db_display_types', 'name', $field['display_type_name']);
                 $widgetId = $this->getId('_db_widget_types', 'name', $field['widget_type_name']);
-                
-                $pkName = empty($field['pk_table_name'])?'':$field['pk_table_name'].'.'.$field['pk_name'];
-                $pkdName = empty($field['pk_table_name'])?'':$field['pk_table_name'].'.'.$field['pk_display_name'];
+
+                $pkName = empty($field['pk_table_name']) ? '' : $field['pk_table_name'] . '.' . $field['pk_name'];
+                $pkdName = empty($field['pk_table_name']) ? '' : $field['pk_table_name'] . '.' . $field['pk_display_name'];
                 $pkFieldId = $this->getId('_db_fields', 'fullname', $pkName);
                 $pkdFieldId = $this->getId('_db_fields', 'fullname', $pkdName);
-                
-                if (!empty($pkName)) {
-                    echo $pkFieldId.' : '.$pkName." | ".$pkdFieldId.' : '.$pkdName."\n";
-                }
-                
-                $this->__updateOrInsert('_db_fields',
-                        array('fullname'=>$field['fullname']),
-                        array('display_type_id'=>$displayId, 
-                            'widget_type_id'=>$widgetId, 
-                            'label'=>$field['label'],
-                            'display_order'=>$field['display_order'],
-                            'href'=>$field['href'],
-                            'pk_field_id'=>$pkFieldId,
-                            'pk_display_field_id'=>$pkdFieldId,
-                            'searchable'=>$field['searchable'])
-                        );
 
+                if (!empty($pkName))
+                {
+                    echo $pkFieldId . ' : ' . $pkName . " | " . $pkdFieldId . ' : ' . $pkdName . "\n";
+                }
+
+                $this->__updateOrInsert('_db_fields', array('fullname' => $field['fullname']), array('display_type_id' => $displayId,
+                    'widget_type_id' => $widgetId,
+                    'label' => $field['label'],
+                    'display_order' => $field['display_order'],
+                    'href' => $field['href'],
+                    'pk_field_id' => $pkFieldId,
+                    'pk_display_field_id' => $pkdFieldId,
+                    'searchable' => $field['searchable'])
+                );
             }
             catch (DBException $e)
             {
@@ -249,7 +244,15 @@ class CrudRestoreSeeder extends Seeder {
      */
     private function menuRestore()
     {
-        
+
+        $sql = "delete from _db_menus";
+        echo DB::unprepared($sql);
+
+        $sql = "insert into _db_menus 
+select distinct id, icon_class, label, weight, href, parent_id, null, null 
+from _db_bak_menus where backup_id = {$this->backupId}";
+
+        echo DB::unprepared($sql);
     }
 
     /**
@@ -269,6 +272,31 @@ class CrudRestoreSeeder extends Seeder {
      */
     private function permissionsRestore()
     {
+        /**
+         * 
+          "select $bakId backup_id, u.username, u.email, u.`password`,
+          u.first_name, u.last_name, api_token, usergroup_id, ug.`group`,
+          deleted_at, t.`name` `table_name`, a.`name` action_name
+          from _db_user_permissions dup
+          inner join users u on dup.user_id = u.id
+          inner join _db_tables t on t.id = dup.table_id
+          inner join _db_actions a on a.id = dup.action_id
+          left outer join usergroups ug on u.usergroup_id = ug.id;"; *
+         */
+        
+        $sql = "delete from _db_menus";
+        echo DB::unprepared($sql);
+        
+        $sql = "select distinct username, email, `password`, first_name, 
+last_name, api_token, usergroup_id 
+from _db_bak_permissions 
+where backup_id = {$this->backupId};";
+        
+        echo DB::unprepared($sql);
+
+        $sql = "select username, `table_name`, action_name from _db_bak_permissions;";
+        
+        
         
     }
 
