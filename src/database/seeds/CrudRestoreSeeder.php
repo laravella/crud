@@ -22,10 +22,10 @@ class CrudRestoreSeeder extends Seeder {
         DB::transaction(function()
                 {
                     $this->bakId = empty($this->backupId) ? $this->__getMaxId() : $this->backupId;
-//                    $this->tableRestore();
+                    $this->tableRestore();
                     $this->fieldRestore();
                     $this->menuRestore();
-                    $this->permissionsRestore();
+//                    $this->permissionsRestore();
                 });
     }
 
@@ -80,7 +80,8 @@ class CrudRestoreSeeder extends Seeder {
         else
         {
             echo 'inserting ' . $updateTable . ' ' . PHP_EOL;
-            $i = DB::table($updateTable)->insert($insertValues);
+            $id = DB::table($updateTable)->insertGetId($insertValues);
+            echo $updateTable.' inserted with id '.$id."\n";
         }
     }
 
@@ -247,12 +248,47 @@ class CrudRestoreSeeder extends Seeder {
 
         $sql = "delete from _db_menus";
         echo DB::unprepared($sql);
+//
+//        $sql = "insert into _db_menus 
+//select distinct id, icon_class, label, weight, href, parent_id, null, null 
+//from _db_bak_menus where backup_id = {$this->backupId}";
+//
+//        echo DB::unprepared($sql);
 
-        $sql = "insert into _db_menus 
-select distinct id, icon_class, label, weight, href, parent_id, null, null 
-from _db_bak_menus where backup_id = {$this->backupId}";
+        $mbs = Model::getInstance('_db_bak_menus')->distinct()
+                        ->select(array('id', 'icon_class', 'label', 'weight', 'href', 'parent_id'))
+                        ->where('backup_id', $this->backupId)
+                        ->get()->toArray();
 
-        echo DB::unprepared($sql);
+        foreach ($mbs as $mb)
+        {
+            $this->__updateOrInsert('_db_menus', array('id' => $mb['id']), $mb);
+            echo 'menu : '.$mb['id'].' : '.$mb['href']."\n";
+        }
+
+        $mbs = Model::getInstance('_db_bak_menus')
+                //->join('usergroups', 'usergroups.id', '=', '_db_bak_menu_permissions.usergroup_id')
+                ->distinct()
+                ->select(array('id', 'group_name'))
+                ->where('backup_id', $this->backupId)
+                ->get()
+                ->toArray();
+
+        foreach ($mbs as $mb)
+        {
+            $usergroupId = $this->getId('usergroups', 'group', $mb['group_name']);
+            //menuid remains the same
+            
+            if (!empty($mb['id']) && !empty($usergroupId)) {
+                $this->__updateOrInsert('_db_menu_permissions', 
+                        array('menu_id' => $mb['id'], 'usergroup_id' => $usergroupId), 
+                        array('menu_id' => $mb['id'], 'usergroup_id' => $usergroupId));
+                
+                echo 'inserting '.$mb['id'].' : '.$usergroupId."\n";
+            } else {
+                echo "empty menu permissions \n";
+            }
+        }
     }
 
     /**
@@ -283,21 +319,50 @@ from _db_bak_menus where backup_id = {$this->backupId}";
           inner join _db_actions a on a.id = dup.action_id
           left outer join usergroups ug on u.usergroup_id = ug.id;"; *
          */
-        
-        $sql = "delete from _db_menus";
-        echo DB::unprepared($sql);
-        
-        $sql = "select distinct username, email, `password`, first_name, 
-last_name, api_token, usergroup_id 
-from _db_bak_permissions 
-where backup_id = {$this->backupId};";
-        
-        echo DB::unprepared($sql);
+        $sql = "delete from users";
+        echo DB::unprepared($sql) . "\n";
+
+        $sql = "delete from _db_user_permissions";
+        echo DB::unprepared($sql) . "\n";
+
+        $perms = Model::getInstance('_db_bak_permissions')
+                        ->where('backup_id', $this->backupId)
+                        ->select(array('email', 'username', 'usergroup_id', 'api_token', 'group', 'password', 'first_name', 'last_name'))
+                        ->distinct()
+                        ->get()->toArray();
+
+        foreach ($perms as $perm)
+        {
+            $usergroupId = $this->getId('usergroups', 'group', $perm['group']);
+
+            unset($perm['group']);
+
+            $perm['usergroup_id'] = $usergroupId;
+
+            $this->__updateOrInsert('users', array('username' => $perm['username']), $perm);
+        }
+
+        $perms = Model::getInstance('_db_bak_permissions')
+                        ->where('backup_id', $this->backupId)
+                        ->select(array('username', 'table_name', 'action_name'))
+                        ->distinct()
+                        ->get()->toArray();
+
+        foreach ($perms as $perm)
+        {
+            $userId = $this->getId('users', 'username', $perm['username']);
+            $tableId = $this->getId('_db_tables', 'name', $perm['table_name']);
+            $actionId = $this->getId('_db_actions', 'name', $perm['action_name']);
+
+            $a = array('user_id' => $userId,
+                'table_id' => $tableId,
+                'action_id' => $actionId);
+            $this->__updateOrInsert('_db_user_permissions', $a, $a);
+        }
 
         $sql = "select username, `table_name`, action_name from _db_bak_permissions;";
-        
-        
-        
+        echo DB::unprepared($sql) . "\n";
+        echo "permissions restored. \n";
     }
 
 }
