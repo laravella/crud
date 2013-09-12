@@ -123,6 +123,8 @@ class Params {
                         'm2.id as m2_id', 'm2.icon_class as m2_icon_class', 'm2.label as m2_label', 
                         'm2.href as m2_href', 'm2.parent_id as m2_parent_id')->get();
 
+
+        
         $menuA = array();
         foreach($menus as $menu) {
             if (!isset($menuA[$menu->label])) {

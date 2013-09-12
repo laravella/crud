@@ -13,7 +13,11 @@
 
 <!-- JS -->
 <script type="text/javascript" src="/packages/laravella/crud/assets/scripts/modernizr-2.6.2.min.js"></script>
+
+@if(Options::get('debug'))
 <script type="text/javascript" src="/packages/laravella/crud/assets/scripts/jsonconvert.js"></script>
+@endif
+
 <script type="text/javascript" src="/packages/laravella/crud/assets/scripts/admintools.js"></script>
 
 <!-- CKEditor -->
