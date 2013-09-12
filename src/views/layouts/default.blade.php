@@ -83,9 +83,9 @@
 
         @yield('bottom')
         
-        <script src="assets/scripts/js/plugins.js"></script>
-        <script src="assets/scripts/js/main.js"></script>
-        <script src="assets/scripts/js/vendor/bootstrap.min.js"></script>
+        <script src="/assets/scripts/js/plugins.js"></script>
+        <script src="/assets/scripts/js/main.js"></script>
+        <script src="/assets/scripts/js/vendor/bootstrap.min.js"></script>
         
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
         <script>
