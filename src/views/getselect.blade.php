@@ -86,7 +86,7 @@
                 || ($displayTypes[$meta[$name]['display_type_id']] == 'widget' 
                 && $widgetTypes[$meta[$name]['widget_type_id']] == 'thumbnail'))
                     <td>
-                        @if(file_exists(public_path().'/uploads/thumbnail/'.$record->file_name))
+                        @if(is_object($record) && property_exists($record, 'file_name') && file_exists(public_path().'/uploads/thumbnail/'.$record->file_name))
                             <a href="{{$prefix[$name]}}{{$value}}"><img src="/uploads/thumbnail/{{$record->file_name}}" class="img-rounded" style="width:80px; height:80px; max-width:80px" /></a>
                         @else
                             <i class="icon-file"> </i>
