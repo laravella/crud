@@ -1,51 +1,34 @@
-<?php
-
-namespace Laravella\Crud;
+<?php namespace Laravella\Crud;
 
 use Laravella\Crud\Log;
 use \Seeder;
 use \DB;
 
-class SeedTables extends Seeder {
-
-    private function __addWidgetType($name)
-    {
-        $widgetTypeId = DB::table('_db_widget_types')->insertGetId(array('name' => $name));
-        Log::write(Log::INFO, $name . ' widget type created');
-        return $widgetTypeId;
-    }
-
-    private function __addWidgetTypes()
+class SeedTables extends CrudSeeder {
+    
+    private function addWidgetTypes()
     {
         $wTypes = array();
 
         DB::table('_db_widget_types')->delete();
 
-        $wTypes['input:text'] = $this->__addWidgetType('input:text');
-        $wTypes['input:hidden'] = $this->__addWidgetType('input:hidden');
-        $wTypes['input:text'] = $this->__addWidgetType('input:text');
-        $wTypes['input:checkbox'] = $this->__addWidgetType('input:checkbox');
-        $wTypes['input:radio'] = $this->__addWidgetType('input:radio');
-        $wTypes['textarea'] = $this->__addWidgetType('textarea');
-        $wTypes['select'] = $this->__addWidgetType('select');
-        $wTypes['multiselect'] = $this->__addWidgetType('multiselect');
-        $wTypes['ckeditor'] = $this->__addWidgetType('ckeditor');
-        $wTypes['span'] = $this->__addWidgetType('span');
-        $wTypes['password'] = $this->__addWidgetType('password');
-        $wTypes['password:hashed'] = $this->__addWidgetType('password:hashed');
-        $wTypes['password:md5'] = $this->__addWidgetType('password:md5');
-        $wTypes['thumbnail'] = $this->__addWidgetType('thumbnail');
+        $wTypes['input:text'] = $this->addWidgetType('input:text');
+        $wTypes['input:hidden'] = $this->addWidgetType('input:hidden');
+        $wTypes['input:text'] = $this->addWidgetType('input:text');
+        $wTypes['input:checkbox'] = $this->addWidgetType('input:checkbox');
+        $wTypes['input:radio'] = $this->addWidgetType('input:radio');
+        $wTypes['textarea'] = $this->addWidgetType('textarea');
+        $wTypes['select'] = $this->addWidgetType('select');
+        $wTypes['multiselect'] = $this->addWidgetType('multiselect');
+        $wTypes['ckeditor'] = $this->addWidgetType('ckeditor');
+        $wTypes['span'] = $this->addWidgetType('span');
+        $wTypes['password'] = $this->addWidgetType('password');
+        $wTypes['password:hashed'] = $this->addWidgetType('password:hashed');
+        $wTypes['password:md5'] = $this->addWidgetType('password:md5');
+        $wTypes['thumbnail'] = $this->addWidgetType('thumbnail');
     }
 
-    private function __addDisplayType($name)
-    {
-        $displayTypes = array('name' => $name);
-        $displayTypeId = DB::table('_db_display_types')->insertGetId($displayTypes);
-        Log::write(Log::INFO, $name . ' display types created');
-        return $displayTypeId;
-    }
-
-    private function __addDisplayTypes()
+    private function addDisplayTypes()
     {
         $types = array();
         DB::table('_db_display_types')->delete();
@@ -55,26 +38,14 @@ class SeedTables extends Seeder {
          */
         $types['nodisplay'] = DB::table('_db_display_types')->insertGetId(array('id' => 0, 'name' => 'nodisplay'));
 
-        $types['edit'] = $this->__addDisplayType('edit');
-        $types['display'] = $this->__addDisplayType('display');
-        $types['hidden'] = $this->__addDisplayType('hidden');
-        $types['link'] = $this->__addDisplayType('link');
-        $types['widget'] = $this->__addDisplayType('widget');
-        $types['thumbnail'] = $this->__addDisplayType('thumbnail');
+        $types['edit'] = $this->addDisplayType('edit');
+        $types['display'] = $this->addDisplayType('display');
+        $types['hidden'] = $this->addDisplayType('hidden');
+        $types['link'] = $this->addDisplayType('link');
+        $types['widget'] = $this->addDisplayType('widget');
+        $types['thumbnail'] = $this->addDisplayType('thumbnail');
 
         return $types;
-    }
-
-    private function __getDisplayType($colRec, $types)
-    {
-
-        $displayTypeId = $types['edit'];
-
-        if ($colRec['name'] == "created_at" || $colRec['name'] == "updated_at")
-        {
-            $displayTypeId = $types['nodisplay'];
-        }
-        return $displayTypeId;
     }
 
     public function run()
@@ -83,9 +54,9 @@ class SeedTables extends Seeder {
         DB::table('_db_tables')->delete();
         DB::table('_db_fields')->delete();
 
-        $displayTypes = $this->__addDisplayTypes();
+        $displayTypes = $this->addDisplayTypes();
 
-        $widgetTypes = $this->__addWidgetTypes();
+        $widgetTypes = $this->addWidgetTypes();
 
 //get the list of tables from the database metadata
         $tables = DB::select('show tables');
@@ -115,19 +86,19 @@ class SeedTables extends Seeder {
                                 $colRec['table_id'] = $id;
                                 $colRec['name'] = $col->Field;
                                 $colRec['fullname'] = $tableName . "." . $col->Field;
-                                $colRec['label'] = $this->__makeLabel($col->Field);
+                                $colRec['label'] = $this->makeLabel($col->Field);
                                 $colRec['searchable'] = 1;
                                 $colRec['display_order'] = $displayOrder++;
-                                $colRec['type'] = $this->__getFieldType($col->Type);
-                                $colRec['length'] = $this->__getFieldLength($col->Type);
-                                $colRec['width'] = $this->__getFieldWidth($colRec['type'], $colRec['length']);
-                                $colRec['widget_type_id'] = $this->__getFieldWidget($colRec['type'], $colRec['length']);
+                                $colRec['type'] = $this->getFieldType($col->Type);
+                                $colRec['length'] = $this->getFieldLength($col->Type);
+                                $colRec['width'] = $this->getFieldWidth($colRec['type'], $colRec['length']);
+                                $colRec['widget_type_id'] = $this->getFieldWidget($colRec['type'], $colRec['length']);
                                 $colRec['null'] = $col->Null;
                                 $colRec['key'] = $col->Key;
                                 $colRec['default'] = $col->Default;
                                 $colRec['extra'] = $col->Extra;
 
-                                $colRec['display_type_id'] = $this->__getDisplayType($colRec, $displayTypes);
+                                $colRec['display_type_id'] = $this->getDisplayType($colRec, $displayTypes);
 
                                 $fid = DB::table('_db_fields')->insertGetId($colRec);
                                 Log::write("success", " - {$colRec['name']} inserted with id $fid");
@@ -158,63 +129,6 @@ class SeedTables extends Seeder {
                 throw new Exception($message, 1, $e);
             }
         }
-    }
-
-    /**
-     * Replace _ with spaces and make first character of each word uppercase
-     * 
-     * @param type $name
-     */
-    private function __makeLabel($name)
-    {
-        return ucwords(str_replace('_', ' ', $name));
-    }
-
-    /**
-     * Returns varchar if fieldType = varchar(100) etc.
-     */
-    private function __getFieldType($fieldType)
-    {
-        $start = strpos($fieldType, '(');
-        if ($start > 0)
-        {
-            $fieldType = substr($fieldType, 0, $start);
-            Log::write("success", "fieldtype : $fieldType");
-        }
-        return $fieldType;
-    }
-
-    /**
-     * Returns 100 if fieldType = varchar(100) etc.
-     */
-    private function __getFieldLength($fieldType)
-    {
-        $start = strpos($fieldType, '(') + 1;
-        $len = null;
-        if ($start > 0)
-        {
-            $count = strpos($fieldType, ')') - $start;
-            $len = substr($fieldType, $start, $count);
-            //$this->__log("success", "fieldtype : $fieldType, start : $start, count : $count, len : $len");
-        }
-
-        return $len;
-    }
-
-    /**
-     * Try and calculate the width of the widget to display the field in 
-     */
-    private function __getFieldWidth($fieldType, $fieldLength)
-    {
-        return 220;
-    }
-
-    /**
-     * Try and calculate the best widget to display the field in. Define the widget in json
-     */
-    private function __getFieldWidget($fieldType, $fieldLength)
-    {
-        return ""; //'{widget" : "input", "attributes" : {"type" : "text"}}';
     }
 
 }

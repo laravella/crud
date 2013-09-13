@@ -37,54 +37,6 @@ class CrudRestoreSeeder extends CrudSeeder {
         return $bid;
     }
 
-    /**
-     * Updates a field or inserts a record if key does not exist
-     * 
-     * @param type $updateTable
-     * @param type $setField
-     * @param type $setValue
-     * @param type $whereValues an array of key value pairs , or an id
-     * @param type $insertValues Used as a single value if whereField is a string, else excluded
-     */
-    private function __updateOrInsert($updateTable, $whereValues, array $insertValues)
-    {
-        $m = Model::getInstance($updateTable);
-        if (is_array($whereValues))
-        {
-            //$whereField is an array of key-value pairs
-            foreach ($whereValues as $key => $value)
-            {
-                $m = $m->where($key, $value);
-            }
-        }
-        else
-        {
-            $m = $m->where('id', $whereValues);
-        }
-        $recs = $m->distinct()->get();
-
-//$queries = DB::getQueryLog();
-//$last_query = end($queries);
-//echo var_dump($last_query);
-//echo 'last query';
-
-        if (is_object($recs) && count($recs->modelKeys()) > 0)
-        {
-            //records exist so update
-            foreach ($recs as $rec)
-            {
-                echo 'updating ' . $updateTable . ' ' . $rec->id . ' ' . PHP_EOL;
-                $updateM = DB::table($updateTable)->where('id', $rec->id)->update($insertValues);
-            }
-        }
-        else
-        {
-            echo 'inserting ' . $updateTable . ' ' . PHP_EOL;
-            $id = DB::table($updateTable)->insertGetId($insertValues);
-            echo $updateTable.' inserted with id '.$id."\n";
-        }
-    }
-
     private $idCache = array();
 
     /**
@@ -149,7 +101,7 @@ class CrudRestoreSeeder extends CrudSeeder {
                 $actionId = $this->getId('_db_actions', 'name', $tav['action_name']);
                 $viewId = $this->getId('_db_views', 'name', $tav['view_name']);
 
-                $this->__updateOrInsert('_db_table_action_views', array('table_id' => $tableId, 'action_id' => $actionId), array('table_id' => $tableId, 'action_id' => $actionId,
+                $this->updateOrInsert('_db_table_action_views', array('table_id' => $tableId, 'action_id' => $actionId), array('table_id' => $tableId, 'action_id' => $actionId,
                     'view_id' => $viewId, 'page_size' => $tav['page_size'], 'title' => $tav['tav_title']));
             }
             catch (DBException $e)
@@ -214,7 +166,7 @@ class CrudRestoreSeeder extends CrudSeeder {
                     echo $pkFieldId . ' : ' . $pkName . " | " . $pkdFieldId . ' : ' . $pkdName . "\n";
                 }
 
-                $this->__updateOrInsert('_db_fields', array('fullname' => $field['fullname']), array('display_type_id' => $displayId,
+                $this->updateOrInsert('_db_fields', array('fullname' => $field['fullname']), array('display_type_id' => $displayId,
                     'widget_type_id' => $widgetId,
                     'label' => $field['label'],
                     'display_order' => $field['display_order'],
@@ -262,7 +214,7 @@ class CrudRestoreSeeder extends CrudSeeder {
 
         foreach ($mbs as $mb)
         {
-            $this->__updateOrInsert('_db_menus', array('id' => $mb['id']), $mb);
+            $this->updateOrInsert('_db_menus', array('id' => $mb['id']), $mb);
             echo 'menu : '.$mb['id'].' : '.$mb['href']."\n";
         }
 
@@ -280,7 +232,7 @@ class CrudRestoreSeeder extends CrudSeeder {
             //menuid remains the same
             
             if (!empty($mb['id']) && !empty($usergroupId)) {
-                $this->__updateOrInsert('_db_menu_permissions', 
+                $this->updateOrInsert('_db_menu_permissions', 
                         array('menu_id' => $mb['id'], 'usergroup_id' => $usergroupId), 
                         array('menu_id' => $mb['id'], 'usergroup_id' => $usergroupId));
                 
@@ -339,7 +291,7 @@ class CrudRestoreSeeder extends CrudSeeder {
 
             $perm['usergroup_id'] = $usergroupId;
 
-            $this->__updateOrInsert('users', array('username' => $perm['username']), $perm);
+            $this->updateOrInsert('users', array('username' => $perm['username']), $perm);
         }
 
         $perms = Model::getInstance('_db_bak_permissions')
@@ -357,7 +309,7 @@ class CrudRestoreSeeder extends CrudSeeder {
             $a = array('user_id' => $userId,
                 'table_id' => $tableId,
                 'action_id' => $actionId);
-            $this->__updateOrInsert('_db_user_permissions', $a, $a);
+            $this->updateOrInsert('_db_user_permissions', $a, $a);
         }
 
         $sql = "select username, `table_name`, action_name from _db_bak_permissions;";

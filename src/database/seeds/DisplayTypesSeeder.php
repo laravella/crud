@@ -7,27 +7,20 @@ use \DB;
 /**
  * @deprecated see TablesSeeder.php
  */
-class SeedDisplayTypes extends Seeder {
-
-    private function __addDisplayType($id, $name)
-    {
-        $displayTypes = array('id' => $id, 'name' => $name);
-        DB::table('_db_display_types')->insert($displayTypes);
-        Log::write(Log::INFO, $name . ' display types created');
-    }
+class SeedDisplayTypes extends CrudSeeder {
 
     public function run()
     {
 
         DB::table('_db_display_types')->delete();
 
-        $this->__addDisplayType(1, 'nodisplay');
-        $this->__addDisplayType(2, 'edit');
-        $this->__addDisplayType(3, 'display');
-        $this->__addDisplayType(4, 'hidden');
-        $this->__addDisplayType(5, 'link');
-        $this->__addDisplayType(6, 'thumbnail');
-        $this->__addDisplayType(7, 'widget');
+        $this->addDisplayType(1, 'nodisplay');
+        $this->addDisplayType(2, 'edit');
+        $this->addDisplayType(3, 'display');
+        $this->addDisplayType(4, 'hidden');
+        $this->addDisplayType(5, 'link');
+        $this->addDisplayType(6, 'thumbnail');
+        $this->addDisplayType(7, 'widget');
     }
 
 }

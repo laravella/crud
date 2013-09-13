@@ -4,47 +4,31 @@ use Laravella\Crud\Log;
 use \Seeder;
 use \DB;
 
-class SeedOptions extends Seeder {
-
-    private function __addOption($optionTypeId, $name, $value)
-    {
-        $option = array('option_type_id' => $optionTypeId, 'name' => $name, 'value' => $value);
-        $optionId = DB::table('_db_options')->insertGetId($option);
-        Log::write(Log::INFO, $name . ' option created');
-        return $optionId;
-    }
-
-    private function __addOptionType($name, $parentId=null)
-    {
-        $optionType = array('name' => $name, 'parent_id' => $parentId);
-        $optionTypeId = DB::table('_db_option_types')->insertGetId($optionType);
-        Log::write(Log::INFO, $name . ' option type created');
-        return $optionTypeId;
-    }
+class SeedOptions extends CrudSeeder {
 
     public function run()
     {
         DB::table('_db_option_types')->delete();
         DB::table('_db_options')->delete();
 
-        $optionTypeId = $this->__addOptionType('database');
+        $optionTypeId = $this->addOptionType('database');
         
-        $optionTypeId = $this->__addOptionType('admin');
-        $this->__addOption($optionTypeId, 'skin', 'default');
-        $this->__addOption($optionTypeId, 'debug', '');
-        $this->__addOption($optionTypeId, 'configure', ''); //show shortcuts to _db_fields for each field, for easy configuration
-        $this->__addOption($optionTypeId, 'show-pk-tables', '');
-        $this->__addOption($optionTypeId, 'show-fk-tables', '');
-        $this->__addOption($optionTypeId, 'attach-params', '');
+        $optionTypeId = $this->addOptionType('admin');
+        $this->addOption($optionTypeId, 'skin', 'default');
+        $this->addOption($optionTypeId, 'debug', '');
+        $this->addOption($optionTypeId, 'configure', ''); //show shortcuts to _db_fields for each field, for easy configuration
+        $this->addOption($optionTypeId, 'show-pk-tables', '');
+        $this->addOption($optionTypeId, 'show-fk-tables', '');
+        $this->addOption($optionTypeId, 'attach-params', '');
         
-        $optionTypeId = $this->__addOptionType('frontend');
-        $this->__addOption($optionTypeId, 'skin', 'default');
+        $optionTypeId = $this->addOptionType('frontend');
+        $this->addOption($optionTypeId, 'skin', 'default');
         
-        $optionTypeId = $this->__addOptionType('installation');
-        $this->__addOption($optionTypeId, 'status', 0);
+        $optionTypeId = $this->addOptionType('installation');
+        $this->addOption($optionTypeId, 'status', 0);
         
         //'site_root'
-        $this->__addOption($optionTypeId, 'site_root', base_path());
+        $this->addOption($optionTypeId, 'site_root', base_path());
     }
 
 }

@@ -6,9 +6,9 @@ use Laravella\Crud\Log;
 use \Seeder;
 use \DB;
 
-class UpdateCMSFields extends Seeder {
+class UpdateCMSFields extends CrudSeeder {
 
-    private function __updateField($tableName, $fieldName, $widgetType)
+    private function updateField($tableName, $fieldName, $widgetType)
     {
         $tableId = DB::table('_db_tables')->where('name', $tableName)->pluck('id');
 
@@ -32,9 +32,9 @@ class UpdateCMSFields extends Seeder {
 
     public function run()
     {
-        $this->__updateField('contents', 'content', 'ckeditor');
-        $this->__updateField('contents', 'excerpt', 'textarea');
-        $this->__updateField('medias', 'thumbnail', 'thumbnail');
+        $this->updateField('contents', 'content', 'ckeditor');
+        $this->updateField('contents', 'excerpt', 'textarea');
+        $this->updateField('medias', 'thumbnail', 'thumbnail');
     }
 
 }
