@@ -32,6 +32,7 @@ class SeedOptions extends Seeder {
         $optionTypeId = $this->__addOptionType('admin');
         $this->__addOption($optionTypeId, 'skin', 'default');
         $this->__addOption($optionTypeId, 'debug', '');
+        $this->__addOption($optionTypeId, 'configure', ''); //show shortcuts to _db_fields for each field, for easy configuration
         $this->__addOption($optionTypeId, 'show-pk-tables', '');
         $this->__addOption($optionTypeId, 'show-fk-tables', '');
         $this->__addOption($optionTypeId, 'attach-params', '');

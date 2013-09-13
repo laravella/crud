@@ -7,7 +7,7 @@ use Laravella\Crud\Exceptions\DBException;
 use Seeder;
 use \Model;
 
-class CrudRestoreSeeder extends Seeder {
+class CrudRestoreSeeder extends CrudSeeder {
 
     private $backupId = null;
     private $pdo = null;

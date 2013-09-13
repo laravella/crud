@@ -82,6 +82,10 @@
                     <div class="span4"><input type="text" style="width:{{$field['width']}}px" name="{{$field['name']}}" value="{{$record[$field['name']]}}" /></div>
                 @endif
             @endif
+            @if(Options::get('configure'))
+                <a href="/db/edit/_db_fields/{{$field['id']}}" id="btnFieldEdit" class="btn"><i class="icon-wrench"></i></a>
+            @endif    
+            
         </div>
         @endif
     
