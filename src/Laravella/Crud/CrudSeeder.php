@@ -158,9 +158,12 @@ class CrudSeeder extends Seeder {
      * @param type $id
      * @param type $name
      */
-    public function addDisplayType($id, $name)
+    public function addDisplayType($name, $id = null)
     {
-        $displayTypes = array('id' => $id, 'name' => $name);
+        $displayTypes = array('name' => $name);
+        if (!is_null($id)) {
+            $displayTypes['id']  = $id; 
+        }
         DB::table('_db_display_types')->insert($displayTypes);
         Log::write(Log::INFO, $name . ' display types created');
     }
