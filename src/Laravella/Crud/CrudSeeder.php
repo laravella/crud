@@ -192,7 +192,7 @@ class CrudSeeder extends Seeder {
         $arr = array("name" => $viewName);
         $viewId = DB::table('_db_views')->insertGetId($arr);
         Log::write("success", " - $viewName view inserted");
-        $this->__populateTableActions($viewId, true);
+        $this->populateTableActions($viewId, true);
     }
 
     /**
@@ -202,7 +202,7 @@ class CrudSeeder extends Seeder {
      * @param type $doPermissions Will also populate permissions tables if true
      * 
      */
-    private function __populateTableActions($viewId, $doPermissions = false)
+    public function populateTableActions($viewId, $doPermissions = false)
     {
         try
         {
@@ -245,6 +245,77 @@ class CrudSeeder extends Seeder {
             throw new Exception($message, 1, $e);
         }
     }
+
+
+    /**
+     * Replace _ with spaces and make first character of each word uppercase
+     * 
+     * @param type $name
+     */
+    public function makeLabel($name)
+    {
+        return ucwords(str_replace('_', ' ', $name));
+}
+
+    /**
+     * Returns varchar if fieldType = varchar(100) etc.
+     */
+    public function getFieldType($fieldType)
+    {
+        $start = strpos($fieldType, '(');
+        if ($start > 0)
+        {
+            $fieldType = substr($fieldType, 0, $start);
+            Log::write("success", "fieldtype : $fieldType");
+        }
+        return $fieldType;
+    }
+
+    /**
+     * Returns 100 if fieldType = varchar(100) etc.
+     */
+    public function getFieldLength($fieldType)
+    {
+        $start = strpos($fieldType, '(') + 1;
+        $len = null;
+        if ($start > 0)
+        {
+            $count = strpos($fieldType, ')') - $start;
+            $len = substr($fieldType, $start, $count);
+            //$this->__log("success", "fieldtype : $fieldType, start : $start, count : $count, len : $len");
+        }
+
+        return $len;
+    }
+
+    /**
+     * Try and calculate the width of the widget to display the field in 
+     */
+    public function getFieldWidth($fieldType, $fieldLength)
+    {
+        return 220;
+    }
+
+    /**
+     * Try and calculate the best widget to display the field in. Define the widget in json
+     */
+    public function getFieldWidget($fieldType, $fieldLength)
+    {
+        return ""; //'{widget" : "input", "attributes" : {"type" : "text"}}';
+    }
+    
+    public function getDisplayType($colRec, $types)
+    {
+
+        $displayTypeId = $types['edit'];
+
+        if ($colRec['name'] == "created_at" || $colRec['name'] == "updated_at")
+        {
+            $displayTypeId = $types['nodisplay'];
+        }
+        return $displayTypeId;
+    }
+
     
 }
 
