@@ -2,6 +2,7 @@
 
 use Laravella\Crud\Log;
 use \Seeder;
+use \Model;
 use \DB;
 
 class CrudSeeder extends Seeder {
@@ -235,7 +236,6 @@ class CrudSeeder extends Seeder {
         $arr = array("name" => $viewName);
         $viewId = DB::table('_db_views')->insertGetId($arr);
         Log::write("success", " - $viewName view inserted");
-        $this->populateTableActions($viewId, true);
     }
 
     /**
@@ -245,36 +245,44 @@ class CrudSeeder extends Seeder {
      * @param type $doPermissions Will also populate permissions tables if true
      * 
      */
-    public function populateTableActions($viewId, $doPermissions = false)
+    public function populateTableActions($doPermissions = false)
     {
         try
         {
+            DB::table('_db_table_action_views')->delete();
+            
             $tables = DB::table('_db_tables')->get();
             $actions = DB::table('_db_actions')->get();
+            $views = DB::table('_db_views')->get();
 
             if ($doPermissions)
             {
                 $users = DB::table('users')->get();
                 $usergroups = DB::table('groups')->get();
             }
-            foreach ($tables as $table)
+            foreach ($views as $view)
             {
-                foreach ($actions as $action)
+                foreach ($tables as $table)
                 {
-                    $arr = array('table_id' => $table->id, 'action_id' => $action->id, 'view_id' => $viewId, 'page_size' => 10, 'title' => $table->name);
-
-                    DB::table('_db_table_action_views')->insert($arr);
-                    if ($doPermissions)
+                    foreach ($actions as $action)
                     {
-                        foreach ($users as $user)
+                        $arrTav = array('table_id' => $table->id, 'action_id' => $action->id, 
+                            'view_id' => $view->id, 'page_size' => 10, 'title' => $table->name);
+
+                        DB::table('_db_table_action_views')->insert($arrTav);
+
+                        if ($doPermissions)
                         {
-                            $arr = array('table_id' => $table->id, 'action_id' => $action->id, 'user_id' => $user->id);
-                            DB::table('_db_user_permissions')->insert($arr);
-                        }
-                        foreach ($usergroups as $usergroup)
-                        {
-                            $arr = array('table_id' => $table->id, 'action_id' => $action->id, 'usergroup_id' => $usergroup->id);
-                            DB::table('_db_usergroup_permissions')->insert($arr);
+                            foreach ($users as $user)
+                            {
+                                $arr = array('table_id' => $table->id, 'action_id' => $action->id, 'user_id' => $user->id);
+                                DB::table('_db_user_permissions')->insert($arr);
+                            }
+                            foreach ($usergroups as $usergroup)
+                            {
+                                $arr = array('table_id' => $table->id, 'action_id' => $action->id, 'usergroup_id' => $usergroup->id);
+                                DB::table('_db_usergroup_permissions')->insert($arr);
+                            }
                         }
                     }
                 }

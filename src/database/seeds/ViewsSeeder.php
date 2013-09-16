@@ -12,6 +12,9 @@ class SeedViews extends CrudSeeder {
         
         $this->addView("crud::dbview");
         $this->addView("crud::frontview");
+        
+        $this->populateTableActions(true);
+        
     }
 
 }
