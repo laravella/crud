@@ -41,13 +41,15 @@
         
         <tr>
             <th></th>
-            @foreach($data[0] as $name=>$field)
-            @if ($displayTypes[$meta[$name]['display_type_id']] == 'nodisplay')
             
+            @foreach($data[0] as $name=>$field)
+
+            @if ($displayTypes[$meta[$name]['display_type_id']] == 'nodisplay')
+
             @elseif ($displayTypes[$meta[$name]['display_type_id']] == 'widget' && $widgetTypes[$meta[$name]['widget_type_id']] == 'ckeditor')
 
             @elseif ($displayTypes[$meta[$name]['display_type_id']] == 'widget' && $widgetTypes[$meta[$name]['widget_type_id']] == 'textarea')
-            
+
             @else
             <th>{{$meta[$name]['label']}}</th>
             @if (isset($meta[$name]['pk']))
@@ -56,6 +58,7 @@
             @endif
             @endif
             @endforeach
+            
         </tr>
         
         {{-- the records --}}

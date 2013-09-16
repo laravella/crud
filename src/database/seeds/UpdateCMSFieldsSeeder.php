@@ -1,6 +1,4 @@
-<?php
-
-namespace Laravella\Crud;
+<?php namespace Laravella\Crud;
 
 use Laravella\Crud\Log;
 use \Seeder;
@@ -32,9 +30,9 @@ class UpdateCMSFields extends CrudSeeder {
 
     public function run()
     {
-        $this->updateField('contents', 'content', 'ckeditor');
-        $this->updateField('contents', 'excerpt', 'textarea');
-        $this->updateField('medias', 'thumbnail', 'thumbnail');
+//        $this->updateField('contents', 'content', 'ckeditor');
+//        $this->updateField('contents', 'excerpt', 'textarea');
+//        $this->updateField('medias', 'thumbnail', 'thumbnail');
     }
 
 }

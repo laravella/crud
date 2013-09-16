@@ -1,5 +1,7 @@
 <?php
 
+use Laravella\Crud\DbGopher;
+
 class Table extends Eloquent {
 
     protected $tableName = "";
@@ -158,6 +160,21 @@ class Table extends Eloquent {
     }
 
     /**
+     * Safely return a value from an array
+     * 
+     * @param type $arr
+     * @param type $key
+     * @return type
+     */
+    public static function val($arr, $key) {
+        $val = null;
+  //      if (!isset($arr) && !empty($arr) && isset($key) && !empty($key) && is_array($arr) && isset($arr[$key])) {
+            $val = $arr[$key];
+//        }
+        return $val;
+    }
+    
+    /**
      * return an array(
      *  'table'=>array('name'=>'name', 'pk_name'=>'fieldname'), 
      *  'fields_array'=array('fieldname'=>fieldData,...))
@@ -177,15 +194,19 @@ class Table extends Eloquent {
 
         //turn metadata into array
         $metaA = DbGopher::makeArray($fmeta, $meta);
-
+        
+//        echo var_dump($metaA);
+//        echo var_dump($meta);
+//        die;
+        
         $fieldMeta = Table::addPkData($tableName, $metaA);
 
         $pkName = "";
         foreach ($metaA as $name => $data)
         {
-            if ($data['key'] == 'PRI')
+            if (Table::val($data,'key') == 'PRI')
             {
-                $pkName = $data['name'];
+                $pkName = Table::val($data,'name');
             }
         }
 
@@ -250,28 +271,34 @@ class Table extends Eloquent {
     public static function addPkData($tableName, $ma, $fieldsMeta = null)
     {
 
-        if (empty($fieldsMeta))
-        {
-            $fieldsMeta = Table::getMeta("_db_fields");
-        }
-
         //set field name as key in meta array
         $metaA = array();
-        foreach ($ma as $mk)
-        {
-            //the name of the table
-            $mk['tableName'] = $tableName;
-            if (!empty($mk['pk_field_id']))
+        
+        try {
+            if (empty($fieldsMeta))
             {
-                //add primary key's metadata to foreignkey metadata
-                $mk['pk'] = Table::getFieldMeta($mk['pk_field_id'], $fieldsMeta);
-                if (!empty($mk['pk_display_field_id']))
-                {
-                    //add primary key's (displayed one) metadata to foreignkey metadata
-                    $mk['pk_display'] = Table::getFieldMeta($mk['pk_display_field_id'], $fieldsMeta);
-                }
+                $fieldsMeta = Table::getMeta("_db_fields");
             }
-            $metaA[$mk['name']] = $mk;
+
+            foreach ($ma as $mk)
+            {
+                //the name of the table
+                $mk['tableName'] = $tableName;
+                if (!empty($mk['pk_field_id']))
+                {
+                    //add primary key's metadata to foreignkey metadata
+                    $mk['pk'] = Table::getFieldMeta($mk['pk_field_id'], $fieldsMeta);
+                    if (!empty($mk['pk_display_field_id']))
+                    {
+                        //add primary key's (displayed one) metadata to foreignkey metadata
+                        $mk['pk_display'] = Table::getFieldMeta($mk['pk_display_field_id'], $fieldsMeta);
+                    }
+                }
+                $fname = Table::val($mk, 'name');
+                $metaA[$fname] = $mk;
+            }
+        } catch(Exception $e) {
+            echo $e->getMessage();
         }
         return $metaA;
     }

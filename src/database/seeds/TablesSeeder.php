@@ -36,8 +36,7 @@ class SeedTables extends CrudSeeder {
         /**
          * force 0 for nodisplay (possibly obsolete)
          */
-        $types['nodisplay'] = DB::table('_db_display_types')->insertGetId(array('id' => 0, 'name' => 'nodisplay'));
-
+        $types['nodisplay'] = $this->addDisplayType('nodisplay');
         $types['edit'] = $this->addDisplayType('edit');
         $types['display'] = $this->addDisplayType('display');
         $types['hidden'] = $this->addDisplayType('hidden');

@@ -18,11 +18,16 @@ class DbGopher {
      */
     public static function makeArray($meta, $data)
     {
+        
         $pkName = "";
         $arr = array();
+        
+//        echo var_dump($meta);
+        
         //loop through records
         foreach ($data as $rec)
         {
+            
             $recA = array();
             //for each fieldname in metadata
             foreach ($meta as $metaField)
@@ -37,11 +42,17 @@ class DbGopher {
                 if (property_exists($rec, $fieldName))
                 {
                     $recA[$fieldName] = $rec->$fieldName;
+//                } else {
+//                    $recA[$fieldName] = '';
                 }
             }
             //add record array to table array
             $arr[] = $recA;
         }
+//        
+//        echo var_dump($arr);
+//        die;
+        
         return $arr;
     }
 
@@ -67,6 +78,8 @@ class DbGopher {
                 if (property_exists($rec, $fieldName))
                 {
                     $recA[$fieldName] = $rec->$fieldName;
+//                } else {
+//                    $recA[$fieldName] = null;
                 }
             }
             //add record array to table array

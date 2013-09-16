@@ -164,8 +164,9 @@ class CrudSeeder extends Seeder {
         if (!is_null($id)) {
             $displayTypes['id']  = $id; 
         }
-        DB::table('_db_display_types')->insert($displayTypes);
+        $id = DB::table('_db_display_types')->insertGetId($displayTypes);
         Log::write(Log::INFO, $name . ' display types created');
+        return $id;
     }
 
     /**
