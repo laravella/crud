@@ -37,48 +37,6 @@ class CrudRestoreSeeder extends CrudSeeder {
         return $bid;
     }
 
-    private $idCache = array();
-
-    /**
-     * 
-     * @param type $whereField
-     * @param type $whereValue
-     */
-    private function getId($table, $whereField, $whereValue = null)
-    {
-        $key = $table . ':' . $whereField . ':' . $whereValue;
-        if (!isset($this->idCache[$key]))
-        {
-            $m = Model::getInstance(array(), $table);
-            $query = $table . ' ';
-            if (is_array($whereField))
-            {
-                //$whereField is an array of key-value pairs
-                foreach ($whereField as $key => $value)
-                {
-                    $m = $m->where($key, $value);
-                    $query .= $key . '=\'' . $value . '\' ';
-                }
-            }
-            else
-            {
-                $m = $m->where($whereField, $whereValue);
-                $query .= $whereField . '=\'' . $whereValue . '\' ';
-            }
-            $recs = $m->get();
-            if (count($recs) != 1)
-            {
-//                throw new DBException(count($recs) . ' Unique id not found where ' . $query);
-                return null;
-            }
-            else
-            {
-                $idCache[$key] = $recs[0]->id;
-            }
-        }
-        return $idCache[$key];
-    }
-
     /**
       Tables:
       backup_id,
