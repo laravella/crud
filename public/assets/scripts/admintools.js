@@ -55,22 +55,10 @@ function sendDelete() {
 
             console.log('/dbapi/delete/' + tableName + '/' + recNo);
 
+            $('#tr-' + tableName + '-' + recNo).remove();
+            
             $.get('/dbapi/delete/' + tableName + '/' + recNo, '', function(data) {
-                $('#tr-' + tableName + '-' + recNo).remove();
-                //console.log(data);
             });
-
-            /*
-             $.ajax({
-             data: encodeURIComponent(data),
-             type: "GET",
-             url: '/dbapi/delete/'+tableName+'/'+recNo,
-             timeout: 20000,
-             contentType: "application/x-www-form-urlencoded;charset=utf-8",
-             dataType: 'json',
-             success: function(data) {console.log(data);}
-             });        
-             */
 
         });
     } else {
