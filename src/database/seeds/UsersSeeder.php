@@ -15,7 +15,7 @@ class SeedUsers extends Seeder {
 
         $hashPass = Hash::make($password);
         
-        $group = DB::table('groups')->where('name', $groupName)->first();
+        //$group = DB::table('groups')->where('name', $groupName)->first();
         $userGroup = DB::table('usergroups')->where('group', $groupName)->first();
     
         $adminUser = array('username' => $name, 'password' => $hashPass, 'email' => $email); //Config::get('crud::app.setup_user');
@@ -28,8 +28,8 @@ class SeedUsers extends Seeder {
                 
         $userId = DB::table('users')->insertGetId($adminUser);
 
-        if (is_object($group)) {
-            DB::table('users_groups')->insert(array('user_id' => $userId, 'group_id' => $group->id));
+        if (is_object($userGroup)) {
+//            DB::table('users_groups')->insert(array('user_id' => $userId, 'usergroup_id' => $userGroup->id));
         }   
         
         return $userId;

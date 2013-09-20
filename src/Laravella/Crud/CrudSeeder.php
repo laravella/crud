@@ -105,6 +105,30 @@ class CrudSeeder extends Seeder {
      * Updates a field or inserts a record if key does not exist
      * 
      * @param type $updateTable
+     * @param type $whereValues an array of key value pairs , or an id
+     */
+    public function delete($updateTable, $whereValues)
+    {
+        $m = Model::getInstance($updateTable);
+        if (is_array($whereValues))
+        {
+            //$whereField is an array of key-value pairs
+            foreach ($whereValues as $key => $value)
+            {
+                $m = $m->where($key, $value);
+            }
+        }
+        else
+        {
+            $m = $m->where('id', $whereValues);
+        }    
+        $m->delete();
+    }
+    
+    /**
+     * Updates a field or inserts a record if key does not exist
+     * 
+     * @param type $updateTable
      * @param type $setField
      * @param type $setValue
      * @param type $whereValues an array of key value pairs , or an id
@@ -258,7 +282,7 @@ class CrudSeeder extends Seeder {
             if ($doPermissions)
             {
                 $users = DB::table('users')->get();
-                $usergroups = DB::table('groups')->get();
+                $usergroups = DB::table('usergroups')->get();
             }
             foreach ($views as $view)
             {

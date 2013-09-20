@@ -10,7 +10,7 @@ class SeedGroups extends CrudSeeder {
 
     public function run()
     {
-
+/*
         DB::table('groups')->delete();
 
         $this->addGroup('SuperAdmins');     //can change permissions
@@ -18,6 +18,8 @@ class SeedGroups extends CrudSeeder {
         $this->addGroup('SuperUsers');      //can moderate
         $this->addGroup('Users');           //can post articles
         $this->addGroup('Guests');          //can make comments
+ * 
+ */
     }
 
 }
