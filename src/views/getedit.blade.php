@@ -68,6 +68,12 @@
                                 {{htmlentities($record[$field['name']])}}
                             </textarea>
                         </div>
+                    @elseif ($widgetTypes[$field['widget_type_id']] == 'input:checkbox')
+                        @if ($record[$field['name']]) 
+                            <div class="span4" style="text-align:left;height:40px"><input type="checkbox" checked="checked" name="{{$field['name']}}" value="1" /></div>
+                        @else
+                            <div class="span4" style="text-align:left;height:40px"><input type="checkbox" name="{{$field['name']}}" value="1" /></div>
+                        @endif
                     @elseif ($widgetTypes[$field['widget_type_id']] == 'ckeditor')
                         <div class="span6">
                             <textarea class="ckeditor" style="width:{{$field['width']}}px" name="{{$field['name']}}">
