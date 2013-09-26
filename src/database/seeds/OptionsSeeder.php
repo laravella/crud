@@ -21,6 +21,11 @@ class SeedOptions extends CrudSeeder {
         $this->addOption($optionTypeId, 'show-fk-tables', '');
         $this->addOption($optionTypeId, 'attach-params', '');
         
+        $ulId = $this->addOptionType($optionTypeId, 'upload');
+        $ivId = $this->addOptionType($ulId, 'image_versions');
+        $this->addOptionType($ivId, 'medium');
+        $this->addOptionType($ivId, 'thumbnail');
+        
         $optionTypeId = $this->addOptionType('frontend');
         $this->addOption($optionTypeId, 'skin', 'default');
         
