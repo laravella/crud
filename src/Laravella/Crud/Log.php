@@ -22,7 +22,7 @@ class Log {
             if (\Schema::hasTable('_db_logs'))
             {
 
-                $entry = array("severity" => $severity, "message" => $message);
+                $entry = array("severity" => 0 /*$severity*/, "message" => $message);
                 $id = \DB::table('_db_logs')->insertGetId($entry);
             }
         }
