@@ -21,7 +21,8 @@ class CreateKeysTable extends Migration {
                         $table->string('name', 100);
                         $table->integer('field_id')->unsigned()->nullable();
                         $table->integer('key_type_id')->unsigned()->nullable();
-                        $table->timestamps();
+                        $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+                        $table->timestamp('updated_at')->default('0000-00-00 00:00:00');
                     });
         }
     }

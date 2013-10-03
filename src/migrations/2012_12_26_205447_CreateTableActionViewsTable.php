@@ -23,7 +23,8 @@ class CreateTableActionViewsTable extends Migration {
                         $table->integer('view_id')->unsigned();
                         $table->integer('page_size')->unsigned(); //the size of a page (pagination) in a list view
                         $table->string('title', 50);
-                        $table->timestamps();
+                        $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+                        $table->timestamp('updated_at')->default('0000-00-00 00:00:00');
                         /*
                           $table->foreign('view_id')->references('id')->on('_db_views')->onDelete('cascade');
                           $table->foreign('table_id')->references('id')->on('_db_tables')->onDelete('cascade');

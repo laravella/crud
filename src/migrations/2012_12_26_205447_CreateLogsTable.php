@@ -20,7 +20,8 @@ class CreateLogsTable extends Migration {
                         $table->increments('id')->unique();
                         $table->integer('severity');
                         $table->string('message', 100);
-                        $table->timestamps();
+                        $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+                        $table->timestamp('updated_at')->default('0000-00-00 00:00:00');
                     });
         }
     }

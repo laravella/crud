@@ -21,7 +21,8 @@ class CreateUserGroupPermissionsTable extends Migration {
                         $table->integer('usergroup_id')->unsigned();
                         $table->integer('table_id')->unsigned();
                         $table->integer('action_id')->unsigned();
-                        $table->timestamps();
+                        $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+                        $table->timestamp('updated_at')->default('0000-00-00 00:00:00');
 
                         /*
                           $table->foreign('usergroup_id')->references('id')->on('usergroups')->onDelete('cascade');

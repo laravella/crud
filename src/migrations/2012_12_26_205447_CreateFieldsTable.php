@@ -37,7 +37,8 @@ class CreateFieldsTable extends Migration {
                         $table->integer('table_id')->unsigned();                               // links to _db_tables.id
                         $table->integer('pk_field_id')->unsigned()->nullable();                // links to _db_fields.id (the id of the primary key)
                         $table->integer('pk_display_field_id')->unsigned()->nullable();        // links to _db_fields.id (the id of a field in the primary table that will be used as a description of the primary key id)
-                        $table->timestamps();
+                        $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+                        $table->timestamp('updated_at')->default('0000-00-00 00:00:00');
 
                         /*
                           $table->unique(array('table_id', 'name'));

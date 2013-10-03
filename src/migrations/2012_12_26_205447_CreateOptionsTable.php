@@ -21,7 +21,8 @@ class CreateOptionsTable extends Migration {
                         $table->string('name', 100)->nullable();
                         $table->string('value', 100)->nullable();
                         $table->integer('option_type_id')->nullable();
-                        $table->timestamps();
+                        $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+                        $table->timestamp('updated_at')->default('0000-00-00 00:00:00');
                     });
         }
     }

@@ -34,7 +34,8 @@
                 {
                     $table->increments('id')->unique();
                     $table->string('name', 100)->unique();
-                    $table->timestamps();                    
+                    $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+                    $table->timestamp('updated_at')->default('0000-00-00 00:00:00');
                     
                 });
     }
@@ -51,7 +52,8 @@
                     $table->increments('id')->unique();
                     $table->integer('severity');
                     $table->string('message', 100);
-                    $table->timestamps();                    
+                    $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+                    $table->timestamp('updated_at')->default('0000-00-00 00:00:00');
                     
                 });
     }
@@ -67,7 +69,8 @@
                 {
                     $table->increments('id')->unique();
                     $table->string('name', 100)->unique();
-                    $table->timestamps();                    
+                    $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+                    $table->timestamp('updated_at')->default('0000-00-00 00:00:00');
                     
                 });
     }
@@ -83,7 +86,8 @@
                 {
                     $table->increments('id')->unique();
                     $table->string('name', 100);
-                    $table->timestamps();                    
+                    $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+                    $table->timestamp('updated_at')->default('0000-00-00 00:00:00');
                     
                 });
     }
@@ -116,7 +120,8 @@
                     $table->integer('table_id')->unsigned();        // links to _db_tables.id
                     $table->integer('pk_field_id')->unsigned();                // links to _db_fields.id (the id of the primary key)
                     $table->integer('pk_display_field_id')->unsigned();        // links to _db_fields.id (the id of a field in the primary table that will be used as a description of the primary key id)
-                    $table->timestamps();                    
+                    $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+                    $table->timestamp('updated_at')->default('0000-00-00 00:00:00');
                     
                     $table->unique(array('table_id', 'name'));
                     $table->foreign('table_id')->references('id')->on('_db_tables')->onDelete('cascade');
@@ -134,7 +139,8 @@
                 {
                     $table->increments('id')->unique();
                     $table->string('name', 100);
-                    $table->timestamps();                    
+                    $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+                    $table->timestamp('updated_at')->default('0000-00-00 00:00:00');
                     
                 });
     }
@@ -150,7 +156,8 @@
                 {
                     $table->increments('id')->unique();
                     $table->string('name', 100);
-                    $table->timestamps();                    
+                    $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+                    $table->timestamp('updated_at')->default('0000-00-00 00:00:00');
                     
                 });
     }
@@ -171,7 +178,8 @@
                     $table->integer('view_id')->unsigned();
                     $table->integer('page_size')->unsigned(); //the size of a page (pagination) in a list view
                     $table->string('title',50);
-                    $table->timestamps();                    
+                    $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+                    $table->timestamp('updated_at')->default('0000-00-00 00:00:00');
 
                     $table->foreign('view_id')->references('id')->on('_db_views')->onDelete('cascade');
                     $table->foreign('table_id')->references('id')->on('_db_tables')->onDelete('cascade');
@@ -192,7 +200,8 @@
                     $table->integer('user_id')->unsigned();
                     $table->integer('table_id')->unsigned();
                     $table->integer('action_id')->unsigned();
-                    $table->timestamps();                    
+                    $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+                    $table->timestamp('updated_at')->default('0000-00-00 00:00:00');
                     
                     $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
                     $table->foreign('table_id')->references('id')->on('_db_tables')->onDelete('cascade');
@@ -213,7 +222,8 @@
                     $table->integer('usergroup_id')->unsigned();
                     $table->integer('table_id')->unsigned();
                     $table->integer('action_id')->unsigned();
-                    $table->timestamps();                    
+                    $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+                    $table->timestamp('updated_at')->default('0000-00-00 00:00:00');
                     
                     $table->foreign('usergroup_id')->references('id')->on('usergroups')->onDelete('cascade');
                     $table->foreign('table_id')->references('id')->on('_db_tables')->onDelete('cascade');

@@ -20,7 +20,8 @@ class CreateWidgetTypesTable extends Migration {
                         $table->increments('id')->unique();
                         $table->string('name', 100);
                         $table->string('definition', 600);
-                        $table->timestamps();
+                        $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+                        $table->timestamp('updated_at')->default('0000-00-00 00:00:00');
                     });
         }
     }
