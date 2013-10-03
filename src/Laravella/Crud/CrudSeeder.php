@@ -9,6 +9,65 @@ class CrudSeeder extends Seeder {
 
     private $idCache = array();
 
+
+    /**
+     * Update a reference to primary keys in _db_fields
+     * 
+     * @param type $fkTableName
+     * @param type $fkFieldName
+     * @param type $pkTableName
+     * @param type $pkFieldName
+     */
+    public function updateReference($fkTableName, $fkFieldName, $pkTableName, $pkFieldName, $pkDisplayFieldName)
+    {
+        //get the id of the pkTableName in _db_tables
+        $fkTableId = DB::table('_db_tables')->where('name', $fkTableName)->pluck('id');
+
+        $pkTableId = DB::table('_db_tables')->where('name', $pkTableName)->pluck('id');
+
+        //get the id of the primary key field in _db_fields
+        //for each field in the _db_fields table there will thus be a reference to 
+        $pkFieldId = DB::table('_db_fields')
+                ->where('table_id', $pkTableId)
+                ->where('name', $pkFieldName)
+                ->pluck('id');
+
+        $pkDisplayFieldId = DB::table('_db_fields')
+                ->where('table_id', $pkTableId)
+                ->where('name', $pkDisplayFieldName)
+                ->pluck('id');
+
+        $fkFieldId = DB::table('_db_fields')
+                ->where('table_id', $fkTableId)
+                ->where('name', $fkFieldName)
+                ->pluck('id');
+
+        Log::write("success", "inserting into _db_fields : where 
+            pkTableName = $pkTableName, 
+            pkFieldName = $pkFieldName, 
+            pkTableId = $pkTableId, 
+            pkFieldId = $pkFieldId, 
+
+            fkTableName = $fkTableName, 
+            fkFieldName = $fkFieldName, 
+            fkTableId = $fkTableId,
+            fkFieldId = $fkFieldId");
+
+//set the reference on the fk field
+        DB::table('_db_fields')
+                ->where('table_id', $fkTableId)
+                ->where('name', $fkFieldName)
+                ->update(array('pk_field_id' => $pkFieldId, 'pk_display_field_id' => $pkDisplayFieldId));
+        /*
+          $this->__log("success", "updating record : {$fkRec->id}");
+
+          DB::table('_db_fields')
+          ->where('table_id', $fkTableId)
+          ->where('name', $fkFieldName)
+          ->update(array('pk_field_id' => $fieldId));
+         */
+    }
+    
     /**
      * 
      * @param type $whereField
@@ -233,6 +292,23 @@ class CrudSeeder extends Seeder {
         }
         $id = DB::table('_db_display_types')->insertGetId($displayTypes);
         Log::write(Log::INFO, $name . ' display types created');
+        return $id;
+    }
+
+    /**
+     * Add display_type
+     * 
+     * @param type $id
+     * @param type $name
+     */
+    public function addKeyType($name, $id = null)
+    {
+        $keyTypes = array('name' => $name);
+        if (!is_null($id)) {
+            $keyTypes['id']  = $id; 
+        }
+        $id = DB::table('_db_key_types')->insertGetId($keyTypes);
+        Log::write(Log::INFO, $name . ' key type created');
         return $id;
     }
 

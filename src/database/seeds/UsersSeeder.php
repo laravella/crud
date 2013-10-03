@@ -5,9 +5,9 @@ use \Seeder;
 use \DB;
 use \Hash;
 
-class SeedUsers extends Seeder {
+class SeedUsers extends CrudSeeder {
 
-    private function __createUser($groupName, $name, $password, $email, $firstName, $lastName) {
+    private function createUser($groupName, $name, $password, $email, $firstName, $lastName) {
         
         $this->command->info($groupName.' '.$name);
         
@@ -18,9 +18,9 @@ class SeedUsers extends Seeder {
         //$group = DB::table('groups')->where('name', $groupName)->first();
         $userGroup = DB::table('usergroups')->where('group', $groupName)->first();
     
-        $adminUser = array('username' => $name, 'password' => $hashPass, 'email' => $email); //Config::get('crud::app.setup_user');
+        $adminUser = array('username' => $name, 'password' => $hashPass, 'email' => $email, 'first_name'=> $firstName, 'last_name'=>$lastName); //Config::get('crud::app.setup_user');
         $adminUser['activated'] = true;
-        $adminUser['api_token'] = $this->__makeApiKey();
+        $adminUser['api_token'] = $this->makeApiKey();
         if (is_object($userGroup)) {
             $adminUser['usergroup_id'] = $userGroup->id;
             $this->command->info('usergroup id is : '.$userGroup->id);
@@ -36,7 +36,7 @@ class SeedUsers extends Seeder {
         
     }
     
-    private function __makeApiKey() {
+    private function makeApiKey() {
         $password = rand(23450987, 234509870);
         $password = md5($password);
         return $password;
@@ -47,13 +47,13 @@ class SeedUsers extends Seeder {
     {
         DB::table('users')->delete();
         
-        $password = $this->__makeApiKey();
+        $password = $this->makeApiKey();
         
         $shortPassword = substr($password,0,8);
         
-        $this->__createUser('superadmin', 'superadmin', $shortPassword, 'superadmin@site.com', 'super', 'admin');
+        $this->createUser('superadmin', 'superadmin', 'ravel', 'superadmin@yourwebsite.com', 'super', 'admin');
         
-        $this->__createUser('admin', 'admin', 'ravel', 'admin@yourwebsite.com', 'admin', 'admin');
+        $this->createUser('admin', 'admin', 'ravel', 'admin@yourwebsite.com', 'admin', 'admin');
         
         //echo ;
         Log::write(Log::INFO, "-- password : $shortPassword --");

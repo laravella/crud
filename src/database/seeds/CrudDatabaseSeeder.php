@@ -39,6 +39,9 @@ class CrudDatabaseSeeder extends Seeder {
         $this->call('Laravella\Crud\SeedViews');
         Log::write("success", "Populated _db_views");
         
+        $this->call('Laravella\Crud\SeedKeyTypes');
+        Log::write("success", "Populated _db_key_types");
+        
         $this->call('Laravella\Crud\UpdateReferences');
         Log::write("success", "References seeded");
         
