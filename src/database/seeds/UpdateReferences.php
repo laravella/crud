@@ -47,6 +47,8 @@ class UpdateReferences extends CrudSeeder {
             $this->updateReference('medias', 'gallery_id', 'galleries', 'id', 'name');
             $this->updateReference('medias', 'mcollection_id', 'mcollections', 'id', 'name');
             $this->updateReference('medias', 'user_id', 'users', 'id', 'username');
+
+            $this->updateReference('galleries', 'media_id', 'medias', 'id', 'filename');
             
             $this->updateReference('_db_options', 'option_type_id', '_db_option_types', 'id', 'name');
             $this->updateReference('_db_option_types', 'parent_id', '_db_option_types', 'id', 'name');
