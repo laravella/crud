@@ -51,7 +51,7 @@ left outer join _db_actions a on tav.action_id = a.id;";
             Schema::create('_db_backups', function($table)
                     {
                         $table->increments('id');
-                        $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+                        $table->timestamp('created_at')->default('0000-00-00 00:00:00');
                         $table->timestamp('updated_at')->default('0000-00-00 00:00:00');
                     });
         }
