@@ -71,7 +71,7 @@ class Params {
         if (Auth::check())
         {
             $userId = Auth::user()->id;
-            $this->menu = $this->__getMenu($userId);
+            $this->menu = $this->getMenu($userId);
         }
     }
 
@@ -106,13 +106,15 @@ class Params {
     }
     
     /**
-     * Build a menu array from _db_menus
      * 
      * @param type $userId
      * @return type
      */
-    private function __getMenu($userId)
-    {
+    public static function getUserMenu ($userId = null) {
+        if ($userId == null) {
+            $userId = Auth::user()->id;
+        }
+        
         $menus = DB::table('users as u')->join('usergroups as ug', 'u.usergroup_id', '=', 'ug.id')
                 ->join('_db_menu_permissions as mp', 'mp.usergroup_id', '=', 'ug.id')
                 ->join('_db_menus as m', 'm.id', '=', 'mp.menu_id')
@@ -137,6 +139,17 @@ class Params {
                 'm2_href'=>$menu->m2_href, 'm2_parent_id'=>$menu->m2_parent_id);
         }
         return $menuA;
+    }
+    
+    /**
+     * Build a menu array from _db_menus
+     * 
+     * @param type $userId
+     * @return type
+     */
+    public function getMenu($userId=null)
+    {
+        return static::getUserMenu($userId);
     }
 
     /**
