@@ -19,6 +19,8 @@ class UpdateReferences extends CrudSeeder {
             // create foreign key references with
             // log, fkTableName, fkFieldName, pkTableName, pkFieldName, pkDisplayFieldName
 
+            DB::table('_db_keys')->delete();
+
             $this->updateReference('_db_fields', 'table_id', '_db_tables', 'id', 'name');
             $this->updateReference('_db_fields', 'pk_field_id', '_db_fields', 'id', 'fullname');
             $this->updateReference('_db_fields', 'pk_display_field_id', '_db_fields', 'id', 'fullname');
@@ -53,7 +55,8 @@ class UpdateReferences extends CrudSeeder {
             $this->updateReference('_db_options', 'option_type_id', '_db_option_types', 'id', 'name');
             $this->updateReference('_db_option_types', 'parent_id', '_db_option_types', 'id', 'name');
             
-            $this->updateReference('_db_keys', 'field_id', '_db_fields', 'id', 'fullname');
+            $this->updateReference('_db_keys', 'foreign_field_id', '_db_fields', 'id', 'fullname');
+            $this->updateReference('_db_keys', 'primary_field_id', '_db_fields', 'id', 'fullname');
             $this->updateReference('_db_keys', 'key_type_id', '_db_key_types', 'id', 'name');
 
             $this->updateReference('_db_key_fields', 'field_id', '_db_fields', 'id', 'fullname');

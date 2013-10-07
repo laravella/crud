@@ -9,6 +9,8 @@ class CrudSeeder extends Seeder {
 
     private $idCache = array();
 
+    private $pkTypeId = null;
+    private $fkTypeId = null;
 
     /**
      * Update a reference to primary keys in _db_fields
@@ -25,6 +27,14 @@ class CrudSeeder extends Seeder {
 
         $pkTableId = DB::table('_db_tables')->where('name', $pkTableName)->pluck('id');
 
+        if (!isset($this->pkTypeId)) {
+            $this->pkTypeId = DB::table('_db_key_types')->where('name', 'primary')->pluck('id');
+        }
+            
+        if (!isset($this->fkTypeId)) {
+            $this->fkTypeId = DB::table('_db_key_types')->where('name', 'foreign')->pluck('id');
+        }
+            
         //get the id of the primary key field in _db_fields
         //for each field in the _db_fields table there will thus be a reference to 
         $pkFieldId = DB::table('_db_fields')
@@ -58,6 +68,9 @@ class CrudSeeder extends Seeder {
                 ->where('table_id', $fkTableId)
                 ->where('name', $fkFieldName)
                 ->update(array('pk_field_id' => $pkFieldId, 'pk_display_field_id' => $pkDisplayFieldId));
+        
+        DB::table('_db_keys')->insert(array('primary_field_id'=>$pkFieldId, 'foreign_field_id'=>$fkFieldId, 'key_type_id'=>$this->pkTypeId));
+        
         /*
           $this->__log("success", "updating record : {$fkRec->id}");
 

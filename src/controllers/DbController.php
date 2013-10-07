@@ -455,8 +455,13 @@ class DbController extends Controller {
             {
                 //metadata of the primary key
                 $pk = $metaField['pk'];
+                
                 //meta data of the field used to display the primary key
-                $pkd = $metaField['pk_display'];
+                $pkd = $pk;
+                if (isset($metaField['pk_display']) && !empty($metaField['pk_display'])) {
+                    $pkd = $metaField['pk_display'];
+                }
+                
                 $selectA[$metaField['name']] = $this->__getSelect($pk['tableName'], $pk['name'], $pkd['name']);
             }
         }
