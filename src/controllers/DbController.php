@@ -163,6 +163,9 @@ class DbController extends Controller {
 
     protected function __attachRelatedData($records, $ma)
     {
+        $pkTables = array();
+        
+        return $pkTables;
     }    
     
     /**
@@ -326,6 +329,8 @@ class DbController extends Controller {
 
             $pkTables = $this->__attachPkData($paginated, $tableMeta['fields_array']);
 
+            $relatedData = $this->__attachRelatedData($paginated, $tableMeta['fields_array']);
+            
             foreach ($pkTables as $pktName => $pkTable)
             {
                 $tables[$pktName] = new Table($pktName, $this->dbTables[$pktName]['dataA'], $this->dbTables[$pktName]['meta']);

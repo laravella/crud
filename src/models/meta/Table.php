@@ -174,6 +174,8 @@ class Table extends Eloquent {
         return $val;
     }
     
+    
+    
     /**
      * return an array(
      *  'table'=>array('name'=>'name', 'pk_name'=>'fieldname'), 
@@ -186,7 +188,6 @@ class Table extends Eloquent {
      */
     public static function getTableMeta($tableName)
     {
-
         //get metadata from database
         $meta = Table::getMeta($tableName);
 
@@ -194,10 +195,6 @@ class Table extends Eloquent {
 
         //turn metadata into array
         $metaA = DbGopher::makeArray($fmeta, $meta);
-        
-//        echo var_dump($metaA);
-//        echo var_dump($meta);
-//        die;
         
         $fieldMeta = Table::addPkData($tableName, $metaA);
 
@@ -219,6 +216,33 @@ class Table extends Eloquent {
         return $tmData;
     }
 
+    /**
+     * get field metadata from database
+     * 
+     * @param type $tableName
+     * @return type
+     */
+    public static function getMeta2($tableName)
+    {
+        $tableMeta = DB::table("_db_fields")
+                        ->join('_db_tables', '_db_fields.table_id', '=', '_db_tables.id')
+                        ->join('_db_display_types', '_db_fields.display_type_id', '=', '_db_display_types.id')
+                        ->leftJoin('_db_keys', function($join)
+                               {
+                                   $join->on('_db_keys.primary_key_id', '=', '_db_fields.id');
+                               })                
+                        ->select('_db_fields.id', '_db_fields.name', '_db_fields.label', '_db_fields.key', 
+                                '_db_fields.display_type_id', '_db_fields.type', '_db_fields.length', 
+                                '_db_fields.default', '_db_fields.extra', '_db_fields.href', 
+                                '_db_keys.primary_field_id', '_db_keys.primary_display_field_id', 
+                                '_db_fields.display_order', '_db_fields.width', 
+                                '_db_fields.widget_type_id', '_db_fields.searchable')
+                        ->orderBy('display_order', 'asc')
+                        ->where("_db_tables.name", "=", $tableName)->get();
+
+        return $tableMeta;
+    }
+    
     /**
      * get field metadata from database
      * 
