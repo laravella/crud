@@ -4,6 +4,7 @@ use Laravella\Crud\Log;
 use \Seeder;
 use \Model;
 use \DB;
+use \Hash;
 
 /**
  * Basic functions to manipulate meta data
