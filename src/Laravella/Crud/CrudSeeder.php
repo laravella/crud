@@ -5,6 +5,9 @@ use \Seeder;
 use \Model;
 use \DB;
 
+/**
+ * Basic functions to manipulate meta data
+ */
 class CrudSeeder extends Seeder {
 
     private $idCache = array();
@@ -82,6 +85,7 @@ class CrudSeeder extends Seeder {
     }
     
     /**
+     * Get the id of a record based on the value of another field
      * 
      * @param type $whereField
      * @param type $whereValue
@@ -133,6 +137,48 @@ class CrudSeeder extends Seeder {
     }
     
     /**
+     * Add a new user
+     * 
+     * @param type $groupName
+     * @param type $name
+     * @param type $password
+     * @param type $email
+     * @param type $firstName
+     * @param type $lastName
+     * @return type
+     */
+    public function createUser($groupName, $name, $password, $email, $firstName, $lastName) {
+        
+        $this->command->info($groupName.' '.$name);
+        
+        Log::write(Log::INFO, '['.$groupName.'] '.$name);
+
+        $hashPass = Hash::make($password);
+        
+        //$group = DB::table('groups')->where('name', $groupName)->first();
+        $userGroup = DB::table('usergroups')->where('group', $groupName)->first();
+    
+        $adminUser = array('username' => $name, 'password' => $hashPass, 'email' => $email, 'first_name'=> $firstName, 'last_name'=>$lastName); //Config::get('crud::app.setup_user');
+        $adminUser['activated'] = true;
+        $adminUser['api_token'] = $this->makeApiKey();
+        if (is_object($userGroup)) {
+            $adminUser['usergroup_id'] = $userGroup->id;
+            $this->command->info('usergroup id is : '.$userGroup->id);
+        }
+                
+        $userId = DB::table('users')->insertGetId($adminUser);
+
+        if (is_object($userGroup)) {
+//            DB::table('users_groups')->insert(array('user_id' => $userId, 'usergroup_id' => $userGroup->id));
+        }   
+        
+        return $userId;
+        
+    }    
+    
+    /**
+     * 
+     * Add an option
      * 
      * @param type $optionTypeId
      * @param type $name

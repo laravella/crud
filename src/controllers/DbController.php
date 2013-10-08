@@ -161,6 +161,10 @@ class DbController extends Controller {
         return $newArray;
     }
 
+    protected function __attachRelatedData($records, $ma)
+    {
+    }    
+    
     /**
      * 
      * 
