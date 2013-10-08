@@ -19,10 +19,10 @@ class CreateKeysTable extends Migration {
                     {
                         $table->increments('id')->unique();
                         $table->string('name', 100);
-                        $table->integer('primary_field_id')->unsigned()->nullable();
-                        $table->integer('primary_display_field_id')->unsigned()->nullable();
-                        $table->integer('foreign_field_id')->unsigned()->nullable();
-                        $table->integer('foreign_display_field_id')->unsigned()->nullable();
+                        $table->integer('pk_field_id')->unsigned()->nullable();
+                        $table->integer('pk_display_field_id')->unsigned()->nullable();
+                        $table->integer('fk_field_id')->unsigned()->nullable();
+                        $table->integer('fk_display_field_id')->unsigned()->nullable();
                         $table->integer('key_type_id')->unsigned()->nullable();
                         $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
                         $table->timestamp('updated_at')->default('0000-00-00 00:00:00');

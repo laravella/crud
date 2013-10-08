@@ -531,12 +531,12 @@ class DbController extends Controller {
     
     public function getTest() {
         
-        $tables = Model::getInstance('_db_tables', array('name' => 'noTable'));
-
-        $field = Model::getInstance('_db_fields', array('id'=>1000, 'name' => 'noTable', 
-            'fullname'=>'asdf', 'label'=>'asdf', 'table_id'=>0, 'pk_field_id'=>0, 'pk_display_field_id'=>0));
-        
-        return "save";
+//        $tables = Model::getInstance('_db_tables', array('name' => 'noTable'));
+//
+//        $field = Model::getInstance('_db_fields', array('id'=>1000, 'name' => 'noTable', 
+//            'fullname'=>'asdf', 'label'=>'asdf', 'table_id'=>0, 'pk_field_id'=>0, 'pk_display_field_id'=>0));
+//        
+//        return "save";
         
 //        $field = $tables->push($field);
         
