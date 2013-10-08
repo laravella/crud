@@ -7,13 +7,6 @@ use \Hash;
 
 class SeedUsers extends CrudSeeder {
 
-    private function makeApiKey() {
-        $password = rand(23450987, 234509870);
-        $password = md5($password);
-        return $password;
-        
-    }
-    
     public function run()
     {
         DB::table('users')->delete();

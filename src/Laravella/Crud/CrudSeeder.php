@@ -137,6 +137,13 @@ class CrudSeeder extends Seeder {
         Log::write("success", " - $severity severity inserted");
     }
     
+    public function makeApiKey() {
+        $password = rand(23450987, 234509870);
+        $password = md5($password);
+        return $password;
+        
+    }
+    
     /**
      * Add a new user
      * 
