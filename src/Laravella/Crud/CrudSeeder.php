@@ -74,7 +74,7 @@ class CrudSeeder extends Seeder {
                 ->where('name', $fkFieldName)
                 ->update(array('pk_field_id' => $pkFieldId, 'pk_display_field_id' => $pkDisplayFieldId));
         */
-        DB::table('_db_keys')->insert(array(
+        DB::table('_db_key_fields')->insert(array(
             'pk_field_id'=>$pkFieldId, 
             'pk_display_field_id'=>$pkDisplayFieldId, 
             'fk_field_id'=>$fkFieldId, 

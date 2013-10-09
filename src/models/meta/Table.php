@@ -17,7 +17,7 @@ class Table extends Eloquent {
         return array('_db_fields.name', '_db_tables.name as tableName', '_db_fields.label', 
             '_db_fields.key', '_db_fields.display_type_id', '_db_fields.type', '_db_fields.length', 
             '_db_fields.default', '_db_fields.extra', '_db_fields.href', 
-            '_db_keys.pk_field_id', '_db_keys.pk_display_field_id', 
+            '_db_key_fields.pk_field_id', '_db_key_fields.pk_display_field_id', 
             '_db_fields.display_order', '_db_fields.width', 
             '_db_fields.widget_type_id', '_db_fields.searchable');
     }
@@ -123,9 +123,9 @@ class Table extends Eloquent {
         //get metadata of a single field from database
         $fieldMeta = DB::table("_db_fields")
                         ->join('_db_tables', '_db_fields.table_id', '=', '_db_tables.id')
-                        ->leftJoin('_db_keys', function($join)
+                        ->leftJoin('_db_key_fields', function($join)
                                {
-                                   $join->on('_db_keys.fk_field_id', '=', '_db_fields.id');
+                                   $join->on('_db_key_fields.fk_field_id', '=', '_db_fields.id');
                                })                
                         ->select(static::getMetaFields)
                         ->where("_db_tables.name", $tableName)
@@ -146,9 +146,9 @@ class Table extends Eloquent {
         //get metadata of a single field from database
         $fieldMeta = DB::table("_db_fields")
                         ->join('_db_tables', '_db_fields.table_id', '=', '_db_tables.id')
-                        ->leftJoin('_db_keys', function($join)
+                        ->leftJoin('_db_key_fields', function($join)
                                {
-                                   $join->on('_db_keys.pk_field_id', '=', '_db_fields.id');
+                                   $join->on('_db_key_fields.pk_field_id', '=', '_db_fields.id');
                                })                
                         ->select(static::getMetaFields())
 
@@ -242,9 +242,9 @@ class Table extends Eloquent {
         $tableMeta = DB::table("_db_fields")
                         ->join('_db_tables', '_db_fields.table_id', '=', '_db_tables.id')
                         ->join('_db_display_types', '_db_fields.display_type_id', '=', '_db_display_types.id')
-                        ->leftJoin('_db_keys', function($join)
+                        ->leftJoin('_db_key_fields', function($join)
                                {
-                                   $join->on('_db_keys.fk_field_id', '=', '_db_fields.id');
+                                   $join->on('_db_key_fields.fk_field_id', '=', '_db_fields.id');
                                })  
                         ->select(static::getMetaFields())
                         ->orderBy('display_order', 'asc')
@@ -265,9 +265,9 @@ class Table extends Eloquent {
         $tableMeta = DB::table("_db_fields")
                         ->join('_db_tables', '_db_fields.table_id', '=', '_db_tables.id')
                         ->join('_db_display_types', '_db_fields.display_type_id', '=', '_db_display_types.id')
-                        ->leftJoin('_db_keys', function($join)
+                        ->leftJoin('_db_key_fields', function($join)
                                {
-                                   $join->on('_db_keys.fk_field_id', '=', '_db_fields.id');
+                                   $join->on('_db_key_fields.fk_field_id', '=', '_db_fields.id');
                                })                
                         ->select(static::getMetaFields())
                         ->orderBy('display_order', 'asc')
