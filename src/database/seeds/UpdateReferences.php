@@ -57,8 +57,12 @@ class UpdateReferences extends CrudSeeder {
             
             $this->updateReference('_db_keys', 'fk_field_id', '_db_fields', 'id', 'fullname');
             $this->updateReference('_db_keys', 'pk_field_id', '_db_fields', 'id', 'fullname');
+            $this->updateReference('_db_keys', 'pk_display_field_id', '_db_fields', 'id', 'fullname');
+            $this->updateReference('_db_keys', 'fk_field_id', '_db_fields', 'id', 'fullname');
+            $this->updateReference('_db_keys', 'fk_display_field_id', '_db_fields', 'id', 'fullname');
             $this->updateReference('_db_keys', 'key_type_id', '_db_key_types', 'id', 'name');
 
+            //obsolute
             $this->updateReference('_db_key_fields', 'field_id', '_db_fields', 'id', 'fullname');
             $this->updateReference('_db_key_fields', 'key_id', '_db_keys', 'id', 'name');
             

@@ -13,6 +13,15 @@ class Table extends Eloquent {
     private $pageSize = 10;
     private $selectBox = array();
 
+    public static function getMetaFields() {
+        return array('_db_fields.name', '_db_tables.name as tableName', '_db_fields.label', 
+            '_db_fields.key', '_db_fields.display_type_id', '_db_fields.type', '_db_fields.length', 
+            '_db_fields.default', '_db_fields.extra', '_db_fields.href', 
+            '_db_keys.pk_field_id', '_db_keys.pk_display_field_id', 
+            '_db_fields.display_order', '_db_fields.width', 
+            '_db_fields.widget_type_id', '_db_fields.searchable');
+    }
+    
     /**
      * Constructor
      * 
@@ -118,16 +127,10 @@ class Table extends Eloquent {
                                {
                                    $join->on('_db_keys.fk_field_id', '=', '_db_fields.id');
                                })                
-                        ->select('_db_fields.name', '_db_tables.name as tableName', '_db_fields.label', 
-                                '_db_fields.key', '_db_fields.display', '_db_fields.type', 
-                                '_db_fields.length', '_db_fields.default', '_db_fields.extra', '_db_fields.href', 
-                                '_db_keys.pk_field_id', '_db_keys.pk_display_field_id', 
-//                                '_db_fields.pk_field_id', '_db_fields.pk_display_field_id', 
-                                '_db_fields.display_order', '_db_fields.width', 
-                                '_db_fields.widget', '_db_fields.searchable')
+                        ->select(static::getMetaFields)
                         ->where("_db_tables.name", $tableName)
                         ->where("_db_fields.name", $fieldName)->get();
-
+                               
         return Table::__field_meta($fieldMeta);
     }
 
@@ -145,15 +148,10 @@ class Table extends Eloquent {
                         ->join('_db_tables', '_db_fields.table_id', '=', '_db_tables.id')
                         ->leftJoin('_db_keys', function($join)
                                {
-                                   $join->on('_db_keys.fk_field_id', '=', '_db_fields.id');
+                                   $join->on('_db_keys.pk_field_id', '=', '_db_fields.id');
                                })                
-                        ->select('_db_fields.name', '_db_tables.name as tableName', '_db_fields.label', 
-                                '_db_fields.key', '_db_fields.display_type_id', '_db_fields.type', '_db_fields.length', 
-                                '_db_fields.default', '_db_fields.extra', '_db_fields.href', 
-                                '_db_keys.pk_field_id', '_db_keys.pk_display_field_id', 
-//                                '_db_fields.pk_field_id', '_db_fields.pk_display_field_id'
-                                '_db_fields.display_order', '_db_fields.width', 
-                                '_db_fields.widget_type_id', '_db_fields.searchable')
+                        ->select(static::getMetaFields())
+
                         ->where("_db_fields.id", $fieldId)->get();
 
         return Table::__field_meta($fieldMeta);
@@ -165,7 +163,8 @@ class Table extends Eloquent {
 
         if (empty($dbFieldsMeta))
         {
-            $dbFieldsMeta = Table::getMeta("_db_fields");
+//            $dbFieldsMeta = Table::getMeta("_db_fields");
+            $dbFieldsMeta = Table::getMultiMeta(static::getMetaFields());
         }
 
         //turn $fieldMeta into an array
@@ -207,7 +206,7 @@ class Table extends Eloquent {
         //get metadata from database
         $meta = Table::getMeta($tableName);
 
-        $fmeta = Table::getMeta("_db_fields");
+        $fmeta =  Table::getMultiMeta(static::getMetaFields()); //Table::getMeta("_db_fields");
 
         //turn metadata into array
         $metaA = DbGopher::makeArray($fmeta, $meta);
@@ -246,18 +245,36 @@ class Table extends Eloquent {
                         ->leftJoin('_db_keys', function($join)
                                {
                                    $join->on('_db_keys.fk_field_id', '=', '_db_fields.id');
-                               })                
-                        ->select('_db_fields.id', '_db_fields.name', '_db_fields.label', '_db_fields.key', 
-                                '_db_fields.display_type_id', '_db_fields.type', '_db_fields.length', 
-                                '_db_fields.default', '_db_fields.extra', '_db_fields.href', 
-                                '_db_keys.pk_field_id', '_db_keys.pk_display_field_id', 
-                                '_db_fields.display_order', '_db_fields.width', 
-                                '_db_fields.widget_type_id', '_db_fields.searchable')
+                               })  
+                        ->select(static::getMetaFields())
                         ->orderBy('display_order', 'asc')
                         ->where("_db_tables.name", "=", $tableName)->get();
 
         return $tableMeta;
     }
+    
+    /**
+     * get field metadata from database
+     * 
+     * @param type $tableName
+     * @return type
+     */
+    public static function getMultiMeta($fieldNames)
+    {
+        
+        $tableMeta = DB::table("_db_fields")
+                        ->join('_db_tables', '_db_fields.table_id', '=', '_db_tables.id')
+                        ->join('_db_display_types', '_db_fields.display_type_id', '=', '_db_display_types.id')
+                        ->leftJoin('_db_keys', function($join)
+                               {
+                                   $join->on('_db_keys.fk_field_id', '=', '_db_fields.id');
+                               })                
+                        ->select(static::getMetaFields())
+                        ->orderBy('display_order', 'asc')
+                        ->whereIn("_db_fields.fullname", $fieldNames)->get();
+
+        return $tableMeta;
+    }    
     
     /**
      * Get a table's metadata (from _db_fields table) as an array
@@ -271,7 +288,7 @@ class Table extends Eloquent {
         //get metadata from database
         $meta = Table::getMeta($tableName);
 
-        $fieldsMeta = Table::getMeta("_db_fields");
+        $fieldsMeta =  Table::getMultiMeta(static::getMetaFields()); //Table::getMeta("_db_fields");
 
         //turn metadata into array
         $ma = DbGopher::makeArray($fieldsMeta, $meta);
@@ -298,7 +315,7 @@ class Table extends Eloquent {
         try {
             if (empty($fieldsMeta))
             {
-                $fieldsMeta = Table::getMeta("_db_fields");
+                $fieldsMeta =  Table::getMultiMeta(static::getMetaFields()); //Table::getMeta("_db_fields");
             }
 
             foreach ($ma as $mk)

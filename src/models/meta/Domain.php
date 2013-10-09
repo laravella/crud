@@ -56,7 +56,6 @@
             $len = substr($fieldType, $start, $count);
             //$this->__log("success", "fieldtype : $fieldType, start : $start, count : $count, len : $len");
         }
-
         return $len;
     }
     

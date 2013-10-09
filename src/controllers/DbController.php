@@ -281,7 +281,8 @@ class DbController extends Controller {
     }
 
     /**
-     * Create a standard params object that will be passed to the view.
+     * Create a standard params object that will be passed to the view.  The params object (instance of Laravella\Crud\Params
+     * is at the heart of every view and contains all the variables that will be passed to the view, from the DbController.
      * 
      * Data is not fetched yet, use data->get(), or data->paginate() to fetch
      * 

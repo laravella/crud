@@ -68,16 +68,17 @@ class CrudSeeder extends Seeder {
             fkFieldId = $fkFieldId");
 
 //set the reference on the fk field
+        /*
         DB::table('_db_fields')
                 ->where('table_id', $fkTableId)
                 ->where('name', $fkFieldName)
                 ->update(array('pk_field_id' => $pkFieldId, 'pk_display_field_id' => $pkDisplayFieldId));
-        
+        */
         DB::table('_db_keys')->insert(array(
             'pk_field_id'=>$pkFieldId, 
             'pk_display_field_id'=>$pkDisplayFieldId, 
             'fk_field_id'=>$fkFieldId, 
-            //'foreign_display_field_id'=>$fkDisplayFieldId, 
+            'fk_display_field_id'=>$fkFieldId,
             'key_type_id'=>$this->pkTypeId));
         
         /*
