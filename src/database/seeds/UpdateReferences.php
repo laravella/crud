@@ -22,8 +22,6 @@ class UpdateReferences extends CrudSeeder {
             DB::table('_db_key_fields')->delete();
 
             $this->updateReference('_db_fields', 'table_id', '_db_tables', 'id', 'name');
-            $this->updateReference('_db_fields', 'pk_field_id', '_db_fields', 'id', 'fullname');
-            $this->updateReference('_db_fields', 'pk_display_field_id', '_db_fields', 'id', 'fullname');
             $this->updateReference('_db_fields', 'display_type_id', '_db_display_types', 'id', 'name');
             $this->updateReference('_db_fields', 'widget_type_id', '_db_widget_types', 'id', 'name');
 
@@ -55,7 +53,6 @@ class UpdateReferences extends CrudSeeder {
             $this->updateReference('_db_options', 'option_type_id', '_db_option_types', 'id', 'name');
             $this->updateReference('_db_option_types', 'parent_id', '_db_option_types', 'id', 'name');
             
-            $this->updateReference('_db_key_fields', 'fk_field_id', '_db_fields', 'id', 'fullname');
             $this->updateReference('_db_key_fields', 'pk_field_id', '_db_fields', 'id', 'fullname');
             $this->updateReference('_db_key_fields', 'pk_display_field_id', '_db_fields', 'id', 'fullname');
             $this->updateReference('_db_key_fields', 'fk_field_id', '_db_fields', 'id', 'fullname');
@@ -63,7 +60,8 @@ class UpdateReferences extends CrudSeeder {
             $this->updateReference('_db_key_fields', 'key_type_id', '_db_key_types', 'id', 'name');
 
             //obsolute
-            $this->updateReference('_db_key_fields', 'field_id', '_db_fields', 'id', 'fullname');
+//            $this->updateReference('_db_key_fields', 'field_id', '_db_fields', 'id', 'fullname');
+           
             $this->updateReference('_db_key_fields', 'key_id', '_db_keys', 'id', 'name');
             $this->updateReference('_db_keys', 'key_type_id', '_db_key_types', 'id', 'name');
             

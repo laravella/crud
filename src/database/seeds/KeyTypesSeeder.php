@@ -17,6 +17,7 @@ class SeedKeyTypes extends CrudSeeder {
         $this->addKeyType('primary');
         $this->addKeyType('foreign');
         $this->addKeyType('unique');
+        $this->addKeyType('filter');
     }
 
 }

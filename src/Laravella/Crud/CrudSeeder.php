@@ -56,16 +56,18 @@ class CrudSeeder extends Seeder {
                 ->where('name', $fkFieldName)
                 ->pluck('id');
 
-        Log::write("success", "inserting into _db_fields : where 
-            pkTableName = $pkTableName, 
-            pkFieldName = $pkFieldName, 
-            pkTableId = $pkTableId, 
-            pkFieldId = $pkFieldId, 
+        $message = "inserting into _db_fields : where ".
+            "pkTableName = $pkTableName, ".
+            "pkFieldName = $pkFieldName, ". 
+            "pkTableId = $pkTableId, ".
+            "pkFieldId = $pkFieldId, ".
 
-            fkTableName = $fkTableName, 
-            fkFieldName = $fkFieldName, 
-            fkTableId = $fkTableId,
-            fkFieldId = $fkFieldId");
+            "fkTableName = $fkTableName, ".
+            "fkFieldName = $fkFieldName, ".
+            "fkTableId = $fkTableId, ".
+            "fkFieldId = $fkFieldId";
+        
+        Log::write("success", $message); 
 
 //set the reference on the fk field
         /*
@@ -74,7 +76,22 @@ class CrudSeeder extends Seeder {
                 ->where('name', $fkFieldName)
                 ->update(array('pk_field_id' => $pkFieldId, 'pk_display_field_id' => $pkDisplayFieldId));
         */
+        
+        if (empty($fkFieldId) || empty($pkFieldId)) {
+            echo "There was an error finding the keys from the database. \n
+                You might have a problem in Laravella\Crud\UpdateReferences \n
+                or another class that extends Laravella\Crud\CrudSeeder and calls updateReference() \n";
+            echo $message. "\n";
+            die;
+        }
+        
+        $keyName = "{$pkTableName}.{$pkFieldName} - {$fkTableName}.{$fkFieldName}";
+        
+        $keyId = DB::table('_db_keys')->insertGetId(array('name'=>$keyName));
+        
         DB::table('_db_key_fields')->insert(array(
+            'order'=>0, 
+            'key_id'=>$keyId, 
             'pk_field_id'=>$pkFieldId, 
             'pk_display_field_id'=>$pkDisplayFieldId, 
             'fk_field_id'=>$fkFieldId, 
@@ -439,6 +456,7 @@ class CrudSeeder extends Seeder {
                 {
                     foreach ($actions as $action)
                     {
+                        Log::write("info", "Linking table ".$table->name.", \t view ".$view->name.", \t action ".$action->name);
                         $arrTav = array('table_id' => $table->id, 'action_id' => $action->id, 
                             'view_id' => $view->id, 'page_size' => 10, 'title' => $table->name);
 
@@ -450,11 +468,13 @@ class CrudSeeder extends Seeder {
                             {
                                 $arr = array('table_id' => $table->id, 'action_id' => $action->id, 'user_id' => $user->id);
                                 DB::table('_db_user_permissions')->insert($arr);
+                                Log::write("success", "Granted user ".$user->username." \t action ".$action->name." on \t table ".$table->name);
                             }
                             foreach ($usergroups as $usergroup)
                             {
                                 $arr = array('table_id' => $table->id, 'action_id' => $action->id, 'usergroup_id' => $usergroup->id);
                                 DB::table('_db_usergroup_permissions')->insert($arr);
+                                Log::write("success", "Granted usergroup ".$usergroup->group." \t action ".$action->name." on table \t".$table->name);
                             }
                         }
                     }
