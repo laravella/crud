@@ -13,6 +13,7 @@ class SeedMenus extends CrudSeeder
 		DB::table('_db_menus')->delete();
 		DB::table('_db_menu_permissions')->delete();
                 
+                //setting the very top level of a new menu as a parent of itself, so that it's not orphaned
                 $topMenuId = $this->addMenu('TopMenu', '', 'icon-file', null);
                 DB::table('_db_menus')->where("id", $topMenuId)->update(array("parent_id"=>$topMenuId));
 
