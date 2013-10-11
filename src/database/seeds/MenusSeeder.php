@@ -62,6 +62,10 @@ class SeedMenus extends CrudSeeder
                 $this->addMenu('Display Types', '/db/select/_db_display_types', 'icon-file', $metaDataId);
                 $this->addMenu('Widget Types', '/db/select/_db_widget_types', 'icon-file', $metaDataId);
                 $this->addMenu('divider', null, '', $metaDataId);
+                $this->addMenu('Objects', '/db/select/_db_objects', 'icon-file', $metaDataId);
+                $this->addMenu('Assets', '/db/select/_db_assets', 'icon-file', $metaDataId);
+                $this->addMenu('Events', '/db/select/_db_events', 'icon-file', $metaDataId);
+                $this->addMenu('divider', null, '', $metaDataId);
                 $this->addMenu('Log', '/db/select/_db_log', 'icon-file', $metaDataId);
                 $this->addMenu('Audit', '/db/select/_db_audit', 'icon-file', $metaDataId);
                 
