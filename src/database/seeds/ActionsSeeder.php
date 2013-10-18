@@ -20,6 +20,8 @@ class SeedActions extends CrudSeeder {
         $this->addAction("postEdit");
         $this->addAction("postDelete");
         $this->addAction("getSearch");
+        $this->addAction("getPage");
+        $this->addAction("getObject");
     }
 
 }

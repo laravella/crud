@@ -1,4 +1,6 @@
-<?php namespace Laravella\Crud;
+<?php
+
+namespace Laravella\Crud;
 
 use Laravella\Crud\Log;
 use \Seeder;
@@ -12,9 +14,37 @@ use \Hash;
 class CrudSeeder extends Seeder {
 
     private $idCache = array();
-
     private $pkTypeId = null;
     private $fkTypeId = null;
+
+    /**
+     * 
+     * @param type $tableName The name of the table 
+     * @param type $actionName The name of the action
+     * @param type $viewName The name of the view
+     */
+    public function tableActionViewId($tableName, $actionName, $viewName)
+    {
+        $tableId = $this->getId('_db_tables', 'name', $tableName);
+        $actionId = $this->getId('_db_actions', 'name', $actionName);
+        $viewId = $this->getId('_db_views', 'name', $viewName);
+
+        $recs = DB::table('_db_table_action_views')->where('table_id', $tableId)
+                ->where('action_id', $actionId)
+                ->where('view_id', $viewId);
+        return $recs;
+    }
+
+    public function tableActionView($tableName, $actionName, $viewName, $values)
+    {
+        $tableId = $this->getId('_db_tables', 'name', $tableName);
+        $actionId = $this->getId('_db_actions', 'name', $actionName);
+        $viewId = $this->getId('_db_views', 'name', $viewName);
+
+        $this->updateOrInsert('_db_table_action_views', array('table_id' => $tableId, 'action_id' => $actionId, 'view_id' => $viewId), $values);
+
+        //$this->tableActionViewId('product_categories', 'getSelect', 'crud::dbview')->update(array('title' => 'Product Categories'));        
+    }
 
     /**
      * Update a reference to primary keys in _db_fields
@@ -31,14 +61,16 @@ class CrudSeeder extends Seeder {
 
         $pkTableId = DB::table('_db_tables')->where('name', $pkTableName)->pluck('id');
 
-        if (!isset($this->pkTypeId)) {
+        if (!isset($this->pkTypeId))
+        {
             $this->pkTypeId = DB::table('_db_key_types')->where('name', 'primary')->pluck('id');
         }
-            
-        if (!isset($this->fkTypeId)) {
+
+        if (!isset($this->fkTypeId))
+        {
             $this->fkTypeId = DB::table('_db_key_types')->where('name', 'foreign')->pluck('id');
         }
-            
+
         //get the id of the primary key field in _db_fields
         //for each field in the _db_fields table there will thus be a reference to 
         $pkFieldId = DB::table('_db_fields')
@@ -56,48 +88,53 @@ class CrudSeeder extends Seeder {
                 ->where('name', $fkFieldName)
                 ->pluck('id');
 
-        $message = "inserting into _db_fields : where ".
-            "pkTableName = $pkTableName, ".
-            "pkFieldName = $pkFieldName, ". 
-            "pkTableId = $pkTableId, ".
-            "pkFieldId = $pkFieldId, ".
+        $message = "inserting into _db_fields : where " .
+                "pkTableName = $pkTableName, " .
+                "pkFieldName = $pkFieldName, " .
+                "pkTableId = $pkTableId, " .
+                "pkFieldId = $pkFieldId, " .
+                "fkTableName = $fkTableName, " .
+                "fkFieldName = $fkFieldName, " .
+                "fkTableId = $fkTableId, " .
+                "fkFieldId = $fkFieldId";
 
-            "fkTableName = $fkTableName, ".
-            "fkFieldName = $fkFieldName, ".
-            "fkTableId = $fkTableId, ".
-            "fkFieldId = $fkFieldId";
-        
-        Log::write("success", $message); 
+        Log::write("success", $message);
 
+//KEEP THIS
 //set the reference on the fk field
         /*
-        DB::table('_db_fields')
-                ->where('table_id', $fkTableId)
-                ->where('name', $fkFieldName)
-                ->update(array('pk_field_id' => $pkFieldId, 'pk_display_field_id' => $pkDisplayFieldId));
-        */
-        
-        if (empty($fkFieldId) || empty($pkFieldId)) {
-            echo "There was an error finding the keys from the database. \n
+          DB::table('_db_fields')
+          ->where('table_id', $fkTableId)
+          ->where('name', $fkFieldName)
+          ->update(array('pk_field_id' => $pkFieldId, 'pk_display_field_id' => $pkDisplayFieldId));
+         */
+
+        if (empty($fkFieldId) || empty($pkFieldId))
+        {
+            echo "\n There was an error finding the keys from the database. \n
                 You might have a problem in Laravella\Crud\UpdateReferences \n
                 or another class that extends Laravella\Crud\CrudSeeder and calls updateReference() \n";
-            echo $message. "\n";
+            echo $message . "\n";
             die;
         }
-        
+
         $keyName = "{$pkTableName}.{$pkFieldName} - {$fkTableName}.{$fkFieldName}";
-        
-        $keyId = DB::table('_db_keys')->insertGetId(array('name'=>$keyName));
-        
-        DB::table('_db_key_fields')->insert(array(
-            'order'=>0, 
-            'key_id'=>$keyId, 
-            'pk_field_id'=>$pkFieldId, 
-            'pk_display_field_id'=>$pkDisplayFieldId, 
-            'fk_field_id'=>$fkFieldId, 
-            'fk_display_field_id'=>$fkFieldId,
-            'key_type_id'=>$this->pkTypeId));
-        
+
+        $keyId = DB::table('_db_keys')->insertGetId(array('name' => $keyName));
+
+        $insertValues = array(
+            'order' => 0,
+            'key_id' => $keyId,
+            'pk_field_id' => $pkFieldId,
+            'pk_display_field_id' => $pkDisplayFieldId,
+            'fk_field_id' => $fkFieldId,
+            'fk_display_field_id' => $fkFieldId,
+            'key_type_id' => $this->pkTypeId);
+
+        $this->updateOrInsert('_db_key_fields', $insertValues, $insertValues);
+
+//        DB::table('_db_key_fields')->insert($insertValues);
+
         /*
           $this->__log("success", "updating record : {$fkRec->id}");
 
@@ -107,7 +144,7 @@ class CrudSeeder extends Seeder {
           ->update(array('pk_field_id' => $fieldId));
          */
     }
-    
+
     /**
      * Get the id of a record based on the value of another field
      * 
@@ -154,19 +191,20 @@ class CrudSeeder extends Seeder {
      * 
      * @param type $severity
      */
-    public function addSeverity($severity) {
+    public function addSeverity($severity)
+    {
         $arr = array("name" => $severity);
         $viewId = DB::table('_db_severities')->insertGetId($arr);
         Log::write("success", " - $severity severity inserted");
     }
-    
-    public function makeApiKey() {
+
+    public function makeApiKey()
+    {
         $password = rand(23450987, 234509870);
         $password = md5($password);
         return $password;
-        
     }
-    
+
     /**
      * Add a new user
      * 
@@ -178,35 +216,37 @@ class CrudSeeder extends Seeder {
      * @param type $lastName
      * @return type
      */
-    public function createUser($groupName, $name, $password, $email, $firstName, $lastName) {
-        
-        $this->command->info($groupName.' '.$name);
-        
-        Log::write(Log::INFO, '['.$groupName.'] '.$name);
+    public function createUser($groupName, $name, $password, $email, $firstName, $lastName)
+    {
+
+        $this->command->info($groupName . ' ' . $name);
+
+        Log::write(Log::INFO, '[' . $groupName . '] ' . $name);
 
         $hashPass = Hash::make($password);
-        
+
         //$group = DB::table('groups')->where('name', $groupName)->first();
         $userGroup = DB::table('usergroups')->where('group', $groupName)->first();
-    
-        $adminUser = array('username' => $name, 'password' => $hashPass, 'email' => $email, 'first_name'=> $firstName, 'last_name'=>$lastName); //Config::get('crud::app.setup_user');
+
+        $adminUser = array('username' => $name, 'password' => $hashPass, 'email' => $email, 'first_name' => $firstName, 'last_name' => $lastName); //Config::get('crud::app.setup_user');
         $adminUser['activated'] = true;
         $adminUser['api_token'] = $this->makeApiKey();
-        if (is_object($userGroup)) {
+        if (is_object($userGroup))
+        {
             $adminUser['usergroup_id'] = $userGroup->id;
-            $this->command->info('usergroup id is : '.$userGroup->id);
+            $this->command->info('usergroup id is : ' . $userGroup->id);
         }
-                
+
         $userId = DB::table('users')->insertGetId($adminUser);
 
-        if (is_object($userGroup)) {
+        if (is_object($userGroup))
+        {
 //            DB::table('users_groups')->insert(array('user_id' => $userId, 'usergroup_id' => $userGroup->id));
-        }   
-        
+        }
+
         return $userId;
-        
-    }    
-    
+    }
+
     /**
      * 
      * Add an option
@@ -231,7 +271,7 @@ class CrudSeeder extends Seeder {
      * @param type $parentId
      * @return type
      */
-    public function addOptionType($name, $parentId=null)
+    public function addOptionType($name, $parentId = null)
     {
         $optionType = array('name' => $name, 'parent_id' => $parentId);
         $optionTypeId = DB::table('_db_option_types')->insertGetId($optionType);
@@ -244,12 +284,13 @@ class CrudSeeder extends Seeder {
      * 
      * @param type $groupName
      */
-    public function addGroup($groupName) {
+    public function addGroup($groupName)
+    {
         $group = array('name' => $groupName);     //can change permissions
         DB::table('groups')->insert($group);
-        Log::write('info', $groupName.' usergroup created');
+        Log::write('info', $groupName . ' usergroup created');
     }
-    
+
     /**
      * Updates a field or inserts a record if key does not exist
      * 
@@ -270,21 +311,25 @@ class CrudSeeder extends Seeder {
         else
         {
             $m = $m->where('id', $whereValues);
-        }    
+        }
         $m->delete();
     }
-    
+
     /**
      * Updates a field or inserts a record if key does not exist
      * 
-     * @param type $updateTable
-     * @param type $setField
-     * @param type $setValue
+     * @param type $updateTable The table that is to be updated
      * @param type $whereValues an array of key value pairs , or an id
      * @param type $insertValues Used as a single value if whereField is a string, else excluded
      */
-    public function updateOrInsert($updateTable, $whereValues, array $insertValues)
+    public function updateOrInsert($updateTable, $whereValues, array $insertValues = null)
     {
+
+        if (is_null($insertValues))
+        {
+            $insertValues = $whereValues;
+        }
+
         $m = Model::getInstance($updateTable);
         if (is_array($whereValues))
         {
@@ -305,6 +350,8 @@ class CrudSeeder extends Seeder {
 //echo var_dump($last_query);
 //echo 'last query';
 
+        $ids = array();
+
         if (is_object($recs) && count($recs->modelKeys()) > 0)
         {
             //records exist so update
@@ -312,14 +359,18 @@ class CrudSeeder extends Seeder {
             {
                 echo 'updating ' . $updateTable . ' ' . $rec->id . ' ' . PHP_EOL;
                 $updateM = DB::table($updateTable)->where('id', $rec->id)->update($insertValues);
+                $ids = $rec->id;
             }
         }
         else
         {
             echo 'inserting ' . $updateTable . ' ' . PHP_EOL;
             $id = DB::table($updateTable)->insertGetId($insertValues);
+            $ids = $id;
             echo $updateTable . ' inserted with id ' . $id . "\n";
         }
+
+        return $ids;
     }
 
     /**
@@ -328,13 +379,23 @@ class CrudSeeder extends Seeder {
      * @param type $label
      * @param type $href
      * @param type $iconClass
-     * @param type $parentId
+     * @param type $parentId Can be the id or the label of the parent menu item
      * @return type
      */
     public function addMenu($label, $href, $iconClass = 'icon-file', $parentId = null)
     {
-        $group = array('label' => $label, 'href' => $href, 'parent_id' => $parentId, 'icon_class' => $iconClass);
-        $menuId = DB::table('_db_menus')->insertGetId($group);
+        if (is_string($parentId))
+        {
+            $parentId = DB::table('_db_menus')->where('label', $parentId)->first()->id;
+        }
+
+        $rec = array('label' => $label, 'href' => $href, 'parent_id' => $parentId, 'icon_class' => $iconClass);
+        $menuId = $this->updateOrInsert('_db_menus', $rec, $rec);
+        if (is_array($menuId))
+        {
+            $menuId = $menuId[0];
+        }
+//        $menuId = DB::table('_db_menus')->insertGetId($rec);
         Log::write('info', $label . ' menu created');
         return $menuId;
     }
@@ -345,13 +406,19 @@ class CrudSeeder extends Seeder {
      * @param type $menuId
      * @param type $groupName
      */
-    public function addMenuPermissions($menuId, $groupName)
+    public function addMenuPermissions($menuId = null, $groupName = '')
     {
-        $usergroup = DB::table('usergroups')->where('group', $groupName)->first();
-        if (is_object($usergroup))
+        if (!is_null($menuId))
         {
-            $usergroupId = $usergroup->id;
-            DB::table('_db_menu_permissions')->insertGetId(array('menu_id' => $menuId, 'usergroup_id' => $usergroupId));
+            $usergroup = DB::table('usergroups')->where('group', $groupName)->first();
+            if (is_object($usergroup))
+            {
+                $usergroupId = $usergroup->id;
+
+                $this->updateOrInsert('_db_menu_permissions', array('menu_id' => $menuId, 'usergroup_id' => $usergroupId));
+
+//                DB::table('_db_menu_permissions')->insertGetId(array('menu_id' => $menuId, 'usergroup_id' => $usergroupId));
+            }
         }
     }
 
@@ -377,8 +444,9 @@ class CrudSeeder extends Seeder {
     public function addDisplayType($name, $id = null)
     {
         $displayTypes = array('name' => $name);
-        if (!is_null($id)) {
-            $displayTypes['id']  = $id; 
+        if (!is_null($id))
+        {
+            $displayTypes['id'] = $id;
         }
         $id = DB::table('_db_display_types')->insertGetId($displayTypes);
         Log::write(Log::INFO, $name . ' display types created');
@@ -394,8 +462,9 @@ class CrudSeeder extends Seeder {
     public function addKeyType($name, $id = null)
     {
         $keyTypes = array('name' => $name);
-        if (!is_null($id)) {
-            $keyTypes['id']  = $id; 
+        if (!is_null($id))
+        {
+            $keyTypes['id'] = $id;
         }
         $id = DB::table('_db_key_types')->insertGetId($keyTypes);
         Log::write(Log::INFO, $name . ' key type created');
@@ -413,6 +482,20 @@ class CrudSeeder extends Seeder {
         $arr = array("name" => $actionName);
         $id = DB::table('_db_actions')->insertGetId($arr);
         Log::write("success", " - $actionName action created");
+        return $id;
+    }
+
+    /**
+     * Add objects to _db_actions
+     * 
+     * @param type $actionName
+     * @return type
+     */
+    public function addObject($objectName)
+    {
+        $arr = array("name" => $objectName);
+        $id = DB::table('_db_objects')->insertGetId($arr);
+        Log::write("success", " - $objectName object created");
         return $id;
     }
 
@@ -440,7 +523,7 @@ class CrudSeeder extends Seeder {
         try
         {
             DB::table('_db_table_action_views')->delete();
-            
+
             $tables = DB::table('_db_tables')->get();
             $actions = DB::table('_db_actions')->get();
             $views = DB::table('_db_views')->get();
@@ -456,8 +539,8 @@ class CrudSeeder extends Seeder {
                 {
                     foreach ($actions as $action)
                     {
-                        Log::write("info", "Linking table ".$table->name.", \t view ".$view->name.", \t action ".$action->name);
-                        $arrTav = array('table_id' => $table->id, 'action_id' => $action->id, 
+                        Log::write("info", "Linking table " . $table->name . ", \t view " . $view->name . ", \t action " . $action->name);
+                        $arrTav = array('table_id' => $table->id, 'action_id' => $action->id,
                             'view_id' => $view->id, 'page_size' => 10, 'title' => $table->name);
 
                         DB::table('_db_table_action_views')->insert($arrTav);
@@ -468,13 +551,13 @@ class CrudSeeder extends Seeder {
                             {
                                 $arr = array('table_id' => $table->id, 'action_id' => $action->id, 'user_id' => $user->id);
                                 DB::table('_db_user_permissions')->insert($arr);
-                                Log::write("success", "Granted user ".$user->username." \t action ".$action->name." on \t table ".$table->name);
+                                Log::write("success", "Granted user " . $user->username . " \t action " . $action->name . " on \t table " . $table->name);
                             }
                             foreach ($usergroups as $usergroup)
                             {
                                 $arr = array('table_id' => $table->id, 'action_id' => $action->id, 'usergroup_id' => $usergroup->id);
                                 DB::table('_db_usergroup_permissions')->insert($arr);
-                                Log::write("success", "Granted usergroup ".$usergroup->group." \t action ".$action->name." on table \t".$table->name);
+                                Log::write("success", "Granted usergroup " . $usergroup->group . " \t action " . $action->name . " on table \t" . $table->name);
                             }
                         }
                     }
@@ -490,7 +573,6 @@ class CrudSeeder extends Seeder {
         }
     }
 
-
     /**
      * Replace _ with spaces and make first character of each word uppercase
      * 
@@ -499,7 +581,7 @@ class CrudSeeder extends Seeder {
     public function makeLabel($name)
     {
         return ucwords(str_replace('_', ' ', $name));
-}
+    }
 
     /**
      * Returns varchar if fieldType = varchar(100) etc.
@@ -547,7 +629,7 @@ class CrudSeeder extends Seeder {
     {
         return ""; //'{widget" : "input", "attributes" : {"type" : "text"}}';
     }
-    
+
     public function getDisplayType($colRec, $types)
     {
 
@@ -560,7 +642,6 @@ class CrudSeeder extends Seeder {
         return $displayTypeId;
     }
 
-    
 }
 
 ?>

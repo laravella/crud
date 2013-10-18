@@ -55,11 +55,20 @@ class DbController extends Controller {
      */
     public function getIndex()
     {
+        
         $action = 'getIndex';
-
-        return View::make("crud::dbview", array('action' => $action));
+        return View::make("crud::frontview", array('action' => $action));
+        
     }
 
+    /**
+     * 
+     * @param type $page
+     */
+    public function getPage($page) {
+        return $this->getSelect($page);
+    }
+    
     /**
      * Find the right view to use with the action
      * 
