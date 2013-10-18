@@ -373,6 +373,11 @@ class CrudSeeder extends Seeder {
         return $ids;
     }
 
+    public function addDivider($parentId) {
+        $rec = array('label' => 'divider', 'href' => '', 'parent_id' => $parentId, 'icon_class' => '');
+        $menuId = DB::table('_db_menus')->insertGetId($rec);
+    }
+    
     /**
      * Add a menu item
      * 
@@ -544,7 +549,7 @@ class CrudSeeder extends Seeder {
                             'view_id' => $view->id, 'page_size' => 10, 'title' => $table->name);
 
                         DB::table('_db_table_action_views')->insert($arrTav);
-
+/*
                         if ($doPermissions)
                         {
                             foreach ($users as $user)
@@ -560,6 +565,8 @@ class CrudSeeder extends Seeder {
                                 Log::write("success", "Granted usergroup " . $usergroup->group . " \t action " . $action->name . " on table \t" . $table->name);
                             }
                         }
+ * 
+ */
                     }
                 }
             }
