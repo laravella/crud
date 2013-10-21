@@ -25,8 +25,7 @@
         <!-- ICO -->
         <link rel="shortcut icon" href="favicon.ico">
 			
-        <!-- Ravel CMS -->
-        @include('crud::layouts.admin.assets')
+        <!-- CMS -->
         @yield('assets_css')
         @yield('assets_js')
 		
@@ -75,7 +74,7 @@
 				</div>
 				<!-- ./ container -->
 				
-                @include('crud::layouts.admin.footer')
+                @yield('footer')
 
             </div> <!-- End #main-content -->
 

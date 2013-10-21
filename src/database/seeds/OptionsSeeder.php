@@ -14,20 +14,23 @@ class SeedOptions extends CrudSeeder {
         $optionTypeId = $this->addOptionType('database');
         
         $optionTypeId = $this->addOptionType('admin');
-        $this->addOption($optionTypeId, 'skin', 'default');
+        $this->addOption($optionTypeId, 'skin', 'arctic');
         $this->addOption($optionTypeId, 'debug', '');
         $this->addOption($optionTypeId, 'configure', ''); //show shortcuts to _db_fields for each field, for easy configuration
         $this->addOption($optionTypeId, 'show-pk-tables', '');
         $this->addOption($optionTypeId, 'show-fk-tables', '');
         $this->addOption($optionTypeId, 'attach-params', '');
+        $this->addOption($optionTypeId, 'default-view', 'crud::skins.arctic.dbview');
         
+        //for image thumbnails
         $ulId = $this->addOptionType($optionTypeId, 'upload');
         $ivId = $this->addOptionType($ulId, 'image_versions');
         $this->addOptionType($ivId, 'medium');
         $this->addOptionType($ivId, 'thumbnail');
         
         $optionTypeId = $this->addOptionType('frontend');
-        $this->addOption($optionTypeId, 'skin', 'default');
+        $this->addOption($optionTypeId, 'skin', 'arctic');
+        $this->addOption($optionTypeId, 'default-view', 'crud::skins.arctic.frontview');
         
         $optionTypeId = $this->addOptionType('installation');
         $this->addOption($optionTypeId, 'status', 0);

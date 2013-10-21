@@ -26,7 +26,7 @@ class CrudBackupSeeder extends Seeder {
     {
         $selectMeta = "select $bakId as backup_id, t.name table_name, tav.page_size, 
             tav.title tav_title, a.`name` action_name, v.`name` view_name
-from _db_tables t left outer join _db_table_action_views tav on t.id = tav.table_id
+from _db_tables t left outer join _db_pages tav on t.id = tav.table_id
 left outer join _db_views v on tav.view_id = v.id
 left outer join _db_actions a on tav.action_id = a.id;";
 

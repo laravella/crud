@@ -30,12 +30,14 @@ Route::get('admin', function()
         });
         
 Route::when('db/*', 'crudauth');
+Route::when('pg/*', 'crudauth');
 Route::when('en/*', 'frontfilter'); //guest use i.e. front end
 Route::when('dbapi/*', 'crudauth');
 //Route::when('dbinstall/*', 'crudauth');
 
 Route::controller('db', 'DbController');
 Route::controller('en', 'DbController');
+Route::controller('pg', 'DbController');
 Route::controller('dbapi', 'DbApiController');
 //Route::controller('dbinstall', 'DbInstallController');
 

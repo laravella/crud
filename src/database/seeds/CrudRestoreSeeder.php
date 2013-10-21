@@ -59,7 +59,7 @@ class CrudRestoreSeeder extends CrudSeeder {
                 $actionId = $this->getId('_db_actions', 'name', $tav['action_name']);
                 $viewId = $this->getId('_db_views', 'name', $tav['view_name']);
 
-                $this->updateOrInsert('_db_table_action_views', array('table_id' => $tableId, 'action_id' => $actionId), array('table_id' => $tableId, 'action_id' => $actionId,
+                $this->updateOrInsert('_db_pages', array('table_id' => $tableId, 'action_id' => $actionId), array('table_id' => $tableId, 'action_id' => $actionId,
                     'view_id' => $viewId, 'page_size' => $tav['page_size'], 'title' => $tav['tav_title']));
             }
             catch (DBException $e)

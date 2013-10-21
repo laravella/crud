@@ -29,7 +29,7 @@ class CrudSeeder extends Seeder {
         $actionId = $this->getId('_db_actions', 'name', $actionName);
         $viewId = $this->getId('_db_views', 'name', $viewName);
 
-        $recs = DB::table('_db_table_action_views')->where('table_id', $tableId)
+        $recs = DB::table('_db_pages')->where('table_id', $tableId)
                 ->where('action_id', $actionId)
                 ->where('view_id', $viewId);
         return $recs;
@@ -41,7 +41,7 @@ class CrudSeeder extends Seeder {
         $actionId = $this->getId('_db_actions', 'name', $actionName);
         $viewId = $this->getId('_db_views', 'name', $viewName);
 
-        $this->updateOrInsert('_db_table_action_views', array('table_id' => $tableId, 'action_id' => $actionId, 'view_id' => $viewId), $values);
+        $this->updateOrInsert('_db_pages', array('table_id' => $tableId, 'action_id' => $actionId, 'view_id' => $viewId), $values);
 
         //$this->tableActionViewId('product_categories', 'getSelect', 'crud::dbview')->update(array('title' => 'Product Categories'));        
     }
@@ -517,7 +517,7 @@ class CrudSeeder extends Seeder {
     }
 
     /**
-     * Populate table _db_table_action_views
+     * Populate table _db_pages
      * 
      * @param type $viewId
      * @param type $doPermissions Will also populate permissions tables if true
@@ -527,7 +527,7 @@ class CrudSeeder extends Seeder {
     {
         try
         {
-            DB::table('_db_table_action_views')->delete();
+            DB::table('_db_pages')->delete();
 
             $tables = DB::table('_db_tables')->get();
             $actions = DB::table('_db_actions')->get();
@@ -548,7 +548,7 @@ class CrudSeeder extends Seeder {
                         $arrTav = array('table_id' => $table->id, 'action_id' => $action->id,
                             'view_id' => $view->id, 'page_size' => 10, 'title' => $table->name);
 
-                        DB::table('_db_table_action_views')->insert($arrTav);
+                        DB::table('_db_pages')->insert($arrTav);
 /*
                         if ($doPermissions)
                         {

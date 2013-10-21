@@ -11,10 +11,17 @@ use \DB;
  */
 class Options {
 
-    public static function get($name)
+    public static function get($name, $type=null)
     {
         $setting = '';
-        $option = DB::table('_db_options')->where('name', $name)->first();
+        $option = DB::table('_db_options as o');
+        if (!empty($type)) {
+                $option = $option->join('_db_option_types as ot', 'ot.id', '=', 'o.option_type_id')
+                ->where('ot.name', $type);
+        }
+        $option = $option->where('o.name', $name)
+        ->select('o.value')
+        ->first();
         if (is_object($option))
         {
             $setting = $option->value;

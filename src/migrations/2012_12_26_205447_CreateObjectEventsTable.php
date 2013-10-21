@@ -18,7 +18,7 @@ class CreateObjectEventsTable extends Migration {
             Schema::create('_db_object_events', function ($table)
                     {
                         $table->increments('id')->unique();
-                        $table->integer('object_id'); //links to _db_table_action_views.id
+                        $table->integer('object_id'); //links to _db_pages.id
                         $table->integer('event_id');
                     });
         }

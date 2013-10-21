@@ -18,7 +18,7 @@ class CreatePageAssetsTable extends Migration {
             Schema::create('_db_page_assets', function ($table)
                     {
                         $table->increments('id')->unique();
-                        $table->integer('page_id'); //links to _db_table_action_views.id
+                        $table->integer('page_id'); //links to _db_pages.id
                         $table->integer('asset_id');
                     });
         }

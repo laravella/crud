@@ -9,7 +9,7 @@ class PostCrudSeeder extends CrudSeeder {
         // change table titles in select lists
         //crud
         $this->tableActionView('_db_severities', 'getSelect', 'crud::dbview', array('title'=>'Severities'));
-        $this->tableActionView('_db_table_action_views', 'getSelect', 'crud::dbview', array('title'=>'Pages'));
+        $this->tableActionView('_db_pages', 'getSelect', 'crud::dbview', array('title'=>'Pages'));
         $this->tableActionView('_db_tables', 'getSelect', 'crud::dbview', array('title'=>'Tables'));
         $this->tableActionView('_db_user_permissions', 'getSelect', 'crud::dbview', array('title'=>'User Permissions'));
         $this->tableActionView('_db_usergroup_permissions', 'getSelect', 'crud::dbview', array('title'=>'Usergroup Permissions'));

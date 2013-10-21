@@ -1,6 +1,8 @@
-<?php use Laravella\Crud\Params;
+<?php 
 
+use Laravella\Crud\Params;
 use Laravella\Crud\DbGopher;
+use Laravella\Crud\Options;
 
 /**
  * All database requests are handled by this controller, 
@@ -8,7 +10,7 @@ use Laravella\Crud\DbGopher;
  */
 class DbController extends Controller {
 
-    protected $layout = 'crud::layouts.default';
+    //protected $layout = //getLayout;
     private $log = array();
 
     const SUCCESS = "success";
@@ -48,6 +50,14 @@ class DbController extends Controller {
         return $this->log();
     }
 
+    public function getSkin() {
+        $skin = array('admin'=>Options::get('skin','admin'), 'frontend'=>Options::get('skin','frontend'));
+    }
+    
+    public function getLayout() {
+        return 'crud::skins.'.Options::get('skin','admin').'.default';
+    }
+    
     /**
      * The root of the crud application /db
      * 
@@ -55,9 +65,9 @@ class DbController extends Controller {
      */
     public function getIndex()
     {
-        
+        $view = Options::get('default-view', 'frontend');
         $action = 'getIndex';
-        return View::make("crud::frontview", array('action' => $action));
+        return View::make($view, array('action' => $action, 'skin'=>$this->getSkin()));
         
     }
 
@@ -77,10 +87,10 @@ class DbController extends Controller {
      */
     protected function __getView($tableName, $action)
     {
-        $views = DB::table('_db_table_action_views')
-                ->join('_db_tables', '_db_table_action_views.table_id', '=', '_db_tables.id')
-                ->join('_db_actions', '_db_table_action_views.action_id', '=', '_db_actions.id')
-                ->join('_db_views', '_db_table_action_views.view_id', '=', '_db_views.id')
+        $views = DB::table('_db_pages')
+                ->join('_db_tables', '_db_pages.table_id', '=', '_db_tables.id')
+                ->join('_db_actions', '_db_pages.action_id', '=', '_db_actions.id')
+                ->join('_db_views', '_db_pages.view_id', '=', '_db_views.id')
                 ->where('_db_actions.name', '=', $action)
                 ->where('_db_tables.name', '=', $tableName)
                 ->first();
@@ -88,7 +98,7 @@ class DbController extends Controller {
     }
 
     /**
-     * Get a record from _db_table_action_views as an stdClass object
+     * Get a record from _db_pages as an stdClass object
      * 
      * @param type $tableName
      * @param type $viewId
@@ -97,10 +107,10 @@ class DbController extends Controller {
      */
     protected function __getTableActionView($tableName, $viewId, $action)
     {
-        $tva = DB::table('_db_table_action_views')
-                ->join('_db_tables', '_db_table_action_views.table_id', '=', '_db_tables.id')
-                ->join('_db_actions', '_db_table_action_views.action_id', '=', '_db_actions.id')
-                ->where('_db_table_action_views.view_id', '=', $viewId)
+        $tva = DB::table('_db_pages')
+                ->join('_db_tables', '_db_pages.table_id', '=', '_db_tables.id')
+                ->join('_db_actions', '_db_pages.action_id', '=', '_db_actions.id')
+                ->where('_db_pages.view_id', '=', $viewId)
                 ->where('_db_actions.name', '=', $action)
                 ->where('_db_tables.name', '=', $tableName)
                 ->first();
@@ -140,8 +150,8 @@ class DbController extends Controller {
 
         //get related data
         $params = $this->__makeParams(self::SUCCESS, $message, $table, $tableName, $action);
-
-        return View::make($this->layout)->nest('content', $params->view->name, $params->asArray());
+        
+        return View::make($this->getLayout())->nest('content', $params->view->name, $params->asArray());
     }
 
     /**
@@ -427,7 +437,7 @@ class DbController extends Controller {
 
         $paramsA = $params->asArray();
 
-        return View::make($this->layout)->nest('content', $paramsA['view']->name, $paramsA);
+        return View::make($this->getLayout())->nest('content', $paramsA['view']->name, $paramsA);
     }
 
     /**

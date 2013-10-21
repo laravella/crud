@@ -19,6 +19,7 @@ class Params {
     public $prefix = "";
     public $tableActionViews = null;
     public $view = null;
+    public $skin = null;
     public $selects = array();
     public $log = array();
     public $status = "success";
@@ -57,6 +58,7 @@ class Params {
         $this->prefix = $prefix;
         $this->tableActionViews = $tableActionViews;
         $this->view = $view;
+        $this->skin = array('admin'=>Options::get('skin', 'admin'), 'frontend'=>Options::get('skin', 'frontend'));
         $this->selects = $selects;
         $this->displayType = $displayType;
         $this->log = $log;
@@ -190,6 +192,7 @@ class Params {
             "prefix" => $this->prefix,
             "pageSize" => $this->pageSize,
             "view" => $this->view,
+            "skin" => $this->skin,
             "selects" => $this->selects,
             "log" => $this->log,
             "status" => $this->status,
