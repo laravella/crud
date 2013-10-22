@@ -54,7 +54,13 @@ class DbController extends Controller {
         $skin = array('admin'=>Options::get('skin','admin'), 'frontend'=>Options::get('skin','frontend'));
     }
     
-    public function getLayout() {
+    /**
+     * 
+     * 
+     * @param type $type Either 'admin' or 'frontend'
+     * @return type
+     */
+    public function getLayout($type = 'admin') {
         return 'skins::'.Options::get('skin','admin').'.default';
     }
     
@@ -65,9 +71,8 @@ class DbController extends Controller {
      */
     public function getIndex()
     {
-        $view = Options::get('default-view', 'frontend');
-        $action = 'getIndex';
-        return View::make($view, array('action' => $action, 'skin'=>$this->getSkin()));
+        
+        return $this->getPage('contents');
         
     }
 
@@ -411,8 +416,8 @@ class DbController extends Controller {
         $action = 'getInsert';
 
         $params = $this->__makeParams(self::INFO, "Enter data to insert.", null, $tableName, $action);
-
-        return View::make($this->layout)->nest('content', $params->view->name, $params->asArray());
+        
+        return View::make($this->getLayout())->nest('content', $params->view->name, $params->asArray());
     }
 
     /**
@@ -557,9 +562,7 @@ class DbController extends Controller {
 //            'fullname'=>'asdf', 'label'=>'asdf', 'table_id'=>0, 'pk_field_id'=>0, 'pk_display_field_id'=>0));
 //        
 //        return "save";
-        
 //        $field = $tables->push($field);
-        
 //        echo var_dump($field);
     }
     
