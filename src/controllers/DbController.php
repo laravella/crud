@@ -55,7 +55,7 @@ class DbController extends Controller {
     }
     
     public function getLayout() {
-        return 'crud::skins.'.Options::get('skin','admin').'.default';
+        return 'skins::'.Options::get('skin','admin').'.default';
     }
     
     /**
