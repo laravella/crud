@@ -20,7 +20,7 @@ class SeedOptions extends CrudSeeder {
         $this->addOption($optionTypeId, 'show-pk-tables', '');
         $this->addOption($optionTypeId, 'show-fk-tables', '');
         $this->addOption($optionTypeId, 'attach-params', '');
-        $this->addOption($optionTypeId, 'default-view', 'crud::skins.arctic.dbview');
+        $this->addOption($optionTypeId, 'default-view', 'skins::arctic.dbview');
         
         //for image thumbnails
         $ulId = $this->addOptionType($optionTypeId, 'upload');
@@ -30,7 +30,7 @@ class SeedOptions extends CrudSeeder {
         
         $optionTypeId = $this->addOptionType('frontend');
         $this->addOption($optionTypeId, 'skin', 'arctic');
-        $this->addOption($optionTypeId, 'default-view', 'crud::skins.arctic.frontview');
+        $this->addOption($optionTypeId, 'default-view', 'skins::arctic.frontview');
         
         $optionTypeId = $this->addOptionType('installation');
         $this->addOption($optionTypeId, 'status', 0);

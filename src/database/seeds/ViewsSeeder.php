@@ -10,8 +10,8 @@ class SeedViews extends CrudSeeder {
     {
         DB::table('_db_views')->delete();
         
-        $this->addView("crud::dbview");
-        $this->addView("crud::frontview");
+        $this->addView("skins::common.dbview");
+        $this->addView("skins::common.frontview");
         
         $this->populateTableActions(true);
         

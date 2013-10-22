@@ -6,6 +6,9 @@ class PostCrudSeeder extends CrudSeeder {
     
     public function run()
     {
+        
+        $defaultView = "skins::common.dbview";
+        
         // change table titles in select lists
         //crud
         $this->tableActionView('_db_severities', 'getSelect', 'crud::dbview', array('title'=>'Severities'));
