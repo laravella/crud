@@ -77,6 +77,18 @@ class DbController extends Controller {
     }
 
     /**
+     * The root of the crud application /db
+     * 
+     * @return type
+     */
+    public function getAdmin()
+    {
+        
+        return $this->getPage('contents');
+        
+    }
+
+    /**
      * 
      * @param type $page
      */
