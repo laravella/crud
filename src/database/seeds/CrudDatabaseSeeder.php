@@ -4,7 +4,6 @@ use Laravella\Crud\Log;
 use \Seeder;
 use \DB;
 
-
 class CrudDatabaseSeeder extends Seeder {
 
     public function run()
@@ -12,8 +11,7 @@ class CrudDatabaseSeeder extends Seeder {
         /*
         $this->call('SeedGroups');
         Log::write("success", "Populated severities");
-        
-         **/
+        **/
 
         $this->call('Laravella\Crud\SeedUsergroups');
         Log::write("success", "Populated usergroups");
@@ -23,10 +21,10 @@ class CrudDatabaseSeeder extends Seeder {
         
         $this->call('Laravella\Crud\SeedMenus');
         Log::write("success", "Populated _db_menus");
-
+        
         $this->call('Laravella\Crud\SeedOptions');
         Log::write("success", "Populated _db_options");
-
+        
         $this->call('Laravella\Crud\SeedSeverities');
         Log::write("success", "Populated severities");
         

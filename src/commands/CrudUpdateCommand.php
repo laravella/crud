@@ -4,21 +4,21 @@ use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
-class CrudBackupCommand extends Command {
+class CrudUpdateCommand extends Command {
 
 	/**
 	 * The console command name.
 	 *
 	 * @var string
 	 */
-	protected $name = 'crud:backup';
+	protected $name = 'crud:update';
 
 	/**
 	 * The console command description.
 	 *
 	 * @var string
 	 */
-	protected $description = 'Backup the current meta data.';
+	protected $description = 'Install database meta data for CRUD.';
 
 	/**
 	 * Create a new command instance.
@@ -37,8 +37,8 @@ class CrudBackupCommand extends Command {
 	 */
 	public function fire()
 	{
-		$this->call('db:seed',array('--class'=>'Laravella\\Crud\\CrudBackupSeeder'));
-		$this->info('CRUD backup complete.');
+		$this->call('db:seed',array('--class'=>'Laravella\\Crud\\PostCrudSeeder'));
+		$this->info('CRUD update complete.');
 	}
 
 	/**

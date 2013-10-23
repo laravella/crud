@@ -66,43 +66,14 @@ class CrudServiceProvider extends ServiceProvider {
     /** register the custom commands * */
     public function registerCommands()
     {
-//            Artisan::add(new InstallCommand);
-//            Artisan::add(new UpdateCommand);
 
-        $commands = array('CrudBackup', 'CrudInstall', 'CrudRestore');
-
-        foreach ($commands as $command)
-        {
-            $this->{'register' . $command . 'Command'}();
-        }
-
+        $this->app['command.crud.update'] = $this->app->share(function($app){return new CrudUpdateCommand();});
+        $this->app['command.crud.install'] = $this->app->share(function($app){return new CrudInstallCommand();});
+        
         $this->commands(
-                'command.crud.backup', 'command.crud.restore', 'command.crud.install'
+                'command.crud.update', 'command.crud.install'
         );
     }
 
-    public function registerCrudBackupCommand()
-    {
-        $this->app['command.crud.backup'] = $this->app->share(function($app)
-                {
-                    return new CrudBackupCommand();
-                });
-    }
-
-    public function registerCrudInstallCommand()
-    {
-        $this->app['command.crud.install'] = $this->app->share(function($app)
-                {
-                    return new CrudInstallCommand();
-                });
-    }
-
-    public function registerCrudRestoreCommand()
-    {
-        $this->app['command.crud.restore'] = $this->app->share(function($app)
-                {
-                    return new CrudRestoreCommand($app['db']);
-                });
-    }
 
 }

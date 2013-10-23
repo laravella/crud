@@ -18,6 +18,24 @@ class CrudSeeder extends Seeder {
     private $fkTypeId = null;
 
     /**
+     * Set the title of a page
+     */
+    public function setTitle($slug, $title) {
+        $recs = DB::table('_db_pages')
+                ->where('slug', $slug)
+                ->update(array('title'=>$title));
+        return $recs;
+    }
+    
+    /**
+     * Set the Caption of an image (_db_medias.caption)
+     */
+    public function setHeroCaption($mediaId, $caption) {
+        
+    }
+
+    
+    /**
      * 
      * @param type $tableName The name of the table 
      * @param type $actionName The name of the action
