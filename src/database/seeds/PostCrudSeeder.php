@@ -11,28 +11,28 @@ class PostCrudSeeder extends CrudSeeder {
         
         // change table titles in select lists
         //crud
-        $this->tableActionView('_db_severities', 'getSelect', 'crud::dbview', array('title'=>'Severities'));
-        $this->tableActionView('_db_pages', 'getSelect', 'crud::dbview', array('title'=>'Pages'));
-        $this->tableActionView('_db_tables', 'getSelect', 'crud::dbview', array('title'=>'Tables'));
-        $this->tableActionView('_db_user_permissions', 'getSelect', 'crud::dbview', array('title'=>'User Permissions'));
-        $this->tableActionView('_db_usergroup_permissions', 'getSelect', 'crud::dbview', array('title'=>'Usergroup Permissions'));
-        $this->tableActionView('_db_views', 'getSelect', 'crud::dbview', array('title'=>'Views'));
-        $this->tableActionView('_db_widget_types', 'getSelect', 'crud::dbview', array('title'=>'Widget Types'));
-        $this->tableActionView('_db_actions', 'getSelect', 'crud::dbview', array('title'=>'Actions'));
-        $this->tableActionView('_db_audit', 'getSelect', 'crud::dbview', array('title'=>'Audit'));
-        $this->tableActionView('_db_display_types', 'getSelect', 'crud::dbview', array('title'=>'Display Types'));
-        $this->tableActionView('_db_fields', 'getSelect', 'crud::dbview', array('title'=>'Fields'));
-        $this->tableActionView('_db_logs', 'getSelect', 'crud::dbview', array('title'=>'Logs'));
-        $this->tableActionView('_db_menu_permissions', 'getSelect', 'crud::dbview', array('title'=>'Menu Permissions'));
-        $this->tableActionView('_db_menus', 'getSelect', 'crud::dbview', array('title'=>'Menus'));
-        $this->tableActionView('_db_option_types', 'getSelect', 'crud::dbview', array('title'=>'Option Types'));
-        $this->tableActionView('_db_options', 'getSelect', 'crud::dbview', array('title'=>'Options'));
-        $this->tableActionView('_db_keys', 'getSelect', 'crud::dbview', array('title'=>'Keys'));
-        $this->tableActionView('_db_key_fields', 'getSelect', 'crud::dbview', array('title'=>'Key Fields'));
-        $this->tableActionView('_db_key_types', 'getSelect', 'crud::dbview', array('title'=>'Key Types'));
-        $this->tableActionView('_db_objects', 'getSelect', 'crud::dbview', array('title'=>'Objects'));
-        $this->tableActionView('_db_assets', 'getSelect', 'crud::dbview', array('title'=>'Assets'));
-        $this->tableActionView('_db_events', 'getSelect', 'crud::dbview', array('title'=>'Events'));
+        $this->tableActionView('_db_severities', 'getSelect', null, array('title'=>'Severities'));
+        $this->tableActionView('_db_pages', 'getSelect', null, array('title'=>'Pages'));
+        $this->tableActionView('_db_tables', 'getSelect', null, array('title'=>'Tables'));
+        $this->tableActionView('_db_user_permissions', 'getSelect', null, array('title'=>'User Permissions'));
+        $this->tableActionView('_db_usergroup_permissions', 'getSelect', null, array('title'=>'Usergroup Permissions'));
+        $this->tableActionView('_db_views', 'getSelect', null, array('title'=>'Views'));
+        $this->tableActionView('_db_widget_types', 'getSelect', null, array('title'=>'Widget Types'));
+        $this->tableActionView('_db_actions', 'getSelect', null, array('title'=>'Actions'));
+        $this->tableActionView('_db_audit', 'getSelect', null, array('title'=>'Audit'));
+        $this->tableActionView('_db_display_types', 'getSelect', null, array('title'=>'Display Types'));
+        $this->tableActionView('_db_fields', 'getSelect', null, array('title'=>'Fields'));
+        $this->tableActionView('_db_logs', 'getSelect', null, array('title'=>'Logs'));
+        $this->tableActionView('_db_menu_permissions', 'getSelect', null, array('title'=>'Menu Permissions'));
+        $this->tableActionView('_db_menus', 'getSelect', null, array('title'=>'Menus'));
+        $this->tableActionView('_db_option_types', 'getSelect', null, array('title'=>'Option Types'));
+        $this->tableActionView('_db_options', 'getSelect', null, array('title'=>'Options'));
+        $this->tableActionView('_db_keys', 'getSelect', null, array('title'=>'Keys'));
+        $this->tableActionView('_db_key_fields', 'getSelect', null, array('title'=>'Key Fields'));
+        $this->tableActionView('_db_key_types', 'getSelect', null, array('title'=>'Key Types'));
+        $this->tableActionView('_db_objects', 'getSelect', null, array('title'=>'Objects'));
+        $this->tableActionView('_db_assets', 'getSelect', null, array('title'=>'Assets'));
+        $this->tableActionView('_db_events', 'getSelect', null, array('title'=>'Events'));
         
         //hide fields
         $nodisplayId = $this->getId('_db_display_types', 'name', 'nodisplay');

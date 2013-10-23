@@ -57,10 +57,12 @@ class CrudSeeder extends Seeder {
     {
         $tableId = $this->getId('_db_tables', 'name', $tableName);
         $actionId = $this->getId('_db_actions', 'name', $actionName);
-        $viewId = $this->getId('_db_views', 'name', $viewName);
-
-        $this->updateOrInsert('_db_pages', array('table_id' => $tableId, 'action_id' => $actionId, 'view_id' => $viewId), $values);
-
+        if (!empty($viewName)) {
+            $viewId = $this->getId('_db_views', 'name', $viewName);
+            $this->updateOrInsert('_db_pages', array('table_id' => $tableId, 'action_id' => $actionId, 'view_id' => $viewId), $values);
+        } else {
+            $this->updateOrInsert('_db_pages', array('table_id' => $tableId, 'action_id' => $actionId), $values);
+        }
         //$this->tableActionViewId('product_categories', 'getSelect', 'crud::dbview')->update(array('title' => 'Product Categories'));        
     }
 
