@@ -20,6 +20,7 @@ class CreateAssetsTable extends Migration {
                         $table->increments('id')->unique();
                         $table->string('url', 200);
                         $table->string('vendor', 100);
+                        $table->string('type', 100); //scripts, styles, images, fonts, as a subfolder of the skin
                         $table->string('version', 20);
                         $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
                         $table->timestamp('updated_at')->default('0000-00-00 00:00:00');

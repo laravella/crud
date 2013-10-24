@@ -49,6 +49,9 @@ class CrudDatabaseSeeder extends Seeder {
         $this->call('Laravella\Crud\UpdateCMSFields');
         Log::write("success", "CMS Fields updates");
         
+        $this->call('Laravella\Crud\SeedAssets');
+        Log::write("success", "Assets seeded");
+        
         $this->call('Laravella\Crud\PostCrudSeeder');
         Log::write("success", "Crud PostCrudSeeder ran");
         

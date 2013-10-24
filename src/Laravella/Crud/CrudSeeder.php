@@ -67,6 +67,43 @@ class CrudSeeder extends Seeder {
     }
 
     /**
+     * 
+     * @param type $url
+     * @param type $type
+     * @param type $vendor
+     * @param type $version
+     */
+    public function addAsset($url, $type='', $vendor='', $version='') {
+        $values = array('url' => $url, 'type'=>$type, 'vendor'=>$vendor, 'version'=>$version);
+        $id = $this->updateOrInsert('_db_assets', array('url'=>$url), $values);
+        return $id;
+    }
+
+    /**
+     * 
+     * @param type $id
+     * @param type $slugs Use '*' for all pages
+     */
+    public function linkAssetPage($id, $slugs) {
+        $pages = array();
+        if (!is_array($slugs)) {
+            if ($slugs == '*') {
+                $pages = DB::table('_db_pages')->get();
+                foreach ($pages as $page) {
+                    $this->updateOrInsert('_db_page_assets', array('page_id'=>$id, 'asset_id'=>$page->id));
+                }
+            }
+        } else {
+            foreach($slugs as $slug) {
+                $pages = DB::table('_db_pages')->where('slug', $slug)->get();
+                foreach ($pages as $page) {
+                    $this->updateOrInsert('_db_page_assets', array('page_id'=>$id, 'asset_id'=>$page->id));
+                }
+            }
+        }
+    }
+    
+    /**
      * Update a reference to primary keys in _db_fields
      * 
      * @param type $fkTableName
