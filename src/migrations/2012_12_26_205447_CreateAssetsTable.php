@@ -18,7 +18,6 @@ class CreateAssetsTable extends Migration {
             Schema::create('_db_assets', function ($table)
                     {
                         $table->increments('id')->unique();
-                        $table->integer('object_id');
                         $table->string('url', 200);
                         $table->string('vendor', 100);
                         $table->string('version', 20);

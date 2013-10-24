@@ -12,21 +12,25 @@ class SeedOptions extends CrudSeeder {
         DB::table('_db_options')->delete();
 
         $optionTypeId = $this->addOptionType('database');
+        $adminId = $this->addOptionType('admin');
         
-        $optionTypeId = $this->addOptionType('admin');
-        $this->addOption($optionTypeId, 'skin', 'arctic');
-        $this->addOption($optionTypeId, 'debug', '');
-        $this->addOption($optionTypeId, 'configure', ''); //show shortcuts to _db_fields for each field, for easy configuration
-        $this->addOption($optionTypeId, 'show-pk-tables', '');
-        $this->addOption($optionTypeId, 'show-fk-tables', '');
-        $this->addOption($optionTypeId, 'attach-params', '');
-        $this->addOption($optionTypeId, 'default-view', 'skins::arctic.dbview');
+        $this->addOption($adminId, 'skin', 'arctic'); //the skin to use
+        $this->addOption($adminId, 'debug', '0'); //make debug information available in frontend, performance hit
+        $this->addOption($adminId, 'configure', '1'); //show shortcuts to _db_fields for each field, for easy configuration
+        $this->addOption($adminId, 'show-pk-tables', '0');
+        $this->addOption($adminId, 'show-fk-tables', '0');
+        $this->addOption($adminId, 'attach-params', '0');
+        $this->addOption($adminId, 'default-view', 'skins::arctic.dbview');
+        
+        $assetPosId = $this->addOptionType('asset-pos', $adminId);
+        $this->addOption($assetPosId, 'asset-pos-top', 'top');
+        $this->addOption($assetPosId, 'asset-pos-bottom', 'bottom');
         
         //for image thumbnails
-        $ulId = $this->addOptionType($optionTypeId, 'upload');
-        $ivId = $this->addOptionType($ulId, 'image_versions');
-        $this->addOptionType($ivId, 'medium');
-        $this->addOptionType($ivId, 'thumbnail');
+        $ulId = $this->addOptionType('upload', $adminId);
+        $ivId = $this->addOptionType('image_versions', $ulId);
+        $this->addOptionType('medium', $ivId);
+        $this->addOptionType('thumbnail', $ivId);
         
         $optionTypeId = $this->addOptionType('frontend');
         $this->addOption($optionTypeId, 'skin', 'arctic');

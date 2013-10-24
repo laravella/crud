@@ -67,6 +67,9 @@ class UpdateReferences extends CrudSeeder {
             
             $this->updateReference('contents', 'content_type_id', 'content_types', 'id', 'name');
             
+            $this->updateReference('_db_page_assets', 'page_id', '_db_pages', 'id', 'slug');
+            $this->updateReference('_db_page_assets', 'asset_id', '_db_assets', 'id', 'url');
+            
             Log::write("success", "Completed foreign key references");
         }
         catch (Exception $e)
