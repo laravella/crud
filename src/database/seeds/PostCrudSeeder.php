@@ -53,6 +53,8 @@ class PostCrudSeeder extends CrudSeeder {
         $mId = $this->getId('_db_menus', 'label', 'Menus');
         $this->delete('_db_menu_permissions', array('usergroup_id'=>$ugId, 'menu_id'=>$mId));
         
+        echo "Crud::PostCrudSeeder done.";
+        
     }
 
 }

@@ -18,6 +18,7 @@ class Params {
     public $primaryTables = array();
     public $prefix = "";
     public $tableActionViews = null;
+    public $assets = null;
     public $view = null;
     public $skin = null;
     public $selects = array();
@@ -56,7 +57,7 @@ class Params {
             $this->pageSize = 10;
         }
         $this->prefix = $prefix;
-        $this->tableActionViews = $tableActionViews;
+        $this->tableActionViews = $tableActionViews;  //single, called by first()
         $this->view = $view;
         $this->skin = array('admin'=>Options::get('skin', 'admin'), 'frontend'=>Options::get('skin', 'frontend'));
         $this->selects = $selects;
@@ -66,6 +67,7 @@ class Params {
         $this->paginated = $paginated;
         $this->tables = $tables;
         $this->primaryTables = $primaryTables;
+        $this->assets = $this->__getAssets();
         $this->dataA = $dataA;
         $this->displayTypes = $this->__getDisplayTypes();
         $this->widgetTypes = $this->__getWidgetTypes();
@@ -77,6 +79,23 @@ class Params {
         }
     }
 
+    /**
+     * 
+     */
+    private function __getAssets() {
+        $assetsA = array();
+        if (isset($this->tableActionViews) && is_object($this->tableActionViews))
+        {
+            $assets = DB::table('_db_assets')
+                    ->join("_db_page_assets", "_db_assets.id", "=", "_db_page_assets.asset_id")
+                    ->where('_db_page_assets.page_id', $this->tableActionViews->id)->get();
+            foreach($assets as $asset) {
+                $assetsA = array($asset->type."/".$asset->url);
+            }
+        }
+        return $assetsA;
+    }
+    
     /**
      * get all entries from _db_display_types
      * This determines under which conditions a field will be displayed
@@ -204,6 +223,7 @@ class Params {
             "dataA" => $this->dataA,
             "pkTables" => $this->primaryTables,
             "menu" => $this->menu,
+            "assets" => $this->assets,
             "displayTypes" => $this->displayTypes,
             "widgetTypes" => $this->widgetTypes
         ); //$this->tables[$tableName]['tableMetaData']['table']['pk_name']);

@@ -115,6 +115,22 @@ class DbController extends Controller {
     }
 
     /**
+     * Find the right object and view to use with the page slug
+     * 
+     * @param type $tableName
+     * @param type $action
+     */
+    protected function __getSlug($slug)
+    {
+        $views = DB::table('_db_pages')
+                ->join('_db_objects', '_db_pages.object_id', '=', '_db_objects.id')
+                ->join('_db_views', '_db_pages.view_id', '=', '_db_views.id')
+                ->where('_db_pages.slug', '=', $slug)
+                ->first();
+        return $views;
+    }
+
+    /**
      * Get a record from _db_pages as an stdClass object
      * 
      * @param type $tableName

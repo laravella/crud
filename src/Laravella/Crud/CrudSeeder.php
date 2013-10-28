@@ -57,7 +57,9 @@ class CrudSeeder extends Seeder {
     {
         $tableId = $this->getId('_db_tables', 'name', $tableName);
         $actionId = $this->getId('_db_actions', 'name', $actionName);
-        if (!empty($viewName)) {
+        $slug = strtolower($tableName.'_'.$actionName);
+        $values['slug'] = $slug;
+        if (!is_null($viewName) && !empty($viewName)) {
             $viewId = $this->getId('_db_views', 'name', $viewName);
             $this->updateOrInsert('_db_pages', array('table_id' => $tableId, 'action_id' => $actionId, 'view_id' => $viewId), $values);
         } else {
@@ -88,6 +90,15 @@ class CrudSeeder extends Seeder {
         $pages = array();
         if (!is_array($slugs)) {
             if ($slugs == '*') {
+                //all slugs
+                $this->info("linking asset id $id with *");
+                $pages = DB::table('_db_pages')->get();
+                foreach ($pages as $page) {
+                    $this->updateOrInsert('_db_page_assets', array('page_id'=>$id, 'asset_id'=>$page->id));
+                }
+            } else {
+                //specific slug
+                $this->info("linking asset id $id with $slug");
                 $pages = DB::table('_db_pages')->get();
                 foreach ($pages as $page) {
                     $this->updateOrInsert('_db_page_assets', array('page_id'=>$id, 'asset_id'=>$page->id));
@@ -95,12 +106,19 @@ class CrudSeeder extends Seeder {
             }
         } else {
             foreach($slugs as $slug) {
+                //an array of slugs
                 $pages = DB::table('_db_pages')->where('slug', $slug)->get();
                 foreach ($pages as $page) {
+                    $this->info("linking asset id $id with $page");
                     $this->updateOrInsert('_db_page_assets', array('page_id'=>$id, 'asset_id'=>$page->id));
                 }
             }
         }
+    }
+    
+    public function info($message) 
+    {
+        Log::write(Log::INFO, $message);
     }
     
     /**
@@ -601,9 +619,10 @@ class CrudSeeder extends Seeder {
                 {
                     foreach ($actions as $action)
                     {
+                        $slug = strtolower($table->name.'_'.$action->name);
                         Log::write("info", "Linking table " . $table->name . ", \t view " . $view->name . ", \t action " . $action->name);
                         $arrTav = array('table_id' => $table->id, 'action_id' => $action->id,
-                            'view_id' => $view->id, 'page_size' => 10, 'title' => $table->name);
+                            'view_id' => $view->id, 'page_size' => 10, 'title' => $table->name, 'slug'=>$slug);
 
                         DB::table('_db_pages')->insert($arrTav);
 /*
