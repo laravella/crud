@@ -90,8 +90,15 @@ class Params extends CrudSeeder {
             $assets = DB::table('_db_assets')
                     ->join("_db_option_types", "_db_assets.asset_type_id", "=", "_db_option_types.id")
                     ->join("_db_page_assets", "_db_assets.id", "=", "_db_page_assets.asset_type_id")
+                    ->select('_db_assets.type', '_db_assets.url')
                     ->where('_db_page_assets.page_type_id', $this->tableActionViews->page_type_id)
                     ->where('_db_option_types.name', $assetType)->get();
+            
+            $queries = DB::getQueryLog();
+            $last_query = end($queries);
+            echo var_dump($last_query);
+            die;
+            
             foreach($assets as $asset) {
                 $assetsA = array($asset->type."/".$asset->url);
             }
