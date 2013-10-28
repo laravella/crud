@@ -28,6 +28,9 @@ class CrudDatabaseSeeder extends Seeder {
         $this->call('Laravella\Crud\SeedSeverities');
         Log::write("success", "Populated severities");
         
+        $this->call('Laravella\Crud\SeedPageTypes');
+        Log::write("success", "Populated page types in to _db_option_types");
+        
         $this->call('Laravella\Crud\SeedTables');
         Log::write("success", "Populated _db_tables and _db_fields");
         

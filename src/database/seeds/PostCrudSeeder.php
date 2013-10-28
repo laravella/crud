@@ -11,28 +11,28 @@ class PostCrudSeeder extends CrudSeeder {
         
         // change table titles in select lists
         //crud
-        $this->tableActionView('_db_severities', 'getSelect', null, array('title'=>'Severities'));
-        $this->tableActionView('_db_pages', 'getSelect', null, array('title'=>'Pages'));
-        $this->tableActionView('_db_tables', 'getSelect', null, array('title'=>'Tables'));
-        $this->tableActionView('_db_user_permissions', 'getSelect', null, array('title'=>'User Permissions'));
-        $this->tableActionView('_db_usergroup_permissions', 'getSelect', null, array('title'=>'Usergroup Permissions'));
-        $this->tableActionView('_db_views', 'getSelect', null, array('title'=>'Views'));
-        $this->tableActionView('_db_widget_types', 'getSelect', null, array('title'=>'Widget Types'));
-        $this->tableActionView('_db_actions', 'getSelect', null, array('title'=>'Actions'));
-        $this->tableActionView('_db_audit', 'getSelect', null, array('title'=>'Audit'));
-        $this->tableActionView('_db_display_types', 'getSelect', null, array('title'=>'Display Types'));
-        $this->tableActionView('_db_fields', 'getSelect', null, array('title'=>'Fields'));
-        $this->tableActionView('_db_logs', 'getSelect', null, array('title'=>'Logs'));
-        $this->tableActionView('_db_menu_permissions', 'getSelect', null, array('title'=>'Menu Permissions'));
-        $this->tableActionView('_db_menus', 'getSelect', null, array('title'=>'Menus'));
-        $this->tableActionView('_db_option_types', 'getSelect', null, array('title'=>'Option Types'));
-        $this->tableActionView('_db_options', 'getSelect', null, array('title'=>'Options'));
-        $this->tableActionView('_db_keys', 'getSelect', null, array('title'=>'Keys'));
-        $this->tableActionView('_db_key_fields', 'getSelect', null, array('title'=>'Key Fields'));
-        $this->tableActionView('_db_key_types', 'getSelect', null, array('title'=>'Key Types'));
-        $this->tableActionView('_db_objects', 'getSelect', null, array('title'=>'Objects'));
-        $this->tableActionView('_db_assets', 'getSelect', null, array('title'=>'Assets'));
-        $this->tableActionView('_db_events', 'getSelect', null, array('title'=>'Events'));
+        $this->addPage('_db_severities', 'getSelect', null, array('title'=>'Severities'));
+        $this->addPage('_db_pages', 'getSelect', null, array('title'=>'Pages'));
+        $this->addPage('_db_tables', 'getSelect', null, array('title'=>'Tables'));
+        $this->addPage('_db_user_permissions', 'getSelect', null, array('title'=>'User Permissions'));
+        $this->addPage('_db_usergroup_permissions', 'getSelect', null, array('title'=>'Usergroup Permissions'));
+        $this->addPage('_db_views', 'getSelect', null, array('title'=>'Views'));
+        $this->addPage('_db_widget_types', 'getSelect', null, array('title'=>'Widget Types'));
+        $this->addPage('_db_actions', 'getSelect', null, array('title'=>'Actions'));
+        $this->addPage('_db_audit', 'getSelect', null, array('title'=>'Audit'));
+        $this->addPage('_db_display_types', 'getSelect', null, array('title'=>'Display Types'));
+        $this->addPage('_db_fields', 'getSelect', null, array('title'=>'Fields'));
+        $this->addPage('_db_logs', 'getSelect', null, array('title'=>'Logs'));
+        $this->addPage('_db_menu_permissions', 'getSelect', null, array('title'=>'Menu Permissions'));
+        $this->addPage('_db_menus', 'getSelect', null, array('title'=>'Menus'));
+        $this->addPage('_db_option_types', 'getSelect', null, array('title'=>'Option Types'));
+        $this->addPage('_db_options', 'getSelect', null, array('title'=>'Options'));
+        $this->addPage('_db_keys', 'getSelect', null, array('title'=>'Keys'));
+        $this->addPage('_db_key_fields', 'getSelect', null, array('title'=>'Key Fields'));
+        $this->addPage('_db_key_types', 'getSelect', null, array('title'=>'Key Types'));
+        $this->addPage('_db_objects', 'getSelect', null, array('title'=>'Objects'));
+        $this->addPage('_db_assets', 'getSelect', null, array('title'=>'Assets'));
+        $this->addPage('_db_events', 'getSelect', null, array('title'=>'Events'));
         
         //hide fields
         $nodisplayId = $this->getId('_db_display_types', 'name', 'nodisplay');

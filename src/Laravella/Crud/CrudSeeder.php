@@ -20,20 +20,45 @@ class CrudSeeder extends Seeder {
     /**
      * Set the title of a page
      */
-    public function setTitle($slug, $title) {
+    public function setTitle($slug, $title)
+    {
         $recs = DB::table('_db_pages')
                 ->where('slug', $slug)
-                ->update(array('title'=>$title));
+                ->update(array('title' => $title));
         return $recs;
     }
-    
+
     /**
      * Set the Caption of an image (_db_medias.caption)
      */
-    public function setHeroCaption($mediaId, $caption) {
+    public function setHeroCaption($mediaId, $caption)
+    {
         
     }
 
+    /*
+     * Set the page's type
+     */
+    public function setPageType() {
+        
+    }
+    
+    /*
+     * Set the asset's type
+     */
+    public function setAssetType() {
+        
+    }
+    
+    /**
+     * 
+     * @param type $id
+     * @param type $slugs
+     */
+    public function linkAssetPageGroups($assetGroup, $pageGroup){
+        
+    }
+    
     
     /**
      * 
@@ -53,19 +78,46 @@ class CrudSeeder extends Seeder {
         return $recs;
     }
 
+    /**
+     * 
+     * @param type $tableName
+     * @param type $actionName
+     * @param type $viewName
+     * @param type $values
+     * @return type
+     */
+    public function addPage($tableName, $actionName, $viewName, $values)
+    {
+        return $this->tableActionView($tableName, $actionName, $viewName, $values);
+    }
+
+    /**
+     * Deprecated. Use addPage.
+     * 
+     * @param type $tableName
+     * @param type $actionName
+     * @param type $viewName
+     * @param array $values
+     * 
+     * @deprecated 
+     */
     public function tableActionView($tableName, $actionName, $viewName, $values)
     {
         $tableId = $this->getId('_db_tables', 'name', $tableName);
         $actionId = $this->getId('_db_actions', 'name', $actionName);
-        $slug = strtolower($tableName.'_'.$actionName);
+        $slug = strtolower($tableName . '_' . $actionName);
         $values['slug'] = $slug;
-        if (!is_null($viewName) && !empty($viewName)) {
+        $id = null;
+        if (!is_null($viewName) && !empty($viewName))
+        {
             $viewId = $this->getId('_db_views', 'name', $viewName);
-            $this->updateOrInsert('_db_pages', array('table_id' => $tableId, 'action_id' => $actionId, 'view_id' => $viewId), $values);
-        } else {
-            $this->updateOrInsert('_db_pages', array('table_id' => $tableId, 'action_id' => $actionId), $values);
+            $id = $this->updateOrInsert('_db_pages', array('table_id' => $tableId, 'action_id' => $actionId, 'view_id' => $viewId), $values);
         }
-        //$this->tableActionViewId('product_categories', 'getSelect', 'crud::dbview')->update(array('title' => 'Product Categories'));        
+        else
+        {
+            $id = $this->updateOrInsert('_db_pages', array('table_id' => $tableId, 'action_id' => $actionId), $values);
+        }
+        return $id;
     }
 
     /**
@@ -75,9 +127,12 @@ class CrudSeeder extends Seeder {
      * @param type $vendor
      * @param type $version
      */
-    public function addAsset($url, $type='', $vendor='', $version='') {
-        $values = array('url' => $url, 'type'=>$type, 'vendor'=>$vendor, 'version'=>$version);
-        $id = $this->updateOrInsert('_db_assets', array('url'=>$url), $values);
+    public function addAsset($url, $type = '', $assetGroup='', $vendor = '', $version = '')
+    {
+        $optionTypes = $this->getOptionType($assetGroup);
+        $assetTypeID = $optionTypes[0]['id'];
+        $values = array('url' => $url, 'type' => $type, 'asset_type_id' => $assetTypeID, 'vendor' => $vendor, 'version' => $version);
+        $id = $this->updateOrInsert('_db_assets', array('url' => $url), $values);
         return $id;
     }
 
@@ -86,41 +141,63 @@ class CrudSeeder extends Seeder {
      * @param type $id
      * @param type $slugs Use '*' for all pages
      */
-    public function linkAssetPage($id, $slugs) {
+    public function linkAssetPage($id, $slugs)
+    {
         $pages = array();
-        if (!is_array($slugs)) {
-            if ($slugs == '*') {
+        if (!is_array($slugs))
+        {
+            if ($slugs == '*')
+            {
                 //all slugs
                 $this->info("linking asset id $id with *");
-                $pages = DB::table('_db_pages')->get();
-                foreach ($pages as $page) {
-                    $this->updateOrInsert('_db_page_assets', array('asset_id'=>$id, 'page_id'=>$page->id));
-                }
-            } else {
-                //specific slug
-                $this->info("linking asset id $id with $slug");
-                $pages = DB::table('_db_pages')->get();
-                foreach ($pages as $page) {
-                    $this->updateOrInsert('_db_page_assets', array('asset_id'=>$id, 'page_id'=>$page->id));
+                $pageTypes = DB::table('_db_option_types as ot1')
+                        ->join('_db_option_types as ot2', 'ot1.parent_id', '=', 'ot2.id')
+                        ->where('ot2.name', 'pages')->get();
+                foreach ($pageTypes as $pageType)
+                {
+                    $this->updateOrInsert('_db_page_assets', array('asset_type_id' => $id, 'page_type_id' => $pageType->id));
                 }
             }
-        } else {
-            foreach($slugs as $slug) {
+            else
+            {
+                //specific slug
+                $this->info("linking asset id $id with $slugs");
+                $pageTypes = DB::table('_db_option_types as ot1')
+                        ->join('_db_option_types as ot2', 'ot1.parent_id', '=', 'ot2.id')
+                        ->where('ot2.name', 'pages')
+                        ->where('ot1.name', $slugs)
+                        ->get();
+                foreach ($pageTypes as $pageType)
+                {
+                    $this->updateOrInsert('_db_page_assets', array('asset_type_id' => $id, 'page_id' => $pageType->id));
+                }
+            }
+        }
+        else
+        {
+            foreach ($slugs as $slug)
+            {
                 //an array of slugs
+                $pageTypes = DB::table('_db_option_types as ot1')
+                        ->join('_db_option_types as ot2', 'ot1.parent_id', '=', 'ot2.id')
+                        ->where('ot2.name', 'pages')
+                        ->where('ot1.name', $slug)
+                        ->get();
                 $pages = DB::table('_db_pages')->where('slug', $slug)->get();
-                foreach ($pages as $page) {
-                    $this->info("linking asset id $id with $page");
-                    $this->updateOrInsert('_db_page_assets', array('asset_id'=>$id, 'page_id'=>$page->id));
+                foreach ($pages as $pageType)
+                {
+                    $this->info("linking asset id $id with $pageType");
+                    $this->updateOrInsert('_db_page_assets', array('asset_type_id' => $id, 'page_id' => $pageType->id));
                 }
             }
         }
     }
-    
-    public function info($message) 
+
+    public function info($message)
     {
         Log::write(Log::INFO, $message);
     }
-    
+
     /**
      * Update a reference to primary keys in _db_fields
      * 
@@ -348,12 +425,84 @@ class CrudSeeder extends Seeder {
      */
     public function addOptionType($name, $parentId = null)
     {
+        // an option with name "grand.parent.name"
+//        if (is_null($parentId)) {
+//            $parentA = explode('.', $name);
+//            foreach($parentA as $parent) {
+//                $optionTypes = DB::table('_db_option_types as ot1')
+//                        ->join('_db_option_types as ot2', 'ot1.id', '=', 'ot2.parent_id')
+//                        ->where('ot1.name', $parentName)
+//                        ->where('ot2.name', $name)
+//                        ->select('ot1.name', 'ot1.id')
+//                        ->get();
+//            }
+//        }
         $optionType = array('name' => $name, 'parent_id' => $parentId);
         $optionTypeId = DB::table('_db_option_types')->insertGetId($optionType);
         Log::write(Log::INFO, $name . ' option type created');
         return $optionTypeId;
     }
 
+    /**
+     * Add an option type 
+     * 
+     * @param type $name
+     * @param type $parentId
+     * @return type
+     */
+    public function getOptionType($name, $parentName = null)
+    {
+        $optionTypeA = array();
+        $optionTypes = null;
+        if (!is_null($parentName) && !empty($parentName))
+        {
+            $optionTypes = DB::table('_db_option_types as ot1')
+                    ->join('_db_option_types as ot2', 'ot1.id', '=', 'ot2.parent_id')
+                    ->where('ot1.name', $parentName)
+                    ->where('ot2.name', $name)
+                    ->select('ot1.name', 'ot1.id')
+                    ->get();
+        }
+        else
+        {
+            $optionTypes = DB::table('_db_option_types as ot1')
+                    ->where('ot1.name', $name)
+                    ->select('ot1.name', 'ot1.id')
+                    ->get();
+        }
+        foreach($optionTypes as $optionType) 
+        {
+            $optionTypeA[] = array('id' => $optionType->id, 'name' => $optionType->name);
+        }
+        return $optionTypeA;
+    }
+
+    /**
+     * Add an asset type
+     * 
+     * @param type $typeName
+     * @return type
+     */
+    public function addAssetType($typeName)
+    {
+        $crudId = $this->addOptionType('crud');
+        $assetsId = $this->addOptionType('assets', $crudId);
+        $assetTypeId = $this->addOptionType($typeName, $assetsId);
+        return $assetTypeId;
+    }
+
+    /**
+     * 
+     * @param type $pageType
+     * @return type
+     */
+    public function addPageType($pageType) {
+        $crudId = $this->addOptionType('crud');
+        $pagesId = $this->addOptionType('pages', $crudId);
+        $pageTypeId = $this->addOptionType($pageType, $pagesId);
+        return $pageTypeId;
+    }
+    
     /**
      * Add a new usergroup
      * 
@@ -432,27 +581,28 @@ class CrudSeeder extends Seeder {
             //records exist so update
             foreach ($recs as $rec)
             {
-                echo 'updating ' . $updateTable . ' ' . $rec->id . ' ' . PHP_EOL;
+//                $this->info('updating ' . $updateTable . ' ' . $rec->id . ' ' . PHP_EOL);
                 $updateM = DB::table($updateTable)->where('id', $rec->id)->update($insertValues);
                 $ids = $rec->id;
             }
         }
         else
         {
-            echo 'inserting ' . $updateTable . ' ' . PHP_EOL;
+//            $this->info('inserting ' . $updateTable . ' ' . PHP_EOL);
             $id = DB::table($updateTable)->insertGetId($insertValues);
             $ids = $id;
-            echo $updateTable . ' inserted with id ' . $id . "\n";
+//            $this->info($updateTable . ' inserted with id ' . $id . "\n");
         }
 
         return $ids;
     }
 
-    public function addDivider($parentId) {
+    public function addDivider($parentId)
+    {
         $rec = array('label' => 'divider', 'href' => '', 'parent_id' => $parentId, 'icon_class' => '');
         $menuId = DB::table('_db_menus')->insertGetId($rec);
     }
-    
+
     /**
      * Add a menu item
      * 
@@ -619,30 +769,30 @@ class CrudSeeder extends Seeder {
                 {
                     foreach ($actions as $action)
                     {
-                        $slug = strtolower($table->name.'_'.$action->name);
+                        $slug = strtolower($table->name . '_' . $action->name);
                         Log::write("info", "Linking table " . $table->name . ", \t view " . $view->name . ", \t action " . $action->name);
                         $arrTav = array('table_id' => $table->id, 'action_id' => $action->id,
-                            'view_id' => $view->id, 'page_size' => 10, 'title' => $table->name, 'slug'=>$slug);
+                            'view_id' => $view->id, 'page_size' => 10, 'title' => $table->name, 'slug' => $slug);
 
                         DB::table('_db_pages')->insert($arrTav);
-/*
-                        if ($doPermissions)
-                        {
-                            foreach ($users as $user)
-                            {
-                                $arr = array('table_id' => $table->id, 'action_id' => $action->id, 'user_id' => $user->id);
-                                DB::table('_db_user_permissions')->insert($arr);
-                                Log::write("success", "Granted user " . $user->username . " \t action " . $action->name . " on \t table " . $table->name);
-                            }
-                            foreach ($usergroups as $usergroup)
-                            {
-                                $arr = array('table_id' => $table->id, 'action_id' => $action->id, 'usergroup_id' => $usergroup->id);
-                                DB::table('_db_usergroup_permissions')->insert($arr);
-                                Log::write("success", "Granted usergroup " . $usergroup->group . " \t action " . $action->name . " on table \t" . $table->name);
-                            }
-                        }
- * 
- */
+                        /*
+                          if ($doPermissions)
+                          {
+                          foreach ($users as $user)
+                          {
+                          $arr = array('table_id' => $table->id, 'action_id' => $action->id, 'user_id' => $user->id);
+                          DB::table('_db_user_permissions')->insert($arr);
+                          Log::write("success", "Granted user " . $user->username . " \t action " . $action->name . " on \t table " . $table->name);
+                          }
+                          foreach ($usergroups as $usergroup)
+                          {
+                          $arr = array('table_id' => $table->id, 'action_id' => $action->id, 'usergroup_id' => $usergroup->id);
+                          DB::table('_db_usergroup_permissions')->insert($arr);
+                          Log::write("success", "Granted usergroup " . $usergroup->group . " \t action " . $action->name . " on table \t" . $table->name);
+                          }
+                          }
+                         * 
+                         */
                     }
                 }
             }
