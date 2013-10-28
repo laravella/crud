@@ -4,7 +4,6 @@ use Laravella\Crud\Log;
 use \Seeder;
 use \DB;
 
-
 class SeedAssets extends CrudSeeder {
     
     public function run()

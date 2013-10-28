@@ -94,14 +94,14 @@ class CrudSeeder extends Seeder {
                 $this->info("linking asset id $id with *");
                 $pages = DB::table('_db_pages')->get();
                 foreach ($pages as $page) {
-                    $this->updateOrInsert('_db_page_assets', array('page_id'=>$id, 'asset_id'=>$page->id));
+                    $this->updateOrInsert('_db_page_assets', array('asset_id'=>$id, 'page_id'=>$page->id));
                 }
             } else {
                 //specific slug
                 $this->info("linking asset id $id with $slug");
                 $pages = DB::table('_db_pages')->get();
                 foreach ($pages as $page) {
-                    $this->updateOrInsert('_db_page_assets', array('page_id'=>$id, 'asset_id'=>$page->id));
+                    $this->updateOrInsert('_db_page_assets', array('asset_id'=>$id, 'page_id'=>$page->id));
                 }
             }
         } else {
@@ -110,7 +110,7 @@ class CrudSeeder extends Seeder {
                 $pages = DB::table('_db_pages')->where('slug', $slug)->get();
                 foreach ($pages as $page) {
                     $this->info("linking asset id $id with $page");
-                    $this->updateOrInsert('_db_page_assets', array('page_id'=>$id, 'asset_id'=>$page->id));
+                    $this->updateOrInsert('_db_page_assets', array('asset_id'=>$id, 'page_id'=>$page->id));
                 }
             }
         }
