@@ -763,6 +763,10 @@ class CrudSeeder extends Seeder {
                 $users = DB::table('users')->get();
                 $usergroups = DB::table('usergroups')->get();
             }
+            
+            $pageTypes = $this->getOptionType('adminpages'); //frontendpages
+            $pageTypeId = $pageTypes[0]['id'];
+            
             foreach ($views as $view)
             {
                 foreach ($tables as $table)
@@ -772,7 +776,8 @@ class CrudSeeder extends Seeder {
                         $slug = strtolower($table->name . '_' . $action->name);
                         Log::write("info", "Linking table " . $table->name . ", \t view " . $view->name . ", \t action " . $action->name);
                         $arrTav = array('table_id' => $table->id, 'action_id' => $action->id,
-                            'view_id' => $view->id, 'page_size' => 10, 'title' => $table->name, 'slug' => $slug);
+                            'view_id' => $view->id, 'page_size' => 10, 'title' => $table->name, 'slug' => $slug,
+                            'page_type_id'=>$pageTypeId);
 
                         DB::table('_db_pages')->insert($arrTav);
                         /*

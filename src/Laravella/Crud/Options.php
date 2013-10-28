@@ -15,7 +15,7 @@ class Options {
     {
         $setting = '';
         $option = DB::table('_db_options as o');
-        if (!empty($type)) {
+        if (!is_null($type) && !empty($type)) {
                 $option = $option->join('_db_option_types as ot', 'ot.id', '=', 'o.option_type_id')
                 ->where('ot.name', $type);
         }

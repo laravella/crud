@@ -14,7 +14,7 @@ class Table extends Eloquent {
     private $selectBox = array();
 
     public static function getMetaFields() {
-        return array('_db_fields.name', '_db_tables.name as tableName', '_db_fields.label', 
+        return array('_db_fields.id', '_db_fields.name', '_db_tables.name as tableName', '_db_fields.label', 
             '_db_fields.key', '_db_fields.display_type_id', '_db_fields.type', '_db_fields.length', 
             '_db_fields.default', '_db_fields.extra', '_db_fields.href', 
             '_db_key_fields.pk_field_id', '_db_key_fields.pk_display_field_id', 
