@@ -45,7 +45,7 @@ class SeedAssets extends CrudSeeder {
         $this->info('adding asset adminstyles.css');
         $this->linkAssetPage($assetGroupId, '*');
 
-        $id = $this->addAsset('css/main.css', 'styles', 'default');
+        $id = $this->addAsset('css/bootstrap.css', 'styles', 'default');
         $this->info('adding asset main.css');
         $this->linkAssetPage($assetGroupId, '*');
 

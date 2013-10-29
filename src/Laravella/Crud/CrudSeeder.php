@@ -23,7 +23,7 @@ class CrudSeeder extends Seeder {
     public function setTitle($slug, $title)
     {
         $recs = DB::table('_db_pages')
-                ->where('slug', $slug)
+                ->where('slug',  strtolower($slug))
                 ->update(array('title' => $title));
         return $recs;
     }
