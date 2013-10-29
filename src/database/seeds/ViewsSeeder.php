@@ -8,10 +8,13 @@ class SeedViews extends CrudSeeder {
 
     public function run()
     {
+        
+        $skin = "flatly";
+        
         DB::table('_db_views')->delete();
         
-        $this->addView("skins::common.dbview");
-        $this->addView("skins::common.frontview");
+        $this->addView("skins::$skin.dbview");
+        $this->addView("skins::$skin.frontview");
         
         $this->populateTableActions(true);
         

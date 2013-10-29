@@ -767,10 +767,11 @@ class CrudSeeder extends Seeder {
                 $usergroups = DB::table('usergroups')->get();
             }
             
-            
             foreach ($views as $view)
             {
+                echo $view->name."\n";
                 $pageTypes = $this->getOptionType($view->name); //frontendpages
+                echo var_dump($pageTypes);
                 $pageTypeId = $pageTypes[0]['id'];
                 foreach ($tables as $table)
                 {

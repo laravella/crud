@@ -7,7 +7,9 @@ class PostCrudSeeder extends CrudSeeder {
     public function run()
     {
         
-        $defaultView = "skins::common.dbview";
+        $skin = "flatly";
+        
+        $defaultView = "skins::$skin.dbview";
         
         // change table titles in select lists
         //crud
