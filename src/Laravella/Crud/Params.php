@@ -95,8 +95,9 @@ class Params extends CrudSeeder {
             ->join('_db_assets as a', 'a.asset_type_id', '=', 'pa.asset_type_id')
             ->join('_db_pages as p', 'p.page_type_id', '=', 'pa.page_type_id')
             ->select('pa.id', 'pa.page_type_id', 'pa.asset_type_id', 'a.id', 
-            'p.id', 'aot.name', 'pot.name', 'a.url', 'a.vendor', 'a.type', 'a.version', 'p.action_id', 
-            'p.view_id', 'p.object_id', 'p.page_size', 'p.title', 'p.slug')
+            'p.id', 'aot.name', 'pot.name', 'a.url', 'a.vendor', 'a.type', 'a.version', 
+            'a.position', 'p.action_id', 'p.view_id', 'p.object_id', 'p.page_size', 
+                    'p.title', 'p.slug')
 //            ->where('pa.page_type_id', $this->tableActionViews->page_type_id)
             ->where('pot.name', $this->tableActionViews->view_name)
             ->where('p.slug', '_db_actions_getselect')
@@ -108,7 +109,7 @@ class Params extends CrudSeeder {
 //            die;
             
             foreach($assets as $asset) {
-                $assetsA[] = array($asset->type."/".$asset->url);
+                $assetsA[] = array('url'=>$asset->type."/".$asset->url, 'type'=>$asset->type, 'position'=>$asset->position);
             }
         }
 

@@ -127,12 +127,12 @@ class CrudSeeder extends Seeder {
      * @param type $vendor
      * @param type $version
      */
-    public function addAsset($url, $type = '', $assetGroup='', $vendor = '', $version = '')
+    public function addAsset($url, $type = '', $assetGroup='', $position='top', $vendor = '', $version = '')
     {
         $optionTypes = $this->getOptionType($assetGroup);
         $assetTypeID = $optionTypes[0]['id'];
         $values = array('url' => $url, 'type' => $type, 'asset_type_id' => $assetTypeID, 
-            'vendor' => $vendor, 'version' => $version);
+            'vendor' => $vendor, 'version' => $version, 'position' => $position);
         $id = $this->updateOrInsert('_db_assets', array('url' => $url), $values);
         return $id;
     }

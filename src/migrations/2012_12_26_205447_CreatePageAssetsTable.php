@@ -20,7 +20,6 @@ class CreatePageAssetsTable extends Migration {
                         $table->increments('id')->unique();
                         $table->integer('page_type_id'); //links to _db_option_types
                         $table->integer('asset_type_id');
-                        $table->string('position'); //top or bottom
                     });
         }
     }

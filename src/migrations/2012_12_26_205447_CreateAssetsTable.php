@@ -23,6 +23,7 @@ class CreateAssetsTable extends Migration {
                         $table->integer('asset_type_id')->unsigned(); //links to _db_option_types
                         $table->string('type', 100); //scripts, styles, images, fonts, as a subfolder of the skin
                         $table->string('version', 20);
+                        $table->string('position'); //top or bottom of the page
                         $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
                         $table->timestamp('updated_at')->default('0000-00-00 00:00:00');
                     });
