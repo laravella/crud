@@ -24,6 +24,7 @@ class Params extends CrudSeeder {
     public $selects = array();
     public $log = array();
     public $status = "success";
+    public $slug = "";
     public $displayType = "text/html";
     public $displayTypes = array();
     public $widgetTypes = array();
@@ -87,20 +88,27 @@ class Params extends CrudSeeder {
         if (isset($this->tableActionViews) && is_object($this->tableActionViews))
         {
             $assetType = 'default';
-            $assets = DB::table('_db_assets')
-                    ->join("_db_option_types", "_db_assets.asset_type_id", "=", "_db_option_types.id")
-                    ->join("_db_page_assets", "_db_assets.id", "=", "_db_page_assets.asset_type_id")
-                    ->select('_db_assets.type', '_db_assets.url')
-                    ->where('_db_page_assets.page_type_id', $this->tableActionViews->page_type_id)
-                    ->where('_db_option_types.name', $assetType)->get();
+
+            $assets = DB::table('_db_page_assets as pa')
+            ->join('_db_option_types as pot', 'pot.id', '=', 'pa.page_type_id')
+            ->join('_db_option_types as aot', 'aot.id', '=', 'pa.asset_type_id')
+            ->join('_db_assets as a', 'a.asset_type_id', '=', 'pa.asset_type_id')
+            ->join('_db_pages as p', 'p.page_type_id', '=', 'pa.page_type_id')
+            ->select('pa.id', 'pa.page_type_id', 'pa.asset_type_id', 'a.id', 
+            'p.id', 'aot.name', 'pot.name', 'a.url', 'a.vendor', 'a.type', 'a.version', 'p.action_id', 
+            'p.view_id', 'p.object_id', 'p.page_size', 'p.title', 'p.slug')
+//            ->where('pa.page_type_id', $this->tableActionViews->page_type_id)
+            ->where('pot.name', $this->tableActionViews->view_name)
+            ->where('p.slug', '_db_actions_getselect')
+            ->get();
             
-            $queries = DB::getQueryLog();
-            $last_query = end($queries);
-            echo var_dump($last_query);
-            die;
+//            $queries = DB::getQueryLog();
+//            $last_query = end($queries);
+//            echo var_dump($last_query);
+//            die;
             
             foreach($assets as $asset) {
-                $assetsA = array($asset->type."/".$asset->url);
+                $assetsA[] = array($asset->type."/".$asset->url);
             }
         }
 
@@ -223,6 +231,7 @@ class Params extends CrudSeeder {
             "pageSize" => $this->pageSize,
             "view" => $this->view,
             "skin" => $this->skin,
+            "slug" => $this->slug,
             "selects" => $this->selects,
             "log" => $this->log,
             "status" => $this->status,

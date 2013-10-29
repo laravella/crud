@@ -13,6 +13,7 @@ class SeedAssets extends CrudSeeder {
         set_time_limit(0);
 
         DB::table('_db_assets')->delete();
+        DB::table('_db_page_assets')->delete();
         
         $assetGroupId = $this->addAssetType('default');
 

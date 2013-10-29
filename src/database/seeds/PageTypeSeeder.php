@@ -8,8 +8,8 @@ class SeedPageTypes extends CrudSeeder {
 
     public function run()
     {
-        $this->addPageType('adminpages');
-        $this->addPageType('frontendpages');
+        $this->addPageType('skins::common.dbview');
+        $this->addPageType('skins::common.frontview');
     }
 
 }

@@ -143,6 +143,10 @@ class DbController extends Controller {
         $tva = DB::table('_db_pages')
                 ->join('_db_tables', '_db_pages.table_id', '=', '_db_tables.id')
                 ->join('_db_actions', '_db_pages.action_id', '=', '_db_actions.id')
+                ->join('_db_views', '_db_pages.view_id', '=', '_db_views.id')
+                ->select('_db_pages.view_id', '_db_pages.id as page_id', '_db_pages.action_id', 
+                        '_db_views.name as view_name', '_db_actions.name as action_name', 
+                        '_db_tables.name as table_name', '_db_pages.title')
                 ->where('_db_pages.view_id', '=', $viewId)
                 ->where('_db_actions.name', '=', $action)
                 ->where('_db_tables.name', '=', $tableName)

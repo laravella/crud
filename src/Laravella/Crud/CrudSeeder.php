@@ -131,7 +131,8 @@ class CrudSeeder extends Seeder {
     {
         $optionTypes = $this->getOptionType($assetGroup);
         $assetTypeID = $optionTypes[0]['id'];
-        $values = array('url' => $url, 'type' => $type, 'asset_type_id' => $assetTypeID, 'vendor' => $vendor, 'version' => $version);
+        $values = array('url' => $url, 'type' => $type, 'asset_type_id' => $assetTypeID, 
+            'vendor' => $vendor, 'version' => $version);
         $id = $this->updateOrInsert('_db_assets', array('url' => $url), $values);
         return $id;
     }
@@ -152,6 +153,7 @@ class CrudSeeder extends Seeder {
                 $this->info("linking asset id $id with *");
                 $pageTypes = DB::table('_db_option_types as ot1')
                         ->join('_db_option_types as ot2', 'ot1.parent_id', '=', 'ot2.id')
+                        ->select('ot1.id')
                         ->where('ot2.name', 'pages')->get();
                 foreach ($pageTypes as $pageType)
                 {
@@ -166,6 +168,7 @@ class CrudSeeder extends Seeder {
                         ->join('_db_option_types as ot2', 'ot1.parent_id', '=', 'ot2.id')
                         ->where('ot2.name', 'pages')
                         ->where('ot1.name', $slugs)
+                        ->select('ot1.id')
                         ->get();
                 foreach ($pageTypes as $pageType)
                 {
@@ -182,9 +185,9 @@ class CrudSeeder extends Seeder {
                         ->join('_db_option_types as ot2', 'ot1.parent_id', '=', 'ot2.id')
                         ->where('ot2.name', 'pages')
                         ->where('ot1.name', $slug)
+                        ->select('ot1.id')
                         ->get();
-                $pages = DB::table('_db_pages')->where('slug', $slug)->get();
-                foreach ($pages as $pageType)
+                foreach ($pageTypes as $pageType)
                 {
                     $this->info("linking asset id $id with $pageType");
                     $this->updateOrInsert('_db_page_assets', array('asset_type_id' => $id, 'page_id' => $pageType->id));
@@ -764,11 +767,11 @@ class CrudSeeder extends Seeder {
                 $usergroups = DB::table('usergroups')->get();
             }
             
-            $pageTypes = $this->getOptionType('adminpages'); //frontendpages
-            $pageTypeId = $pageTypes[0]['id'];
             
             foreach ($views as $view)
             {
+                $pageTypes = $this->getOptionType($view->name); //frontendpages
+                $pageTypeId = $pageTypes[0]['id'];
                 foreach ($tables as $table)
                 {
                     foreach ($actions as $action)
