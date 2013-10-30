@@ -441,7 +441,8 @@ class CrudSeeder extends Seeder {
 //            }
 //        }
         $optionType = array('name' => $name, 'parent_id' => $parentId);
-        $optionTypeId = DB::table('_db_option_types')->insertGetId($optionType);
+        $optionTypeId = $this->updateOrInsert('_db_option_types', array('name' => $name, 'parent_id' => $parentId));
+//        $optionTypeId = DB::table('_db_option_types')->insertGetId($optionType);
         Log::write(Log::INFO, $name . ' option type created');
         return $optionTypeId;
     }

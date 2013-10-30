@@ -7,10 +7,6 @@ class PostCrudSeeder extends CrudSeeder {
     public function run()
     {
         
-        $skin = "flatly";
-        
-        $defaultView = "skins::$skin.dbview";
-        
         // change table titles in select lists
         //crud
         $this->addPage('_db_severities', 'getSelect', null, array('title'=>'Severities'));

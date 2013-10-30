@@ -3,13 +3,14 @@
 use Laravella\Crud\Log;
 use \Seeder;
 use \DB;
+use \Config;
 
 class SeedViews extends CrudSeeder {
 
     public function run()
     {
         
-        $skin = "flatly";
+        $skin = Config::get('app.skin'); //"flatly";
         
         DB::table('_db_views')->delete();
         
