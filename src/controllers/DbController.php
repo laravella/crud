@@ -8,7 +8,7 @@ use Laravella\Crud\Options;
  * All database requests are handled by this controller, 
  * even the DbApiController ones, although DbApiController is leaner on the response i.e. json.
  */
-class DbController extends Controller {
+class DbController extends AuthorizedController {
 
     //protected $layout = //getLayout;
     private $log = array();
@@ -52,6 +52,7 @@ class DbController extends Controller {
 
     public function getSkin() {
         $skin = array('admin'=>Options::get('skin','admin'), 'frontend'=>Options::get('skin','frontend'));
+        return $skin;
     }
     
     /**
@@ -559,31 +560,38 @@ class DbController extends Controller {
      * @return type
      */
     protected function _customAction($parameters) {
-        $action = 'get'.$parameters[0];
-        $tableName = $parameters[1];
-        $identifier = (isset($parameters[2]))?$parameters[2]:'';
+        if (!empty($parameters)) {
+            $action = 'get'.$parameters[0];
+            if (count($parameters) > 1 ) {
+                $tableName = $parameters[1];
+                $tableMeta = Table::getTableMeta($tableName);
 
-        $tableMeta = Table::getTableMeta($tableName);
+                //get metadata as an array
+                $pkName = $tableMeta['table']['pk_name'];
+                $pkName = ($tableName == 'contents')?'slug':'id';
 
-        //get metadata as an array
-        $pkName = $tableMeta['table']['pk_name'];
-        
-        $table = null;
-        $pkName = ($tableName == 'contents')?'slug':'id';
-        
-        if (!empty($identifier)) {
-            $table = DB::table($tableName)->where($pkName, '=', $identifier);
-        } else if ($action == 'getRegister') {
-            $table = array();
+                $table = null;
+
+                if (isset($parameters[2])) {
+                    $table = DB::table($tableName)->where($pkName, '=', $parameters[2]);
+                } else if ($action == 'getRegister') {
+                    $table = array();
+                } else {
+                    $table = DB::table($tableName);
+                }
+
+                $params = $this->__makeParams(self::INFO, 'Edit data.', $table, $tableName, $action);
+                $paramsA = $params->asArray();
+
+                if(isset($paramsA['view'])) {
+                    return View::make($paramsA['view']->name)->with($paramsA);
+                } else {
+                    return View::make('skins::default');
+                }
+            }
         } else {
-            $table = DB::table($tableName);
+            return View::make('skins::default');
         }
-        
-        $params = $this->__makeParams(self::INFO, 'Edit data.', $table, $tableName, $action);
-        $paramsA = $params->asArray();
-        
-        return View::make($paramsA['view']->name)->with($paramsA);
-//        return View::make('cart::layouts.frontend')->nest('content', $paramsA['view']->name, $paramsA);
     }
     
     public function getTest() {

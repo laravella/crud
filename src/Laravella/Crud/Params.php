@@ -29,6 +29,8 @@ class Params extends CrudSeeder {
     public $displayTypes = array();
     public $widgetTypes = array();
     public $menu = array();
+    public $user = null;
+    
 
     /**
      * 
@@ -45,6 +47,7 @@ class Params extends CrudSeeder {
      */
     public function __construct($status, $message, $log, $view = null, $action = "", $tableMeta = null, $tableActionViews = null, $prefix = "", $selects = null, $displayType = "", $dataA = array(), $tables = array(), $paginated = array(), $primaryTables = array())
     {
+        $this->user = Auth::user();
         $this->status = $status;
         $this->message = $message;
         $this->action = $action;
@@ -85,32 +88,29 @@ class Params extends CrudSeeder {
      */
     private function __getAssets() {
         $assetsA = array();
+
+        $assetType = "default";
+        
         if (isset($this->tableActionViews) && is_object($this->tableActionViews))
         {
-            $assetType = 'default';
+            $assetType = $this->tableActionViews->view_name;
+        }
+        
+        $assets = DB::table('_db_page_assets as pa')
+        ->join('_db_option_types as pot', 'pot.id', '=', 'pa.page_type_id')
+        ->join('_db_option_types as aot', 'aot.id', '=', 'pa.asset_type_id')
+        ->join('_db_assets as a', 'a.asset_type_id', '=', 'pa.asset_type_id')
+        ->join('_db_pages as p', 'p.page_type_id', '=', 'pa.page_type_id')
+        ->select('pa.id', 'pa.page_type_id', 'pa.asset_type_id', 'a.id', 
+        'p.id', 'aot.name', 'pot.name', 'a.url', 'a.vendor', 'a.type', 'a.version', 
+        'a.position', 'p.action_id', 'p.view_id', 'p.object_id', 'p.page_size', 
+                'p.title', 'p.slug')
+        ->where('pot.name', $assetType)
+        ->where('p.slug', '_db_actions_getselect')
+        ->get();
 
-            $assets = DB::table('_db_page_assets as pa')
-            ->join('_db_option_types as pot', 'pot.id', '=', 'pa.page_type_id')
-            ->join('_db_option_types as aot', 'aot.id', '=', 'pa.asset_type_id')
-            ->join('_db_assets as a', 'a.asset_type_id', '=', 'pa.asset_type_id')
-            ->join('_db_pages as p', 'p.page_type_id', '=', 'pa.page_type_id')
-            ->select('pa.id', 'pa.page_type_id', 'pa.asset_type_id', 'a.id', 
-            'p.id', 'aot.name', 'pot.name', 'a.url', 'a.vendor', 'a.type', 'a.version', 
-            'a.position', 'p.action_id', 'p.view_id', 'p.object_id', 'p.page_size', 
-                    'p.title', 'p.slug')
-//            ->where('pa.page_type_id', $this->tableActionViews->page_type_id)
-            ->where('pot.name', $this->tableActionViews->view_name)
-            ->where('p.slug', '_db_actions_getselect')
-            ->get();
-            
-//            $queries = DB::getQueryLog();
-//            $last_query = end($queries);
-//            echo var_dump($last_query);
-//            die;
-            
-            foreach($assets as $asset) {
-                $assetsA[] = array('url'=>$asset->type."/".$asset->url, 'type'=>$asset->type, 'position'=>$asset->position);
-            }
+        foreach($assets as $asset) {
+            $assetsA[] = array('url'=>$asset->type."/".$asset->url, 'type'=>$asset->type, 'position'=>$asset->position);
         }
 
         return $assetsA;
@@ -246,7 +246,8 @@ class Params extends CrudSeeder {
             "menu" => $this->menu,
             "assets" => $this->assets,
             "displayTypes" => $this->displayTypes,
-            "widgetTypes" => $this->widgetTypes
+            "widgetTypes" => $this->widgetTypes,
+            "user" => $this->user
         ); //$this->tables[$tableName]['tableMetaData']['table']['pk_name']);
 
         if (isset($this->tableActionViews) && is_object($this->tableActionViews))
