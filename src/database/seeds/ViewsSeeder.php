@@ -18,8 +18,6 @@ class SeedViews extends CrudSeeder {
         $this->addView("skins::{$skin}.frontview");
         $this->addView("skins::{$skin}.account.login");
 
-        $params = new Params(self::SUCCESS, '', null, $viewName, 'getLogin');
-        
         $this->populateTableActions(true);
         
     }
