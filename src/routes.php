@@ -1,38 +1,33 @@
 <?php
 
 Route::filter('crudauth', function()
+{
+    if (Request::ajax())
+    {
+        if (Auth::guest())
         {
-            if (Request::ajax())
-            {
-                if (Auth::guest())
-                {
-                    App::abort(403);
-                }
-            }
+            App::abort(403);
+        }
+    }
 
-            if (Auth::guest())
-                return Redirect::to('/account/login');
-        });
+    if (Auth::guest())
+    {
+        return Redirect::to('/account/login');
+    }
+});
 
 Route::when('db/*', 'crudauth');
 Route::when('pg/*', 'crudauth');
 Route::when('dbapi/*', 'crudauth');
 
-Route::controller('db', 'DbController');
-Route::controller('pg', 'DbController');
-Route::controller('dbapi', 'DbApiController');
-Route::controller('account', 'AccountController');
-Route::controller('/', 'PageController');
-
-
 Route::get('/query', function()
-        {
-            $get = Input::get('q');
-            if (!empty($get))
-            {
-                return Redirect::to("/search/$get");
-            }
-        });
+{
+    $get = Input::get('q');
+    if (!empty($get))
+    {
+        return Redirect::to("/search/$get");
+    }
+});
 
 Route::get('/search/{searchPhrase}', 'SearchController@search');
 
@@ -50,24 +45,26 @@ Route::get('/search/{searchPhrase}', 'SearchController@search');
  * Process Logout process
  */
 Route::get('logout', function()
-        {
-            Auth::logout();
-            return Redirect::to('/');
-        });
+{
+    Auth::logout();
+    return Redirect::to('/');
+});
 
 Route::get('login', function()
-        {
-            return Redirect::to('/account/login');
-        });
+{
+    return Redirect::to('/account/login');
+});
 
-        Route::get('admin', function()
-        {
-            return Redirect::to('/db/select/contents');
-        });
-        
 Route::get('admin', function()
-        {
-            Auth::logout();
-            return Redirect::to('/db/select/contents');
-        });
+{
+//            return Redirect::to('/db/select/contents');
+});
+
+Route::controller('db', 'DbController');
+Route::controller('pg', 'DbController');
+Route::controller('dbapi', 'DbApiController');
+Route::controller('account', 'AccountController');
+//Route::controller('/', 'PageController');
+
+
 
