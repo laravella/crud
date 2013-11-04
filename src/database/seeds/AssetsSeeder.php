@@ -19,46 +19,37 @@ class SeedAssets extends CrudSeeder {
 
         $id = $this->addAsset('admintools.js', 'scripts', 'default', 'bottom');
         $this->info('adding asset admintools.js');
-        $this->linkAssetPage($assetGroupId, '*');
 
         $id = $this->addAsset('ckeditor/ckeditor.js', 'scripts', 'default', 'bottom', 'ckeditor');
         $this->info('adding asset ckeditor/ckeditor.js');
-        $this->linkAssetPage($assetGroupId, '*');
 
         $id = $this->addAsset('plugins.js', 'scripts', 'default', 'bottom');
         $this->info('adding asset plugins.js');
-        $this->linkAssetPage($assetGroupId, '*');
 
         $id = $this->addAsset('main.js', 'scripts', 'default', 'bottom');
         $this->info('adding asset main.js');
-        $this->linkAssetPage($assetGroupId, '*');
 
         $id = $this->addAsset('bootstrap.min.js', 'scripts', 'default', 'bottom', 'bootstrap');
         $this->info('adding asset bootstrap.min.js');
-        $this->linkAssetPage($assetGroupId, '*');
 
         $id = $this->addAsset('google-analytics.js', 'scripts', 'default', 'bottom');
         $this->info('adding asset google-analytics.js');
-        $this->linkAssetPage($assetGroupId, '*');
 
         $id = $this->addAsset('adminstyles.css', 'styles', 'default');
         $this->info('adding asset adminstyles.css');
-        $this->linkAssetPage($assetGroupId, '*');
 
         $id = $this->addAsset('css/bootstrap.css', 'styles', 'default');
         $this->info('adding asset main.css');
-        $this->linkAssetPage($assetGroupId, '*');
 
         $id = $this->addAsset('jquery-1.8.3.min.js', 'scripts', 'default', 'top', 'jquery', '1.8.3');
         $this->info('adding asset jquery-1.8.3.min.js');
-        $this->linkAssetPage($assetGroupId, '*');
 
         $id = $this->addAsset('modernizr-2.6.2.min.js', 'scripts', 'default', 'top', 'modernizr', '2.6.2');
         $this->info('adding asset modernizr-2.6.2.min.js');
-        $this->linkAssetPage($assetGroupId, '*');
 
         $id = $this->addAsset('jsonconvert.js', 'scripts', 'default', 'bottom');
         $this->info('adding asset jsonconvert.js');
+        
         $this->linkAssetPage($assetGroupId, '*');
     }
 
