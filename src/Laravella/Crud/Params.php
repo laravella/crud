@@ -45,7 +45,9 @@ class Params extends CrudSeeder {
      * @param type $prefix Used to prepend the href on the primary key
      * @param type $view An entry in _db_views
      */
-    public function __construct($status, $message, $log, $view = null, $action = "", $tableMeta = null, $tableActionViews = null, $prefix = "", $selects = null, $displayType = "", $dataA = array(), $tables = array(), $paginated = array(), $primaryTables = array())
+    public function __construct($status, $message, $log, $view = null, $action = "", $tableMeta = null, 
+            $tableActionViews = null, $prefix = "", $selects = null, $displayType = "", $dataA = array(), 
+            $tables = array(), $paginated = array(), $primaryTables = array())
     {
         $this->user = Auth::user();
         $this->status = $status;
@@ -91,9 +93,11 @@ class Params extends CrudSeeder {
 
         $assetType = "default";
         
+        $pot = "skins::flatly.dbview";
+        
         if (isset($this->tableActionViews) && is_object($this->tableActionViews))
         {
-            $assetType = $this->tableActionViews->view_name;
+            $pot = $this->tableActionViews->view_name;
         }
         
         $assets = DB::table('_db_page_assets as pa')
@@ -105,10 +109,13 @@ class Params extends CrudSeeder {
         'p.id', 'aot.name', 'pot.name', 'a.url', 'a.vendor', 'a.type', 'a.version', 
         'a.position', 'p.action_id', 'p.view_id', 'p.object_id', 'p.page_size', 
                 'p.title', 'p.slug')
-        ->where('pot.name', $assetType)
+        ->where('pot.name', $pot)
         ->where('p.slug', '_db_actions_getselect')
         ->get();
 
+//        $q = \Laravella\Crud\DbGopher::getLastQuery();
+//        echo var_dump($q);
+        
         foreach($assets as $asset) {
             $assetsA[] = array('url'=>$asset->type."/".$asset->url, 'type'=>$asset->type, 'position'=>$asset->position);
         }

@@ -14,7 +14,7 @@ class PageController extends DbController {
         $viewName = 'skins::'.Options::get('skin').'.account.login';
         $params = new Params(self::SUCCESS, '', null, $viewName);
         
-        return View::make('skins::'.Options::get('skin').'.default')
+        return View::make('skins::'.Options::get('skin').'.frontend.default')
                 ->nest('content', 'skins::'.Options::get('skin').'.frontview', $params->asArray());
     }
 }

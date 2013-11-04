@@ -1,4 +1,5 @@
 <?php namespace Laravella\Crud;
+use \DB;
 
 use Laravella\Crud\Exceptions\DBException;
 
@@ -99,6 +100,15 @@ class DbGopher {
             throw new DBException('Empty record.');
         }
         return $value;
+    }
+    
+    /**
+     * Return last executed query
+     */
+    public static function getLastQuery() {
+        $queries = DB::getQueryLog();
+        $lastQuery = end($queries);        
+        return $lastQuery;
     }
     
 }
