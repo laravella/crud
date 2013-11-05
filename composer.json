@@ -1,12 +1,15 @@
 {
     "name": "laravella/crud",
-    "description": "crud",
-    "keywords": ["laravel","cms","radiate","laravella","ravel"],
+    "description": "Crud",
+    "version": "v4.0.20131105-beta",
+    "keywords": ["laravel","cms"],
     "license": "MIT",
     "authors": [
         {
-            "name": "laravella",
-            "email": "laravella.cms@gmail.com"
+            "name": "Victor Geere",
+            "email": "laravella.cms@gmail.com",
+            "homepage": "http://github.com/victorgeere/laravella",
+            "role": "Developer"
         }
     ],
     "require": {
@@ -15,11 +18,15 @@
     "autoload": {
         "classmap": [
             "src/controllers",
-            "src/migrations"
+            "src/commands",
+            "src/models",
+            "src/models/meta",
+            "src/migrations",
+            "src/database/seeds"
         ],
         "psr-0": {
             "Laravella\\Crud": "src/"
         }                
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "stable"
 }
