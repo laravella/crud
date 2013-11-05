@@ -1,7 +1,8 @@
 {
     "name": "laravella/crud",
     "description": "Crud",
-    "keywords": ["ravel","laravel","cms"],
+    "version": "v4.0.20131105-beta",
+    "keywords": ["laravel","cms"],
     "license": "MIT",
     "authors": [
         {
