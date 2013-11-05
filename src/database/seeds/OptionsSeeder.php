@@ -32,8 +32,12 @@ class SeedOptions extends CrudSeeder {
         //for image thumbnails
         $ulId = $this->addOptionType('upload', $adminId);
         $ivId = $this->addOptionType('image_versions', $ulId);
-        $this->addOptionType('medium', $ivId);
-        $this->addOptionType('thumbnail', $ivId);
+        $mediumId = $this->addOptionType('medium', $ivId);
+        $this->addOption($mediumId, 'max_width', '200');
+        $this->addOption($mediumId, 'max_height', '200');
+        $thumbId = $this->addOptionType('thumbnail', $ivId);
+        $this->addOption($mediumId, 'max_width', '100');
+        $this->addOption($mediumId, 'max_height', '100');
         
         $optionTypeId = $this->addOptionType('frontend');
         $this->addOption($optionTypeId, 'skin', $skin);
