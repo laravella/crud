@@ -29,6 +29,26 @@ class Options {
         return $setting;
     }
 
+    /**
+     * 
+     * @return type
+     */
+    public static function getSkin() {
+        $skinFront = Options::get('skin', 'frontend');
+        $skinAdmin = Options::get('skin', 'admin');
+        $skinA = explode('::', $skinFront);
+        $adminSkinA = explode('::', $skinAdmin);
+        $skinName = $skinA[1];
+        $adminSkinName = $adminSkinA[1];
+        
+        $skin = array('admin'=>$skinAdmin, 
+            'frontend'=>$skinFront,
+            'name'=>$skinName,
+            'adminName'=>$adminSkinName);        
+        
+        return $skin;
+    }
+    
     public static function getTypes($name)
     {
         $options = new Options();

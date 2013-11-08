@@ -30,7 +30,6 @@ class Params extends CrudSeeder {
     public $widgetTypes = array();
     public $menu = array();
     public $user = null;
-    
 
     /**
      * 
@@ -65,7 +64,9 @@ class Params extends CrudSeeder {
         $this->prefix = $prefix;
         $this->tableActionViews = $tableActionViews;  //single, called by first()
         $this->view = $view;
-        $this->skin = array('admin'=>Options::get('skin', 'admin'), 'frontend'=>Options::get('skin', 'frontend'));
+
+        $this->skin = Options::getSkin();
+        
         $this->selects = $selects;
         $this->displayType = $displayType;
         $this->log = $log;
@@ -93,7 +94,7 @@ class Params extends CrudSeeder {
 
         $assetType = "default";
         
-        $pot = "skins::flatly.dbview";
+        $pot = Options::get('skin').".dbview";
         
         if (isset($this->tableActionViews) && is_object($this->tableActionViews))
         {

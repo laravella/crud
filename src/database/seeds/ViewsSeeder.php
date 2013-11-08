@@ -14,12 +14,10 @@ class SeedViews extends CrudSeeder {
         
         DB::table('_db_views')->delete();
         
-        $this->addView("skins::{$skin}.dbview");
-        $this->addView("skins::{$skin}.frontview");
-        $this->addView("skins::{$skin}.account.login");
+        $this->addView("{$skin}.dbview");
+        $this->addView("{$skin}.frontview");
+        $this->addView("{$skin}.account.login");
 
-        $this->populateTableActions(true);
-        
     }
 
 }

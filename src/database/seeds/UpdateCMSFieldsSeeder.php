@@ -6,33 +6,11 @@ use \DB;
 
 class UpdateCMSFields extends CrudSeeder {
 
-    private function updateField($tableName, $fieldName, $widgetType)
-    {
-        $tableId = DB::table('_db_tables')->where('name', $tableName)->pluck('id');
-
-        //get the id of the primary key field in _db_fields
-        //for each field in the _db_fields table there will thus be a reference to 
-        $widgetTypeId = DB::table('_db_widget_types')
-                ->where('name', $widgetType)
-                ->pluck('id');
-        
-        //get the id of the primary key field in _db_fields
-        //for each field in the _db_fields table there will thus be a reference to 
-        $displayTypeId = DB::table('_db_display_types')
-                ->where('name', 'widget')
-                ->pluck('id');
-        
-        DB::table('_db_fields')
-                ->where('table_id', $tableId)
-                ->where('name', $fieldName)
-                ->update(array('widget_type_id' => $widgetTypeId, 'display_type_id' => $displayTypeId));
-    }
-
     public function run()
     {
-//        $this->updateField('contents', 'content', 'ckeditor');
-//        $this->updateField('contents', 'excerpt', 'textarea');
-//        $this->updateField('medias', 'thumbnail', 'thumbnail');
+        $this->setWidgetType('contents', 'content', 'ckeditor');
+        $this->setWidgetType('contents', 'excerpt', 'textarea');
+        $this->setWidgetType('medias', 'thumbnail', 'thumbnail');
     }
 
 }

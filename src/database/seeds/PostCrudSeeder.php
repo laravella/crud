@@ -6,32 +6,40 @@ class PostCrudSeeder extends CrudSeeder {
     
     public function run()
     {
-        
         // change table titles in select lists
         //crud
-        $this->addPage('_db_severities', 'getSelect', null, array('title'=>'Severities'));
-        $this->addPage('_db_pages', 'getSelect', null, array('title'=>'Pages'));
-        $this->addPage('_db_tables', 'getSelect', null, array('title'=>'Tables'));
-        $this->addPage('_db_user_permissions', 'getSelect', null, array('title'=>'User Permissions'));
-        $this->addPage('_db_usergroup_permissions', 'getSelect', null, array('title'=>'Usergroup Permissions'));
-        $this->addPage('_db_views', 'getSelect', null, array('title'=>'Views'));
-        $this->addPage('_db_widget_types', 'getSelect', null, array('title'=>'Widget Types'));
-        $this->addPage('_db_actions', 'getSelect', null, array('title'=>'Actions'));
-        $this->addPage('_db_audit', 'getSelect', null, array('title'=>'Audit'));
-        $this->addPage('_db_display_types', 'getSelect', null, array('title'=>'Display Types'));
-        $this->addPage('_db_fields', 'getSelect', null, array('title'=>'Fields'));
-        $this->addPage('_db_logs', 'getSelect', null, array('title'=>'Logs'));
-        $this->addPage('_db_menu_permissions', 'getSelect', null, array('title'=>'Menu Permissions'));
-        $this->addPage('_db_menus', 'getSelect', null, array('title'=>'Menus'));
-        $this->addPage('_db_option_types', 'getSelect', null, array('title'=>'Option Types'));
-        $this->addPage('_db_options', 'getSelect', null, array('title'=>'Options'));
-        $this->addPage('_db_keys', 'getSelect', null, array('title'=>'Keys'));
-        $this->addPage('_db_key_fields', 'getSelect', null, array('title'=>'Key Fields'));
-        $this->addPage('_db_key_types', 'getSelect', null, array('title'=>'Key Types'));
-        $this->addPage('_db_objects', 'getSelect', null, array('title'=>'Objects'));
-        $this->addPage('_db_assets', 'getSelect', null, array('title'=>'Assets'));
-        $this->addPage('_db_events', 'getSelect', null, array('title'=>'Events'));
-        
+        //$this->setTitle($slug, $title);
+        $this->setTitle('_db_severities_getSelect', 'Severities');
+        $this->setTitle('_db_pages_getSelect', 'Pages');
+        $this->setTitle('_db_tables_getSelect', 'Tables');
+        $this->setTitle('_db_user_permissions_getSelect', 'User Permissions');
+        $this->setTitle('_db_usergroup_permissions_getSelect', 'Usergroup Permissions');
+        $this->setTitle('_db_views_getSelect', 'Views');
+        $this->setTitle('_db_widget_types_getSelect', 'Widget Types');
+        $this->setTitle('_db_actions_getSelect', 'Actions');
+        $this->setTitle('_db_audit_getSelect', 'Audit');
+        $this->setTitle('_db_display_types_getSelect', 'Display Types');
+        $this->setTitle('_db_fields_getSelect', 'Fields');
+        $this->setTitle('_db_logs_getSelect', 'Logs');
+        $this->setTitle('_db_menu_permissions_getSelect', 'Menu Permissions');
+        $this->setTitle('_db_menus_getSelect', 'Menus');
+        $this->setTitle('_db_option_types_getSelect', 'Option Types');
+        $this->setTitle('_db_options_getSelect', 'Options');
+        $this->setTitle('_db_keys_getSelect', 'Keys');
+        $this->setTitle('_db_key_fields_getSelect', 'Key Fields');
+        $this->setTitle('_db_key_types_getSelect', 'Key Types');
+        $this->setTitle('_db_objects_getSelect', 'Objects');
+        $this->setTitle('_db_assets_getSelect', 'Assets');
+        $this->setTitle('_db_events_getSelect', 'Events');
+        //cms
+        $this->setTitle('medias_getSelect', 'Media');
+        $this->setTitle('contents_getSelect', 'Content');
+        $this->setTitle('mcollections_getSelect', 'Media Collections');
+        $this->setTitle('galleries_getSelect', 'Galleries');
+        $this->setTitle('users_getSelect', 'Users');
+        $this->setTitle('usergroups_getSelect', 'User Groups');
+        $this->setTitle('categories_getSelect', 'Categories');
+
         //hide fields
         $nodisplayId = $this->getId('_db_display_types', 'name', 'nodisplay');
         $this->updateOrInsert('_db_fields', array('fullname'=>'contents.content_mime_type'), array('display_type_id'=>$nodisplayId));
@@ -41,17 +49,21 @@ class PostCrudSeeder extends CrudSeeder {
         $this->updateOrInsert('_db_fields', array('fullname'=>'medias.approved'), array('display_type_id'=>$widgetId, 'widget_type_id'=>$checkboxId));
         $this->updateOrInsert('_db_fields', array('fullname'=>'medias.publish'), array('display_type_id'=>$widgetId, 'widget_type_id'=>$checkboxId));
         
-        //change field titles
+        //change field labels
         $this->updateOrInsert('_db_fields', array('fullname'=>'contents.lang'), array('label'=>'Language'));
         $this->updateOrInsert('_db_fields', array('fullname'=>'contents.title'), array('display_order'=>'0'));
 
         $ugId = $this->getId('usergroups', 'group', 'admin');
+        
         $mId = $this->getId('_db_menus', 'label', 'Meta Data');
         $this->delete('_db_menu_permissions', array('usergroup_id'=>$ugId, 'menu_id'=>$mId));
+        
         $mId = $this->getId('_db_menus', 'label', 'Menus');
         $this->delete('_db_menu_permissions', array('usergroup_id'=>$ugId, 'menu_id'=>$mId));
         
-        echo "Crud::PostCrudSeeder done.";
+        $this->setWidgetType('medias', 'id', 'thumbnail');
+        
+        echo "Crud::PostCrudSeeder done.\n";
         
     }
 

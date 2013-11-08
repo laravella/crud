@@ -68,7 +68,7 @@ class SeedMenus extends CrudSeeder
                 $this->addMenu('Assets', '/db/select/_db_assets', 'icon-file', $metaDataId);
                 $this->addMenu('Events', '/db/select/_db_events', 'icon-file', $metaDataId);
                 $this->addDivider($metaDataId);
-                $this->addMenu('Log', '/db/select/_db_log', 'icon-file', $metaDataId);
+                $this->addMenu('Log', '/db/select/_db_logs', 'icon-file', $metaDataId);
                 $this->addMenu('Audit', '/db/select/_db_audit', 'icon-file', $metaDataId);
                 
                 $this->addMenuPermissions($contentId, 'superadmin');

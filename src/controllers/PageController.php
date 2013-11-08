@@ -11,11 +11,11 @@ class PageController extends DbController {
     
     public function getIndex() {
         
-        $viewName = 'skins::'.Options::get('skin').'.account.login';
+        $viewName = Options::get('skin').'.account.login';
         $params = new Params(self::SUCCESS, '', null, $viewName);
         
-        return View::make('skins::'.Options::get('skin').'.frontend.default')
-                ->nest('content', 'skins::'.Options::get('skin').'.frontview', $params->asArray());
+        return View::make(Options::get('skin').'.frontend.default')
+                ->nest('content', Options::get('skin').'.frontview', $params->asArray());
     }
 }
 

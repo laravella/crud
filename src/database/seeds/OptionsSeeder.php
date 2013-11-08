@@ -9,7 +9,7 @@ class SeedOptions extends CrudSeeder {
 
     public function run()
     {
-        $skin = Config::get('app.skin');//"flatly";
+        $skin = Config::get('app.skin');//"skins::flatly";
         
         DB::table('_db_option_types')->delete();
         DB::table('_db_options')->delete();
@@ -23,7 +23,7 @@ class SeedOptions extends CrudSeeder {
         $this->addOption($adminId, 'show-pk-tables', '0');
         $this->addOption($adminId, 'show-fk-tables', '0');
         $this->addOption($adminId, 'attach-params', '0');
-        $this->addOption($adminId, 'default-view', "skins::$skin.dbview");
+        $this->addOption($adminId, 'default-view', "$skin.dbview");
         
         $assetPosId = $this->addOptionType('asset-pos', $adminId);
         $this->addOption($assetPosId, 'asset-pos-top', 'top');
@@ -41,7 +41,7 @@ class SeedOptions extends CrudSeeder {
         
         $optionTypeId = $this->addOptionType('frontend');
         $this->addOption($optionTypeId, 'skin', $skin);
-        $this->addOption($optionTypeId, 'default-view', "skins::$skin.frontview");
+        $this->addOption($optionTypeId, 'default-view', "$skin.frontview");
         
         $optionTypeId = $this->addOptionType('installation');
         $this->addOption($optionTypeId, 'status', 0);

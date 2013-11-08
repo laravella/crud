@@ -51,8 +51,9 @@ class DbController extends AuthorizedController {
     }
 
     public function getSkin() {
-        $skin = array('admin'=>Options::get('skin','admin'), 'frontend'=>Options::get('skin','frontend'));
-        return $skin;
+//        $skin = Options::getSkin();
+//        $skin = array('admin'=>Options::get('skin','admin'), 'frontend'=>Options::get('skin','frontend'));
+        return Options::getSkin();
     }
     
     /**
@@ -62,7 +63,7 @@ class DbController extends AuthorizedController {
      * @return type
      */
     public function getLayout($type = 'admin') {
-        return 'skins::'.Options::get('skin','admin').'.default';
+        return Options::get('skin','admin').'.default';
     }
     
     /**
@@ -334,7 +335,7 @@ class DbController extends AuthorizedController {
 
         $params = $this->__makeParams(self::SUCCESS, "Records selected.", $table, $tableName, $action);
 
-        return View::make($this->layout)->nest('content', $params->view->name, $params->asArray());
+        return View::make($this->getLayout())->nest('content', $params->view->name, $params->asArray());
     }
 
     /**
@@ -586,11 +587,11 @@ class DbController extends AuthorizedController {
                 if(isset($paramsA['view'])) {
                     return View::make($paramsA['view']->name)->with($paramsA);
                 } else {
-                    return View::make('skins::default');
+                    return View::make(Options::get('skin').'.default');
                 }
             }
         } else {
-            return View::make('skins::default');
+            return View::make(Options::get('skin').'.default');
         }
     }
     
