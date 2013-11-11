@@ -7,6 +7,7 @@ use \Seeder;
 use \Model;
 use \DB;
 use \Hash;
+use \Config;
 
 /**
  * Basic functions to manipulate meta data
@@ -57,6 +58,24 @@ class CrudSeeder extends Seeder {
      */
     public function linkAssetPageGroups($assetGroup, $pageGroup){
         
+            $this->info("getting asset types $pageGroup");
+            $pageTypes = DB::table('_db_option_types as ot1')
+                    ->join('_db_option_types as ot2', 'ot1.parent_id', '=', 'ot2.id')
+                    ->where('ot2.name', 'pages')
+                    ->where('ot1.name', $pageGroup)
+                    ->select('ot1.id')
+                    ->first();
+            
+            $this->info("getting asset types $assetGroup");
+            $assetTypes = DB::table('_db_option_types as ot1')
+                    ->join('_db_option_types as ot2', 'ot1.parent_id', '=', 'ot2.id')
+                    ->where('ot2.name', 'assets')
+                    ->where('ot1.name', $assetGroup)
+                    ->select('ot1.id')
+                    ->first();
+            
+            $this->updateOrInsert('_db_page_assets', 
+                    array('asset_type_id' => $assetTypes->id, 'page_type_id' => $pageTypes->id));
     }
     
     
@@ -774,6 +793,62 @@ class CrudSeeder extends Seeder {
         Log::write("success", " - $viewName view inserted");
     }
 
+    public function getPageTypeId($viewName) {
+        $pageTypes = $this->getOptionType($viewName); //frontendpages
+        
+        echo "$viewName \n";
+        echo var_dump($pageTypes);
+        echo "\n";
+        
+        $pageTypeId = null;
+        if (isset($pageTypes[0]) && isset($pageTypes[0]['id'])) {
+            $pageTypeId = $pageTypes[0]['id'];
+        }
+        
+        return $pageTypeId;
+    }    
+    
+    /**
+     * Get an entire _db_view record by name
+     * @param type $viewName
+     * @return type
+     */
+    public function getView($viewName) {
+        Log::write(Log::INFO, "getting record for ".$viewName);
+        $view = DB::table('_db_views')->where('name', $viewName)->first();
+        echo var_dump($view);
+        return $view;
+    }
+    
+    /**
+     * Get an array of all actions with their views array('action'=>'view',...)
+     * @return string
+     */
+    public function getActionViews() {
+        $actionViews = array();
+        
+        $skins = Config::get('app.skins');
+        
+        $dbView = $this->getView($skins['admin'].'.dbview');
+        $upView = $this->getView($skins['admin'].'.uploadview');
+        $feView = $this->getView($skins['admin'].'.frontview');
+        $acView = $this->getView($skins['admin'].'.login');
+        
+        $actionViews['getEdit'] = $dbView;
+        $actionViews['getInsert'] = $dbView;
+        $actionViews['getObject'] = $dbView;
+        $actionViews['getSearch'] = $dbView;
+        $actionViews['getSelect'] = $dbView;
+        $actionViews['postDelete'] = $dbView;
+        $actionViews['postEdit'] = $dbView;
+        $actionViews['getUpload'] = $upView;
+        $actionViews['postUpload'] = $upView;
+        $actionViews['getPage'] = $feView;
+        $actionViews['getLogin'] = $acView;
+        
+        return $actionViews;
+    }
+    
     /**
      * Populate table _db_pages
      * 
@@ -789,55 +864,66 @@ class CrudSeeder extends Seeder {
 
             $tables = DB::table('_db_tables')->get();
             $actions = DB::table('_db_actions')->get();
-            $views = DB::table('_db_views')->get();
+//            $views = DB::table('_db_views')->get();
 
             if ($doPermissions)
             {
                 $users = DB::table('users')->get();
                 $usergroups = DB::table('usergroups')->get();
             }
+            Log::write(Log::INFO, "getting actionViews");
+            $actionViews = $this->getActionViews();
             
-            foreach ($views as $view)
+//            echo var_dump($actionViews);
+            
+            Log::write(Log::INFO, "getting skins from config");
+//            $skins = Config::get('app.skins');
+            $skins = Options::getSkin();
+                  
+            foreach ($tables as $table)
             {
-                echo $view->name."\n";
-                $pageTypes = $this->getOptionType($view->name); //frontendpages
-                echo var_dump($pageTypes);
-                $pageTypeId = $pageTypes[0]['id'];
-                foreach ($tables as $table)
+                Log::write(Log::INFO, "Creating page for table ".$table->name);
+                foreach ($actions as $action)
                 {
-                    foreach ($actions as $action)
-                    {
-                        $slug = strtolower($table->name . '_' . $action->name);
-                        Log::write("info", "Linking table " . $table->name . ", \t view " . $view->name . ", \t action " . $action->name);
-                        $arrTav = array('table_id' => $table->id, 'action_id' => $action->id,
-                            'view_id' => $view->id, 'page_size' => 10, 'title' => $table->name, 'slug' => $slug,
-                            'page_type_id'=>$pageTypeId);
 
-                        DB::table('_db_pages')->insert($arrTav);
-                        /*
-                          if ($doPermissions)
-                          {
-                          foreach ($users as $user)
-                          {
-                          $arr = array('table_id' => $table->id, 'action_id' => $action->id, 'user_id' => $user->id);
-                          DB::table('_db_user_permissions')->insert($arr);
-                          Log::write("success", "Granted user " . $user->username . " \t action " . $action->name . " on \t table " . $table->name);
-                          }
-                          foreach ($usergroups as $usergroup)
-                          {
-                          $arr = array('table_id' => $table->id, 'action_id' => $action->id, 'usergroup_id' => $usergroup->id);
-                          DB::table('_db_usergroup_permissions')->insert($arr);
-                          Log::write("success", "Granted usergroup " . $usergroup->group . " \t action " . $action->name . " on table \t" . $table->name);
-                          }
-                          }
-                         * 
-                         */
-                    }
+                    Log::write(Log::INFO, "Creating page for action ".$action->name);
+                    $view = $actionViews[$action->name];
+                    echo " {$view->name} \n";
+
+                    $pageTypeId = $this->getPageTypeId($view->name);
+
+                    $slug = strtolower($table->name . '_' . $action->name);
+                    Log::write("info", "Linking table " . $table->name . ", \t view " . 
+                            $view->name . ", \t action " . $action->name);
+                    $arrTav = array('table_id' => $table->id, 'action_id' => $action->id,
+                        'view_id' => $view->id, 'page_size' => 10, 'title' => $table->name, 'slug' => $slug,
+                        'page_type_id'=>$pageTypeId);
+
+                    DB::table('_db_pages')->insert($arrTav);
+                    /*
+                      if ($doPermissions)
+                      {
+                      foreach ($users as $user)
+                      {
+                      $arr = array('table_id' => $table->id, 'action_id' => $action->id, 'user_id' => $user->id);
+                      DB::table('_db_user_permissions')->insert($arr);
+                      Log::write("success", "Granted user " . $user->username . " \t action " . $action->name . " on \t table " . $table->name);
+                      }
+                      foreach ($usergroups as $usergroup)
+                      {
+                      $arr = array('table_id' => $table->id, 'action_id' => $action->id, 'usergroup_id' => $usergroup->id);
+                      DB::table('_db_usergroup_permissions')->insert($arr);
+                      Log::write("success", "Granted usergroup " . $usergroup->group . " \t action " . $action->name . " on table \t" . $table->name);
+                      }
+                      }
+                     * 
+                     */
                 }
             }
         }
         catch (Exception $e)
         {
+            echo $e->getMessage();
             Log::write("success", $e->getMessage());
             $message = "Error inserting record into table.";
             Log::write("success", $message);

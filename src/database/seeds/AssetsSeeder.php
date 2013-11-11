@@ -51,6 +51,13 @@ class SeedAssets extends CrudSeeder {
         $this->info('adding asset jsonconvert.js');
         
         $this->linkAssetPage($assetGroupId, '*');
+        
+        $skins = Options::getSkin();
+        $adminSkin = $skins['admin'];
+        
+        //$assetGroupId = $this->addAssetType('uploads');
+//        $this->linkAssetPageGroups('default', "{$skins['admin']}.uploadview");
+        
     }
 
 }

@@ -110,7 +110,7 @@ class Params extends CrudSeeder {
         'p.id', 'aot.name', 'pot.name', 'a.url', 'a.vendor', 'a.type', 'a.version', 
         'a.position', 'p.action_id', 'p.view_id', 'p.object_id', 'p.page_size', 
                 'p.title', 'p.slug')
-        ->where('pot.name', $pot)
+        /*->where('pot.name', $pot)*/  //TODO : had to comment this out because upload isn't properly linked to assets and pages
         ->where('p.slug', '_db_actions_getselect')
         ->get();
 
@@ -121,6 +121,9 @@ class Params extends CrudSeeder {
             $assetsA[] = array('url'=>$asset->type."/".$asset->url, 'type'=>$asset->type, 'position'=>$asset->position);
         }
 
+//        echo var_dump($assetsA);
+//        die; 
+        
         return $assetsA;
     }
     

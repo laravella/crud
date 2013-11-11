@@ -10,11 +10,12 @@ class SeedPageTypes extends CrudSeeder {
     public function run()
     {
         
-        $skin = Config::get('app.skin');//"flatly";
+        $skins = Config::get('app.skins');//"flatly";
         
-        $this->addPageType("{$skin}.dbview");
-        $this->addPageType("{$skin}.frontview");
-        $this->addPageType("{$skin}.account.login");
+        $this->addPageType("{$skins['admin']}.dbview");
+        $this->addPageType("{$skins['frontend']}.frontview");
+        $this->addPageType("{$skins['admin']}.login");
+        $this->addPageType("{$skins['admin']}.uploadview");
     }
 
 }
