@@ -29,6 +29,7 @@ class UpdateReferences extends CrudSeeder {
             $this->updateReference('_db_pages', 'view_id', '_db_views', 'id', 'name');
             $this->updateReference('_db_pages', 'table_id', '_db_tables', 'id', 'name');
             $this->updateReference('_db_pages', 'action_id', '_db_actions', 'id', 'name');
+            $this->updateReference('_db_pages', 'page_type_id', '_db_option_types', 'id', 'name');
             echo "_db_pages done. \n";
             
             $this->updateReference('users', 'usergroup_id', 'usergroups', 'id', 'group');
@@ -83,7 +84,7 @@ class UpdateReferences extends CrudSeeder {
             
 //            $this->updateReference('assets', 'asset_type_id', '_db_asset_types', 'id', 'name');
             $this->updateReference('_db_page_assets', 'page_type_id', '_db_option_types', 'id', 'name');
-            $this->updateReference('_db_page_assets', 'asset_type_id', '_db_assets', 'id', 'url');
+            $this->updateReference('_db_page_assets', 'asset_type_id', '_db_option_types', 'id', 'name');
             echo "_db_page_assets done. \n";
             
             Log::write("success", "Completed foreign key references");

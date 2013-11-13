@@ -37,6 +37,17 @@ class CrudSeeder extends Seeder {
         
     }
 
+    /**
+     * Change the label of a field
+     * 
+     * @param type $fullName
+     * @param type $label
+     */
+    public function setFieldTitle($fullName, $label) {
+        //change field labels
+        $this->updateOrInsert('_db_fields', array('fullname'=>$fullName), array('label'=>$label));
+    }    
+    
     /*
      * Set the page's type
      */
@@ -50,6 +61,11 @@ class CrudSeeder extends Seeder {
     public function setAssetType() {
         
     }
+    
+    public function setDisplayType($fullName, $displayName) {
+        $nodisplayId = $this->getId('_db_display_types', 'name', $displayName);
+        $this->updateOrInsert('_db_fields', array('fullname'=>$fullName), array('display_type_id'=>$nodisplayId));
+    }    
     
     /**
      * 

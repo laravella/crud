@@ -9,14 +9,6 @@ use Laravella\Crud\Params;
 class PageController extends DbController {
     public $displayType = self::HTML; //or self::JSON or self::HTML
     
-    public function getIndex() {
-        $viewName = Options::get('skin', 'frontend').'.frontview';
-        $params = new Params(true, self::SUCCESS, '', null, $viewName);
-        
-        return View::make(Options::get('skin', 'frontend').'.frontlayout')
-                ->nest('content', Options::get('skin', 'frontend').'.frontview', $params->asArray());
-    }
-
 }
 
 ?>

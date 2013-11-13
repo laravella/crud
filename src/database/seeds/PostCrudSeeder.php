@@ -31,6 +31,8 @@ class PostCrudSeeder extends CrudSeeder {
         $this->setTitle('_db_objects_getSelect', 'Objects');
         $this->setTitle('_db_assets_getSelect', 'Assets');
         $this->setTitle('_db_events_getSelect', 'Events');
+        $this->setTitle('_db_page_assets_getSelect', 'Page Assets');
+        
         //cms
         $this->setTitle('medias_getSelect', 'Media');
         $this->setTitle('contents_getSelect', 'Content');
@@ -41,16 +43,13 @@ class PostCrudSeeder extends CrudSeeder {
         $this->setTitle('categories_getSelect', 'Categories');
 
         //hide fields
-        $nodisplayId = $this->getId('_db_display_types', 'name', 'nodisplay');
-        $this->updateOrInsert('_db_fields', array('fullname'=>'contents.content_mime_type'), array('display_type_id'=>$nodisplayId));
+        $this->setDisplayType('contents.content_mime_type', 'nodisplay');
         
-        $widgetId = $this->getId('_db_display_types', 'name', 'widget');
-        $checkboxId = $this->getId('_db_widget_types', 'name', 'input:checkbox');
-        $this->updateOrInsert('_db_fields', array('fullname'=>'medias.approved'), array('display_type_id'=>$widgetId, 'widget_type_id'=>$checkboxId));
-        $this->updateOrInsert('_db_fields', array('fullname'=>'medias.publish'), array('display_type_id'=>$widgetId, 'widget_type_id'=>$checkboxId));
-        
+        $this->setWidgetType('medias', 'approved', 'input:checkbox');
+        $this->setWidgetType('medias', 'publish', 'input:checkbox');
+
         //change field labels
-        $this->updateOrInsert('_db_fields', array('fullname'=>'contents.lang'), array('label'=>'Language'));
+        $this->setFieldTitle('contents.lang', 'Language');
         $this->updateOrInsert('_db_fields', array('fullname'=>'contents.title'), array('display_order'=>'0'));
 
         $ugId = $this->getId('usergroups', 'group', 'admin');

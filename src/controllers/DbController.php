@@ -64,17 +64,25 @@ class DbController extends AuthorizedController {
         return Options::get('skin','admin').'.default';
     }
     
+    
+    public function getIndex($slug = '') {
+        $viewName = Options::get('skin', 'frontend').'.frontview';
+        $params = new Params(true, self::SUCCESS, '', null, $viewName);
+        
+        return View::make(Options::get('skin', 'frontend').'.frontlayout')
+                ->nest('content', Options::get('skin', 'frontend').'.frontview', $params->asArray());
+    }
+    
     /**
      * The root of the crud application /db
      * 
      * @return type
      */
-    public function getIndex()
-    {
-        die;
-        return $this->getPage('contents');
-        
-    }
+//    public function getIndex($slug = '')
+//    {
+//        return $this->getPage('contents');
+//        
+//    }
 
     /**
      * The root of the crud application /db
@@ -83,9 +91,7 @@ class DbController extends AuthorizedController {
      */
     public function getAdmin()
     {
-        
         return $this->getPage('contents');
-        
     }
 
     /**
@@ -93,6 +99,9 @@ class DbController extends AuthorizedController {
      * @param type $page
      */
     public function getPage($page='contents') {
+        
+        return $this->getIndex($page);
+/*                
         $action = 'getPage';
 
         //select table data from database
@@ -107,7 +116,9 @@ class DbController extends AuthorizedController {
         //get related data
         $params = $this->__makeParams(self::SUCCESS, $message, $table, $page, $action);
         
-        return View::make($this->getLayout())->nest('content', $params->view->name, $params->asArray());        
+        return View::make($this->getLayout())->nest('content', $params->view->name, $params->asArray());    
+ * 
+ */    
     }
     
     /**
@@ -572,6 +583,7 @@ class DbController extends AuthorizedController {
      * @return type
      */
     protected function _customAction($parameters) {
+        
         if (!empty($parameters)) {
             $action = 'get'.$parameters[0];
             if (count($parameters) > 1 ) {
