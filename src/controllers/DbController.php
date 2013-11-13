@@ -1,6 +1,4 @@
-<?php 
-
-use Laravella\Crud\Params;
+<?php use Laravella\Crud\Params;
 use Laravella\Crud\DbGopher;
 use Laravella\Crud\Options;
 
@@ -73,7 +71,7 @@ class DbController extends AuthorizedController {
      */
     public function getIndex()
     {
-        
+        die;
         return $this->getPage('contents');
         
     }
@@ -94,8 +92,22 @@ class DbController extends AuthorizedController {
      * 
      * @param type $page
      */
-    public function getPage($page) {
-        return $this->getSelect($page);
+    public function getPage($page='contents') {
+        $action = 'getPage';
+
+        //select table data from database
+        $table = DB::table($page);
+
+        if (empty($message)) {
+            $message = "Data selected.";
+        }
+        
+        $this->log(self::SUCCESS, "$page selected");
+
+        //get related data
+        $params = $this->__makeParams(self::SUCCESS, $message, $table, $page, $action);
+        
+        return View::make($this->getLayout())->nest('content', $params->view->name, $params->asArray());        
     }
     
     /**
@@ -266,7 +278,6 @@ class DbController extends AuthorizedController {
 
                     if (!array_key_exists($pkTableName, $this->dbTables))
                     {
-
                         
                         $pkData = DB::table($pkTableName)->get();
                         $pkData = $this->__indexByPk($pkData, $pkfName);
@@ -396,12 +407,12 @@ class DbController extends AuthorizedController {
 //                $tables[$pktName] = new Table($pktName, array(), array());
             }
 
-            $p = new Params($status, $message, $this->log, $view, $action, $tableMeta, 
+            $p = new Params(false, $status, $message, $this->log, $view, $action, $tableMeta, 
                     $tableActionViews, $prefix, $selects, $this->displayType, $dataA, $tables, $paginated, $pkTables);
         
         } else {
             
-            $p = new Params($status, $message, $this->log, $view, $action, $tableMeta, 
+            $p = new Params(false, $status, $message, $this->log, $view, $action, $tableMeta, 
                     $tableActionViews, $prefix, $selects, $this->displayType);
             
 //            print_r($p);

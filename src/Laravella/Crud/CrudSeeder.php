@@ -57,7 +57,7 @@ class CrudSeeder extends Seeder {
      * @param type $slugs
      */
     public function linkAssetPageGroups($assetGroup, $pageGroup){
-        
+        try {
             $this->info("getting asset types $pageGroup");
             $pageTypes = DB::table('_db_option_types as ot1')
                     ->join('_db_option_types as ot2', 'ot1.parent_id', '=', 'ot2.id')
@@ -76,6 +76,10 @@ class CrudSeeder extends Seeder {
             
             $this->updateOrInsert('_db_page_assets', 
                     array('asset_type_id' => $assetTypes->id, 'page_type_id' => $pageTypes->id));
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            var_dump(debug_backtrace());
+        }
     }
     
     
@@ -796,9 +800,9 @@ class CrudSeeder extends Seeder {
     public function getPageTypeId($viewName) {
         $pageTypes = $this->getOptionType($viewName); //frontendpages
         
-        echo "$viewName \n";
-        echo var_dump($pageTypes);
-        echo "\n";
+//        echo "$viewName \n";
+//        echo var_dump($pageTypes);
+//        echo "\n";
         
         $pageTypeId = null;
         if (isset($pageTypes[0]) && isset($pageTypes[0]['id'])) {
@@ -831,7 +835,7 @@ class CrudSeeder extends Seeder {
         
         $dbView = $this->getView($skins['admin'].'.dbview');
         $upView = $this->getView($skins['admin'].'.uploadview');
-        $feView = $this->getView($skins['admin'].'.frontview');
+        $feView = $this->getView($skins['frontend'].'.frontview');
         $acView = $this->getView($skins['admin'].'.login');
         
         $actionViews['getEdit'] = $dbView;
@@ -927,6 +931,7 @@ class CrudSeeder extends Seeder {
             Log::write("success", $e->getMessage());
             $message = "Error inserting record into table.";
             Log::write("success", $message);
+            var_dump(debug_backtrace());
             throw new Exception($message, 1, $e);
         }
     }

@@ -10,13 +10,13 @@ class PageController extends DbController {
     public $displayType = self::HTML; //or self::JSON or self::HTML
     
     public function getIndex() {
-        
-        $viewName = Options::get('skin').'.account.login';
-        $params = new Params(self::SUCCESS, '', null, $viewName);
+        $viewName = Options::get('skin', 'frontend').'.frontview';
+        $params = new Params(true, self::SUCCESS, '', null, $viewName);
         
         return View::make(Options::get('skin', 'frontend').'.frontlayout')
-                ->nest('content', Options::get('skin').'.frontview', $params->asArray());
+                ->nest('content', Options::get('skin', 'frontend').'.frontview', $params->asArray());
     }
+
 }
 
 ?>
