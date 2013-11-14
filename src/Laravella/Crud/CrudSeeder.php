@@ -19,6 +19,16 @@ class CrudSeeder extends Seeder {
     private $fkTypeId = null;
 
     /**
+     * 
+     */
+    public function addContents($slug, $title, $excerpt, $contents) {
+        $arr = array('slug'=>$slug, 'title'=>$title, 'excerpt'=>$excerpt, 'content'=>$contents);
+        $id = DB::table('contents')->insertGetId($arr);
+        Log::write("success", " - $title content inserted");
+        return $id;
+    }
+    
+    /**
      * Set the title of a page
      */
     public function setTitle($slug, $title)

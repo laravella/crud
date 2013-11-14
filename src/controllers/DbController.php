@@ -67,10 +67,11 @@ class DbController extends AuthorizedController {
     
     public function getIndex($slug = '') {
         $viewName = Options::get('skin', 'frontend').'.frontview';
-        $params = new Params(true, self::SUCCESS, '', null, $viewName);
+        
+        $params = Params::bySlug(true, $slug, $viewName);
         
         return View::make(Options::get('skin', 'frontend').'.frontlayout')
-                ->nest('content', Options::get('skin', 'frontend').'.frontview', $params->asArray());
+                ->nest('content', Options::get('skin', 'frontend').'.frontview', $params);
     }
     
     /**

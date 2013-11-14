@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use \Table;
 
 /**
  * 
@@ -17,7 +18,8 @@ class Params extends CrudSeeder {
     public $paginated = null;
     public $primaryTables = array();
     public $prefix = "";
-    public $tableActionViews = null;
+    public $page = null;
+    public $contents = array();
     public $assets = null;
     public $view = null;
     public $frontend = false;
@@ -33,6 +35,20 @@ class Params extends CrudSeeder {
     public $user = null;
 
     /**
+     * $slug pageslug
+     * 
+     * @param type $slug
+     */
+    public static function bySlug($frontend, $slug, $view) {
+        $params = new Params($frontend, null, null, $view);
+        $pageA = Table::asArray('contents', array('slug'=>$slug));
+        
+        $params->contents = $pageA;
+        $params->view = $view;
+        return $params->asArray();
+    }
+    
+    /**
      * 
      * Used to pass a consistent set of data to views and prevent "$variable not found" errors.
      * 
@@ -47,7 +63,8 @@ class Params extends CrudSeeder {
      * @param type $prefix Used to prepend the href on the primary key
      * @param type $view An entry in _db_views
      */
-    public function __construct($frontend = false, $status, $message, $log=array(), $view = null, $action = "", $tableMeta = null, 
+    public function __construct($frontend = false, $status='success', $message='', $log=array(), 
+            $view = null, $action = "", $tableMeta = null, 
             $tableActionViews = null, $prefix = "", $selects = null, $displayType = "", $dataA = array(), 
             $tables = array(), $paginated = array(), $primaryTables = array())
     {
@@ -65,7 +82,7 @@ class Params extends CrudSeeder {
             $this->pageSize = 10;
         }
         $this->prefix = $prefix;
-        $this->tableActionViews = $tableActionViews;  //single, called by first()
+        $this->page = $tableActionViews;  //single, called by first()
         $this->view = $view;
         $this->frontend = $frontend;
 
@@ -109,9 +126,9 @@ class Params extends CrudSeeder {
         
         $pot = Options::get('skin').".dbview";
         
-        if (isset($this->tableActionViews) && is_object($this->tableActionViews))
+        if (isset($this->page) && is_object($this->page))
         {
-            $pot = $this->tableActionViews->view_name;
+            $pot = $this->page->view_name;
         }
         
         $assets = DB::table('_db_page_assets as pa')
@@ -259,7 +276,8 @@ class Params extends CrudSeeder {
             "skin" => $this->skin,
             "slug" => $this->slug,
             "selects" => $this->selects,
-            "log" => $this->log,
+            "contents" => $this->contents,
+            "log" => array(), //too big
             "status" => $this->status,
             "message" => $this->message,
             "pkName" => $this->tableMeta['table']['pk_name'],
@@ -275,9 +293,9 @@ class Params extends CrudSeeder {
             "user" => $this->user
         ); //$this->tables[$tableName]['tableMetaData']['table']['pk_name']);
 
-        if (isset($this->tableActionViews) && is_object($this->tableActionViews))
+        if (isset($this->page) && is_object($this->page))
         {
-            $returnA["title"] = $this->tableActionViews->title;
+            $returnA["title"] = $this->page->title;
         }
         else
         {

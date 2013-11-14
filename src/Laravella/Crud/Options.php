@@ -38,8 +38,17 @@ class Options {
         $skinAdmin = Options::get('skin', 'admin');
         $skinA = explode('::', $skinFront);
         $adminSkinA = explode('::', $skinAdmin);
-        $skinName = $skinA[1];
-        $adminSkinName = $adminSkinA[1];
+        
+        if (count($skinA) > 1) {
+            $skinName = $skinA[1];
+            $adminSkinName = $adminSkinA[1];
+        } else if (count($skinA) == 1) {
+            $skinName = $skinA[0];
+            $adminSkinName = $adminSkinA[0];
+        } else {
+            $skinName = '';
+            $adminSkinName = '';
+        }
         
         $skin = array('admin'=>$skinAdmin, 
             'frontend'=>$skinFront,

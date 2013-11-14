@@ -157,6 +157,25 @@ class Table extends Eloquent {
         return Table::__field_meta($fieldMeta);
     }
 
+    /**
+     * Get the contents of a table as an array
+     * 
+     * @param type $tableName
+     * @return type
+     */
+    public static function asArray($tableName, $conditions) 
+    {
+        $meta = Table::getMeta($tableName);
+        $dObj = DB::table($tableName);
+        foreach ($conditions as $key=>$condition) {
+            $dObj = $dObj->where($key, $condition);
+        }
+        $data = $dObj->get();
+        
+        $dbA = DbGopher::makeArray($meta, $data);
+        return $dbA;
+    }
+    
     private static function __field_meta($fieldMeta, $dbFieldsMeta = null)
     {
         $tableName = $fieldMeta[0]->tableName;
