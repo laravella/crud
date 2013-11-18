@@ -62,6 +62,9 @@ class PostCrudSeeder extends CrudSeeder {
         
         $this->setWidgetType('medias', 'id', 'thumbnail');
         
+        //link tables to object
+        $this->linkPageToTable('contents_getpage', 'medias');
+        
         echo "Crud::PostCrudSeeder done.\n";
         
     }

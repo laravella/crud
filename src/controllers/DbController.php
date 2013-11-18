@@ -61,7 +61,7 @@ class DbController extends AuthorizedController {
      * @return type
      */
     public function getLayout($type = 'admin') {
-        return Options::get('skin','admin').'.default';
+        return Options::get('skin', $type).'.default';
     }
     
     
@@ -101,8 +101,6 @@ class DbController extends AuthorizedController {
      */
     public function getPage($page='contents') {
         
-        return $this->getIndex($page);
-/*                
         $action = 'getPage';
 
         //select table data from database
@@ -117,9 +115,11 @@ class DbController extends AuthorizedController {
         //get related data
         $params = $this->__makeParams(self::SUCCESS, $message, $table, $page, $action);
         
-        return View::make($this->getLayout())->nest('content', $params->view->name, $params->asArray());    
- * 
- */    
+        $layout = Options::get('skin', 'frontend').'.frontlayout';
+//        echo $layout;
+//        die;
+        
+        return View::make($layout)->nest('content', $params->view->name, $params->asArray());    
     }
     
     /**
@@ -172,7 +172,7 @@ class DbController extends AuthorizedController {
                 ->join('_db_views', '_db_pages.view_id', '=', '_db_views.id')
                 ->select('_db_pages.view_id', '_db_pages.id as page_id', '_db_pages.action_id', 
                         '_db_views.name as view_name', '_db_actions.name as action_name', 
-                        '_db_tables.name as table_name', '_db_pages.title')
+                        '_db_tables.name as table_name', '_db_pages.title', '_db_pages.object_id')
                 ->where('_db_pages.view_id', '=', $viewId)
                 ->where('_db_actions.name', '=', $action)
                 ->where('_db_tables.name', '=', $tableName)

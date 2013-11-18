@@ -8,6 +8,16 @@ use Laravella\Crud\Params;
  */
 class PageController extends DbController {
     public $displayType = self::HTML; //or self::JSON or self::HTML
+
+    /**
+     * 
+     * @param type $page
+     */
+    public function getPage($page='contents') {
+        
+        return $this->getIndex($page);
+        
+    }
     
 }
 

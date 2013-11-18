@@ -18,7 +18,7 @@ class SeedMenus extends CrudSeeder
                 DB::table('_db_menus')->where("id", $topMenuId)->update(array("parent_id"=>$topMenuId));
 
                 $contentId = $this->addMenu('Contents', '', 'icon-file', $topMenuId);
-                $this->addMenu('Pages', '/db/select/contents', 'icon-file', $contentId);
+                $this->addMenu('Contents', '/db/select/contents', 'icon-file', $contentId);
                 $this->addMenu('Post Categories', '/db/select/categories', 'icon-file', $contentId);
                 
                 $this->addDivider($contentId);

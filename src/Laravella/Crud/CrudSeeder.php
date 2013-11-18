@@ -58,6 +58,22 @@ class CrudSeeder extends Seeder {
         $this->updateOrInsert('_db_fields', array('fullname'=>$fullName), array('label'=>$label));
     }    
     
+    /**
+     * Link an object and a table by inserting _db_objects.id 
+     * and _db_tables.id into _db_object_tables
+     * 
+     * @param type $objectId
+     * @param type $tableId
+     */
+    public function linkPageToTable($slug, $tableName) {
+        echo $slug." ";
+        echo $tableName;
+        $pageId = $this->getId('_db_pages', 'slug', $slug);
+        $tableId =  $this->getId('_db_tables', 'name', $tableName);
+        $id = DB::table('_db_page_tables')->insertGetId(array('page_id'=>$pageId, 'table_id'=>$tableId));
+        return $id;
+    }
+    
     /*
      * Set the page's type
      */
@@ -390,20 +406,20 @@ class CrudSeeder extends Seeder {
         if (!isset($this->idCache[$key]))
         {
             $m = Model::getInstance(array(), $table);
-            $query = $table . ' ';
+            $cosmeticQuery = $table . ' ';
             if (is_array($whereField))
             {
                 //$whereField is an array of key-value pairs
                 foreach ($whereField as $key => $value)
                 {
                     $m = $m->where($key, $value);
-                    $query .= $key . '=\'' . $value . '\' ';
+                    $cosmeticQuery .= $key . '=\'' . $value . '\' ';
                 }
             }
             else
             {
                 $m = $m->where($whereField, $whereValue);
-                $query .= $whereField . '=\'' . $whereValue . '\' ';
+                $cosmeticQuery .= $whereField . '=\'' . $whereValue . '\' ';
             }
             $recs = $m->get();
             if (count($recs) != 1)

@@ -18,8 +18,8 @@ class Params extends CrudSeeder {
     public $paginated = null;
     public $primaryTables = array();
     public $prefix = "";
-    public $page = null;
-    public $contents = array();
+    public $page = null; //the junction between table, view and action
+    public $contents = array(); // the text contents of the page
     public $assets = null;
     public $view = null;
     public $frontend = false;
@@ -45,6 +45,7 @@ class Params extends CrudSeeder {
         
         $params->contents = $pageA;
         $params->view = $view;
+        $params->slug = $slug;
         return $params->asArray();
     }
     
@@ -138,7 +139,7 @@ class Params extends CrudSeeder {
         ->join('_db_pages as p', 'p.page_type_id', '=', 'pa.page_type_id')
         ->select('pa.id', 'pa.page_type_id', 'pa.asset_type_id', 'a.id', 
         'p.id', 'aot.name', 'pot.name', 'a.url', 'a.vendor', 'a.type', 'a.version', 
-        'a.position', 'p.action_id', 'p.view_id', 'p.object_id', 'p.page_size', 
+        'a.position', 'p.action_id', 'p.view_id', 'p.content_id', 'p.page_size', 
                 'p.title', 'p.slug')
         /*->where('pot.name', $pot)*/  //TODO : had to comment this out because upload isn't properly linked to assets and pages
         ->where('p.slug', '_db_actions_getselect')
@@ -257,6 +258,18 @@ class Params extends CrudSeeder {
         return $params;
     }
 
+    /**
+     * 
+     */
+    public function getObject($pageId) {
+        $object = DB::table('_db_pages as p')
+                ->join('_db_page_tables as pt', 'pt.page_id', '=', 'p.id')
+                ->join('_db_tables as t', 'pt.table_id', '=', 't.id')
+                ->select('p.id as page_id', 'p.slug as slug', 't.id as table_id', 't.name as table_name')
+                ->where('p.id', $pageId)->get();
+        return $object;
+    }
+    
     /*
      * meta
      * data
@@ -296,6 +309,7 @@ class Params extends CrudSeeder {
         if (isset($this->page) && is_object($this->page))
         {
             $returnA["title"] = $this->page->title;
+            $returnA["object"] = $this->getObject($this->page->page_id);
         }
         else
         {

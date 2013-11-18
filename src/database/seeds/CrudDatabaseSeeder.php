@@ -37,6 +37,9 @@ class CrudDatabaseSeeder extends Seeder {
             $this->call('Laravella\Crud\SeedActions');
             Log::write("success", "Populated _db_actions");
 
+            $this->call('Laravella\Crud\SeedPageTables');
+            Log::write("success", "Populated _db_page_tables");
+
             $this->call('Laravella\Crud\SeedObjects');
             Log::write("success", "Populated _db_objects");
 
@@ -61,7 +64,7 @@ class CrudDatabaseSeeder extends Seeder {
             $this->call('Laravella\Crud\PostCrudSeeder');
             Log::write("success", "Crud PostCrudSeeder ran");
         } catch (Exception $e) {
-            echo $e->getMessage();
+            echo var_dump($e);
             var_dump(debug_backtrace());
         }
         
