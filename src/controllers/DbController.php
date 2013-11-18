@@ -1,4 +1,6 @@
-<?php use Laravella\Crud\Params;
+<?php
+
+use Laravella\Crud\Params;
 use Laravella\Crud\DbGopher;
 use Laravella\Crud\Options;
 
@@ -14,13 +16,12 @@ class DbController extends AuthorizedController {
     const SUCCESS = "success";
     const INFO = "info";
     const IMPORTANT = "important";
-
     const HTML = "text/html";
     const XML = "text/xml";
     const JSON = "text/json";
-    
+
     public $displayType = self::HTML;
-    
+
     /**
      * A cache of db tables to minimize db requests. See getPkSelects()
      * 
@@ -48,62 +49,72 @@ class DbController extends AuthorizedController {
         return $this->log();
     }
 
-    public function getSkin() {
+    public function getSkin()
+    {
 //        $skin = Options::getSkin();
 //        $skin = array('admin'=>Options::get('skin','admin'), 'frontend'=>Options::get('skin','frontend'));
         return Options::getSkin();
     }
-    
+
     /**
      * 
      * 
      * @param type $type Either 'admin' or 'frontend'
      * @return type
      */
-    public function getLayout($type = 'admin') {
-        return Options::get('skin', $type).'.default';
+    public function getLayout($type = 'admin')
+    {
+        return Options::get('skin', $type) . '.default';
     }
-    
+
     /**
      * Get the content slug which corresponds to contents.slug
      * 
-     * @param type $slug
+     * @param type $contentSlug
      * @return type
      */
-    public function getIndex($slug = '') {
-            /*
-        $viewName = Options::get('skin', 'frontend').'.frontview';
-        
-        $contentsA = Table::asArray('contents', array('slug'=>$slug));
-        
-        if (isset($contentsA) && !empty($contentsA)) {
+    public function getIndex($contentSlug = '')
+    {
+
+        $viewName = Options::get('skin', 'frontend') . '.frontview';
+
+        $contentsA = Table::asArray('contents', array('slug' => $contentSlug));
+
+        $params = array();
+
+        //see if contents.id links to _db_pages.content_id to fetch relevant data
+        if (isset($contentsA) && !empty($contentsA))
+        {
             $contentId = $contentsA[0]['id'];
-            $pageA = Table::asArray('_db_pages', array('content_id'=>$contentId));
-            $tableId = $pageA[0]['table_id'];
+            $tav = $this->__getTableActionView(null, null, null, $contentId);
+            $tableName = $tav->table_name;
+            $actionName = $tav->action_name;
+            $pageSlug = $tav->slug;
 
-            $table = Table::asArray('_db_tables', array('id'=>$tableId));
-            $tableName = $table[0]['name'];
-
-            $actionId = $pageA[0]['action_id'];
-            $actions = Table::asArray('_db_actions', array('id'=>$actionId));
-            $actionName = $actions[0]['name'];
-
-            $params = $this->__makeParams('success', '', $slug, $tableName, $actionName);
+            $data = DB::table($tableName);
+            
+            $params = $this->__makeParams('success', '', $data, $tableName, $actionName, true);
 
             $params->contents = $contentsA;
             $params->view = $viewName;
-            $params->slug = $slug;
+            $params->slug = $pageSlug;
             $params = $params->asArray();
-        } else {
-            //$params = Params::bySlug(true, $slug, $viewName);
         }
+        else
+        {
+            $params = Params::bySlug(true, $contentSlug, $viewName);
+        }
+
+//        $params['meta'] = null;
+//        $params['data'] = null;
+//        $params['tables'] = null;
+//        echo var_dump($params);
+//        die;
         
-        return View::make(Options::get('skin', 'frontend').'.frontlayout')
-                ->nest('content', Options::get('skin', 'frontend').'.frontview', $params);
-             * 
-             */
+        return View::make(Options::get('skin', 'frontend') . '.frontlayout')
+                        ->nest('content', Options::get('skin', 'frontend') . '.frontview', $params);
     }
-    
+
     /**
      * The root of the crud application /db
      * 
@@ -129,27 +140,29 @@ class DbController extends AuthorizedController {
      * 
      * @param type $page
      */
-    public function getPage($page='contents') {
-        
+    public function getPage($page = 'contents')
+    {
+
         $action = 'getPage';
 
         //select table data from database
         $table = DB::table($page);
 
-        if (empty($message)) {
+        if (empty($message))
+        {
             $message = "Data selected.";
         }
-        
+
         $this->log(self::SUCCESS, "$page selected");
 
         //get related data
         $params = $this->__makeParams(self::SUCCESS, $message, $table, $page, $action);
-        
-        $layout = Options::get('skin', 'frontend').'.frontlayout';
-        
-        return View::make($layout)->nest('content', $params->view->name, $params->asArray());    
+
+        $layout = Options::get('skin', 'frontend') . '.frontlayout';
+
+        return View::make($layout)->nest('content', $params->view->name, $params->asArray());
     }
-    
+
     /**
      * Find the right view to use with the action
      * 
@@ -164,6 +177,7 @@ class DbController extends AuthorizedController {
                 ->join('_db_views', '_db_pages.view_id', '=', '_db_views.id')
                 ->where('_db_actions.name', '=', $action)
                 ->where('_db_tables.name', '=', $tableName)
+                ->select('_db_views.id', '_db_views.name', '_db_pages.page_size')
                 ->first();
         return $views;
     }
@@ -192,19 +206,41 @@ class DbController extends AuthorizedController {
      * @param type $action
      * @return type
      */
-    protected function __getTableActionView($tableName, $viewId, $action)
+    protected function __getTableActionView($tableName = null, $view = null, $action = null, $contentId = null)
     {
-        $tva = DB::table('_db_pages')
+        $viewId = null;
+
+        if (!empty($viewId) && !is_numeric($viewId))
+        {
+            $viewO = DB::table('_db_views')->where('name', $view)->first();
+            $viewId = $viewO->id;
+        }
+
+        $tavO = DB::table('_db_pages')
                 ->join('_db_tables', '_db_pages.table_id', '=', '_db_tables.id')
                 ->join('_db_actions', '_db_pages.action_id', '=', '_db_actions.id')
                 ->join('_db_views', '_db_pages.view_id', '=', '_db_views.id')
                 ->select('_db_pages.view_id', '_db_pages.id as page_id', '_db_pages.action_id', 
+                        '_db_pages.content_id', '_db_pages.slug',
                         '_db_views.name as view_name', '_db_actions.name as action_name', 
-                        '_db_tables.name as table_name', '_db_pages.title', '_db_pages.object_id')
-                ->where('_db_pages.view_id', '=', $viewId)
-                ->where('_db_actions.name', '=', $action)
-                ->where('_db_tables.name', '=', $tableName)
-                ->first();
+                        '_db_tables.name as table_name', '_db_pages.title');
+        if (isset($viewId))
+        {
+            $tavO = $tavO->where('_db_pages.view_id', '=', $viewId);
+        }
+        if (isset($action))
+        {
+            $tavO = $tavO->where('_db_actions.name', '=', $action);
+        }
+        if (isset($tableName))
+        {
+            $tavO = $tavO->where('_db_tables.name', '=', $tableName);
+        }
+        if (isset($contentId))
+        {
+            $tavO = $tavO->where('_db_pages.content_id', '=', $contentId);
+        }
+        $tva = $tavO->first();
         return $tva;
     }
 
@@ -233,15 +269,16 @@ class DbController extends AuthorizedController {
         //select table data from database
         $table = DB::table($tableName);
 
-        if (empty($message)) {
+        if (empty($message))
+        {
             $message = "Data selected.";
         }
-        
+
         $this->log(self::SUCCESS, "$tableName selected");
 
         //get related data
         $params = $this->__makeParams(self::SUCCESS, $message, $table, $tableName, $action);
-        
+
         return View::make($this->getLayout())->nest('content', $params->view->name, $params->asArray());
     }
 
@@ -274,10 +311,10 @@ class DbController extends AuthorizedController {
     protected function __attachRelatedData($records, $ma)
     {
         $pkTables = array();
-        
+
         return $pkTables;
-    }    
-    
+    }
+
     /**
      * 
      * 
@@ -318,7 +355,7 @@ class DbController extends AuthorizedController {
 
                     if (!array_key_exists($pkTableName, $this->dbTables))
                     {
-                        
+
                         $pkData = DB::table($pkTableName)->get();
                         $pkData = $this->__indexByPk($pkData, $pkfName);
                         $pktMeta = Table::getTableMeta($pkTableName);
@@ -326,22 +363,25 @@ class DbController extends AuthorizedController {
                         $pkDataA = DbGopher::makeArray($pktMeta['fields'], $pkData);
 
                         $this->dbTables[$pkTableName] = array('data' => $pkData, 'meta' => $pktMeta, 'dataA' => $pkDataA);
-                        
+
 //                        $this->dbTables[$pkTableName] = array();
                     }
 
                     //get the actual data of the primary key related to this field (not the meta data)
                     $pkData = DB::table($pkTableName)->where($pkfName, $pkValue)->get();
-                    
+
                     //get the value of the display field related to the pk
-                    if (isset($this->dbTables[$pkTableName]['data'][$pkValue])) {
+                    if (isset($this->dbTables[$pkTableName]['data'][$pkValue]))
+                    {
                         $pkdValue = $this->dbTables[$pkTableName]['data'][$pkValue]->$pkdfName;
-                    } else {
+                    }
+                    else
+                    {
                         $pkdValue = '';
                     }
-                    
+
                     $pkRec[$pkValue] = $pkdValue;
-                    
+
                     $this->log(self::INFO, "{$ma[$name]['name']} : key {$pkTableName}.{$pkfName} = {$pkValue} display : {$pkdfName} = {$pkRec[$pkValue]}");
 
                     if (!array_key_exists($pkTableName, $pkTables))
@@ -350,7 +390,6 @@ class DbController extends AuthorizedController {
                     }
 
                     $pkTables[$pkTableName][$pkValue] = $pkdValue;
-                    
                 }
             }
         }
@@ -400,7 +439,7 @@ class DbController extends AuthorizedController {
      * @param type $action
      * @return \Laravella\Crud\Params
      */
-    protected function __makeParams($status, $message, $data, $tableName, $action)
+    protected function __makeParams($status, $message, $data, $tableName, $action, $frontend = false)
     {
 
         $this->log(self::INFO, "tableName = $tableName");
@@ -415,11 +454,15 @@ class DbController extends AuthorizedController {
         $view = $this->__getView($tableName, $action);
 
         $tableActionViews = array();
-        try {
-            if (is_object($view)) {
+        try
+        {
+            if (is_object($view))
+            {
                 $tableActionViews = $this->__getTableActionView($tableName, $view->id, $action);
             }
-        } catch (Exception $e) {
+        }
+        catch (Exception $e)
+        {
             $tableActionViews = array();
         }
 
@@ -427,10 +470,11 @@ class DbController extends AuthorizedController {
 
         $this->log(self::INFO, "makeParams");
 
-        if (is_object($data)) {
-        
-            $pageSize = (is_object($view))?$view->page_size:10;
-            
+        if (is_object($data))
+        {
+
+            $pageSize = (is_object($view)) ? $view->page_size : 10;
+
             $paginated = $data->paginate($pageSize);
 
             $dataA = DbGopher::makeArray($tableMeta['fields'], $paginated);
@@ -440,26 +484,24 @@ class DbController extends AuthorizedController {
             $pkTables = $this->__attachPkData($paginated, $tableMeta['fields_array']);
 
             $relatedData = $this->__attachRelatedData($paginated, $tableMeta['fields_array']);
-            
+
             foreach ($pkTables as $pktName => $pkTable)
             {
                 $tables[$pktName] = new Table($pktName, $this->dbTables[$pktName]['dataA'], $this->dbTables[$pktName]['meta']);
 //                $tables[$pktName] = new Table($pktName, array(), array());
             }
 
-            $p = new Params(false, $status, $message, $this->log, $view, $action, $tableMeta, 
-                    $tableActionViews, $prefix, $selects, $this->displayType, $dataA, $tables, $paginated, $pkTables);
-        
-        } else {
-            
-            $p = new Params(false, $status, $message, $this->log, $view, $action, $tableMeta, 
-                    $tableActionViews, $prefix, $selects, $this->displayType);
-            
+            $p = new Params($frontend, $status, $message, $this->log, $view, $action, $tableMeta, $tableActionViews, $prefix, $selects, $this->displayType, $dataA, $tables, $paginated, $pkTables);
+        }
+        else
+        {
+
+            $p = new Params($frontend, $status, $message, $this->log, $view, $action, $tableMeta, $tableActionViews, $prefix, $selects, $this->displayType);
+
 //            print_r($p);
 //            die;
-            
         }
-        
+
         return $p;
     }
 
@@ -475,20 +517,24 @@ class DbController extends AuthorizedController {
         //check for foreign key constraints
         $action = 'getDelete';
         $params = null;
-        try {
-            DB::table($tableName)->where('id', '=' ,$recorid)->delete();
+        try
+        {
+            DB::table($tableName)->where('id', '=', $recorid)->delete();
             $params = $this->__makeParams(self::SUCCESS, "Record deleted.", null, $tableName, $action);
-        } catch (Exception $e) {
+        }
+        catch (Exception $e)
+        {
             $params = $this->__makeParams(self::IMPORTANT, "Failed to delete record.", null, $tableName, $action);
         }
         $res = '{"status":"failed"}';
-        if (is_object($params)) {
+        if (is_object($params))
+        {
             $res = json_encode($params->asArray());
         }
         echo $res;
         die;
     }
-    
+
     /**
      * Prompt user to insert a new record
      * 
@@ -501,7 +547,7 @@ class DbController extends AuthorizedController {
         $action = 'getInsert';
 
         $params = $this->__makeParams(self::INFO, "Enter data to insert.", null, $tableName, $action);
-        
+
         return View::make($this->getLayout())->nest('content', $params->view->name, $params->asArray());
     }
 
@@ -574,13 +620,14 @@ class DbController extends AuthorizedController {
             {
                 //metadata of the primary key
                 $pk = $metaField['pk'];
-                
+
                 //meta data of the field used to display the primary key
                 $pkd = $pk;
-                if (isset($metaField['pk_display']) && !empty($metaField['pk_display'])) {
+                if (isset($metaField['pk_display']) && !empty($metaField['pk_display']))
+                {
                     $pkd = $metaField['pk_display'];
                 }
-                
+
                 $selectA[$metaField['name']] = $this->__getSelect($pk['tableName'], $pk['name'], $pkd['name']);
             }
         }
@@ -611,44 +658,58 @@ class DbController extends AuthorizedController {
      * @param type $parameters
      * @return type
      */
-    protected function _customAction($parameters) {
-        
-        if (!empty($parameters)) {
-            $action = 'get'.$parameters[0];
-            if (count($parameters) > 1 ) {
+    protected function _customAction($parameters)
+    {
+
+        if (!empty($parameters))
+        {
+            $action = 'get' . $parameters[0];
+            if (count($parameters) > 1)
+            {
                 $tableName = $parameters[1];
                 $tableMeta = Table::getTableMeta($tableName);
 
                 //get metadata as an array
                 $pkName = $tableMeta['table']['pk_name'];
-                $pkName = ($tableName == 'contents')?'slug':'id';
+                $pkName = ($tableName == 'contents') ? 'slug' : 'id';
 
                 $table = null;
 
-                if (isset($parameters[2])) {
+                if (isset($parameters[2]))
+                {
                     $table = DB::table($tableName)->where($pkName, '=', $parameters[2]);
-                } else if ($action == 'getRegister') {
+                }
+                else if ($action == 'getRegister')
+                {
                     $table = array();
-                } else {
+                }
+                else
+                {
                     $table = DB::table($tableName);
                 }
 
                 $params = $this->__makeParams(self::INFO, 'Edit data.', $table, $tableName, $action);
                 $paramsA = $params->asArray();
 
-                if(isset($paramsA['view'])) {
+                if (isset($paramsA['view']))
+                {
                     return View::make($paramsA['view']->name)->with($paramsA);
-                } else {
-                    return View::make(Options::get('skin').'.default');
+                }
+                else
+                {
+                    return View::make(Options::get('skin') . '.default');
                 }
             }
-        } else {
-            return View::make(Options::get('skin').'.default');
+        }
+        else
+        {
+            return View::make(Options::get('skin') . '.default');
         }
     }
-    
-    public function getTest() {
-        
+
+    public function getTest()
+    {
+
 //        $tables = Model::getInstance('_db_tables', array('name' => 'noTable'));
 //
 //        $field = Model::getInstance('_db_fields', array('id'=>1000, 'name' => 'noTable', 
@@ -658,7 +719,7 @@ class DbController extends AuthorizedController {
 //        $field = $tables->push($field);
 //        echo var_dump($field);
     }
-    
+
     /**
      * If method is not found
      * 

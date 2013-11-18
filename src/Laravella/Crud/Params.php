@@ -27,7 +27,7 @@ class Params extends CrudSeeder {
     public $selects = array();
     public $log = array();
     public $status = "success";
-    public $slug = "";
+    public $slug = "";      //_db_pages.slug
     public $displayType = "text/html";
     public $displayTypes = array();
     public $widgetTypes = array();
