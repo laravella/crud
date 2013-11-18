@@ -64,14 +64,44 @@ class DbController extends AuthorizedController {
         return Options::get('skin', $type).'.default';
     }
     
-    
+    /**
+     * Get the content slug which corresponds to contents.slug
+     * 
+     * @param type $slug
+     * @return type
+     */
     public function getIndex($slug = '') {
+            /*
         $viewName = Options::get('skin', 'frontend').'.frontview';
         
-        $params = Params::bySlug(true, $slug, $viewName);
+        $contentsA = Table::asArray('contents', array('slug'=>$slug));
+        
+        if (isset($contentsA) && !empty($contentsA)) {
+            $contentId = $contentsA[0]['id'];
+            $pageA = Table::asArray('_db_pages', array('content_id'=>$contentId));
+            $tableId = $pageA[0]['table_id'];
+
+            $table = Table::asArray('_db_tables', array('id'=>$tableId));
+            $tableName = $table[0]['name'];
+
+            $actionId = $pageA[0]['action_id'];
+            $actions = Table::asArray('_db_actions', array('id'=>$actionId));
+            $actionName = $actions[0]['name'];
+
+            $params = $this->__makeParams('success', '', $slug, $tableName, $actionName);
+
+            $params->contents = $contentsA;
+            $params->view = $viewName;
+            $params->slug = $slug;
+            $params = $params->asArray();
+        } else {
+            //$params = Params::bySlug(true, $slug, $viewName);
+        }
         
         return View::make(Options::get('skin', 'frontend').'.frontlayout')
                 ->nest('content', Options::get('skin', 'frontend').'.frontview', $params);
+             * 
+             */
     }
     
     /**

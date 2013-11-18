@@ -40,10 +40,12 @@ class Params extends CrudSeeder {
      * @param type $slug
      */
     public static function bySlug($frontend, $slug, $view) {
-        $params = new Params($frontend, null, null, $view);
-        $pageA = Table::asArray('contents', array('slug'=>$slug));
         
-        $params->contents = $pageA;
+        $contentsA = Table::asArray('contents', array('slug'=>$slug));
+        
+        $params = new Params($frontend, null, null, $view);
+        
+        $params->contents = $contentsA;
         $params->view = $view;
         $params->slug = $slug;
         return $params->asArray();

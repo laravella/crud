@@ -29,6 +29,24 @@ class CrudSeeder extends Seeder {
     }
     
     /**
+     * 
+     * @param type $contentSlug
+     * @param type $pageSlug
+     */
+    public function linkContentToPage($contentSlug, $pageSlug) {
+        $contentId = null;
+        if (is_numeric($contentSlug)) {
+            $contentId = $contentSlug;
+        } else {
+            $contentId = $this->getId('contents', 'slug', $contentSlug);
+        }
+        
+        echo 'linking content slug : '.$contentSlug.' = '.$contentId.' to pageslug : '.$pageSlug;
+        
+        $this->updateOrInsert('_db_pages', array('slug'=>$pageSlug), array('content_id'=>$contentId));
+    }
+    
+    /**
      * Set the title of a page
      */
     public function setTitle($slug, $title)
