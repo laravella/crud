@@ -116,8 +116,6 @@ class DbController extends AuthorizedController {
         $params = $this->__makeParams(self::SUCCESS, $message, $table, $page, $action);
         
         $layout = Options::get('skin', 'frontend').'.frontlayout';
-//        echo $layout;
-//        die;
         
         return View::make($layout)->nest('content', $params->view->name, $params->asArray());    
     }
