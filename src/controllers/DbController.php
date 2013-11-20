@@ -1,6 +1,4 @@
-<?php
-
-use Laravella\Crud\Params;
+<?php use Laravella\Crud\Params;
 use Laravella\Crud\DbGopher;
 use Laravella\Crud\Options;
 
@@ -10,6 +8,11 @@ use Laravella\Crud\Options;
  */
 class DbController extends AuthorizedController {
 
+    private $layoutName = '.default';
+    private $viewName = '.dbview';
+    
+    private $skinType = 'admin'; //admin, front, (later : upload ... etc.)
+    
     //protected $layout = //getLayout;
     private $log = array();
 
@@ -64,7 +67,17 @@ class DbController extends AuthorizedController {
      */
     public function getLayout($type = 'admin')
     {
-        return Options::get('skin', $type) . '.default';
+        return Options::get('skin', $type) . $this->layoutName;
+    }
+
+    /**
+     * 
+     * @param type $type
+     * @return type
+     */
+    public function getView($type = 'admin')
+    {
+        return Options::get('skin', $type) . $this->viewName;
     }
 
     /**
@@ -76,8 +89,6 @@ class DbController extends AuthorizedController {
     public function getIndex($contentSlug = '')
     {
 
-        $viewName = Options::get('skin', 'frontend') . '.frontview';
-
         $contentsA = Table::asArray('contents', array('slug' => $contentSlug));
 
         $params = array();
@@ -87,32 +98,23 @@ class DbController extends AuthorizedController {
         {
             $contentId = $contentsA[0]['id'];
             $tav = $this->__getTableActionView(null, null, null, $contentId);
-            $tableName = $tav->table_name;
-            $actionName = $tav->action_name;
-            $pageSlug = $tav->slug;
-
+            $tableName = DbGopher::coalesce($tav, 'table_name');
+            $actionName = DbGopher::coalesce($tav, 'action_name');
             $data = DB::table($tableName);
-            
-            $params = $this->__makeParams('success', '', $data, $tableName, $actionName, true);
+            $params = $this->__makeParams($tableName, $actionName, $data, true);
 
             $params->contents = $contentsA;
-            $params->view = $viewName;
-            $params->slug = $pageSlug;
+//            $params->view = $viewName;
+            $params->slug = DbGopher::coalesce($tav, 'slug');
             $params = $params->asArray();
         }
         else
         {
-            $params = Params::bySlug(true, $contentSlug, $viewName);
+            $params = Params::bySlug(true, $contentSlug, $this->getView('frontend'));
         }
 
-//        $params['meta'] = null;
-//        $params['data'] = null;
-//        $params['tables'] = null;
-//        echo var_dump($params);
-//        die;
+        return $this->makeView($params);
         
-        return View::make(Options::get('skin', 'frontend') . '.frontlayout')
-                        ->nest('content', Options::get('skin', 'frontend') . '.frontview', $params);
     }
 
     /**
@@ -133,36 +135,38 @@ class DbController extends AuthorizedController {
      */
     public function getAdmin()
     {
-        return $this->getPage('contents');
+        return $this->getPage();
     }
 
     /**
      * 
-     * @param type $page
+     * @param type $table
      */
-    public function getPage($page = 'contents')
+    protected function getPage($table = 'contents', $action = 'getPage', $frontend = false)
     {
-
-        $action = 'getPage';
-
-        //select table data from database
-        $table = DB::table($page);
-
-        if (empty($message))
-        {
-            $message = "Data selected.";
-        }
-
-        $this->log(self::SUCCESS, "$page selected");
-
         //get related data
-        $params = $this->__makeParams(self::SUCCESS, $message, $table, $page, $action);
-
-        $layout = Options::get('skin', 'frontend') . '.frontlayout';
-
-        return View::make($layout)->nest('content', $params->view->name, $params->asArray());
+        $params = $this->__makeParams($table, $action, DB::table($table), $frontend);
+        $paramsA = $params->asArray();
+        return $this->makeView($paramsA);
     }
 
+    /**
+     * 
+     * @param type $paramsArray Params->asArray()
+     * @return type
+     */
+    public function makeView($paramsArray) {
+        
+        //return View::make($paramsArray['layout'])->nest('content', $paramsArray['view'], $paramsArray);
+        
+        //convert boolean type to skintype
+        $skinType = $paramsArray['frontend']?'frontend':'admin';
+        $layout = $this->getLayout($skinType);
+        $view = $this->getView($skinType);
+        return View::make($layout)->nest('content', $view, $paramsArray);
+        
+    }
+    
     /**
      * Find the right view to use with the action
      * 
@@ -210,12 +214,17 @@ class DbController extends AuthorizedController {
     {
         $viewId = null;
 
-        if (!empty($viewId) && !is_numeric($viewId))
-        {
-            $viewO = DB::table('_db_views')->where('name', $view)->first();
-            $viewId = $viewO->id;
+        if (empty($view)) { 
+            $view = $this->__getView($tableName, $action);
+            $viewId = DbGopher::coalesce($view, 'id');
+        } else {
+            if(!is_numeric($view))
+            {
+                $viewO = DB::table('_db_views')->where('name', $view)->first();
+                $viewId = $viewO->id;
+            }
         }
-
+        
         $tavO = DB::table('_db_pages')
                 ->join('_db_tables', '_db_pages.table_id', '=', '_db_tables.id')
                 ->join('_db_actions', '_db_pages.action_id', '=', '_db_actions.id')
@@ -224,19 +233,19 @@ class DbController extends AuthorizedController {
                         '_db_pages.content_id', '_db_pages.slug',
                         '_db_views.name as view_name', '_db_actions.name as action_name', 
                         '_db_tables.name as table_name', '_db_pages.title');
-        if (isset($viewId))
+        if (isset($viewId) && !empty($viewId))
         {
             $tavO = $tavO->where('_db_pages.view_id', '=', $viewId);
         }
-        if (isset($action))
+        if (isset($action) && !empty($action))
         {
             $tavO = $tavO->where('_db_actions.name', '=', $action);
         }
-        if (isset($tableName))
+        if (isset($tableName) && !empty($tableName))
         {
             $tavO = $tavO->where('_db_tables.name', '=', $tableName);
         }
-        if (isset($contentId))
+        if (isset($contentId) && !empty($contentId))
         {
             $tavO = $tavO->where('_db_pages.content_id', '=', $contentId);
         }
@@ -264,6 +273,10 @@ class DbController extends AuthorizedController {
      */
     public function getSelect($tableName = null, $message = "")
     {
+        
+        return $this->getPage($tableName, 'getSelect');
+
+        /*
         $action = 'getSelect';
 
         //select table data from database
@@ -277,9 +290,11 @@ class DbController extends AuthorizedController {
         $this->log(self::SUCCESS, "$tableName selected");
 
         //get related data
-        $params = $this->__makeParams(self::SUCCESS, $message, $table, $tableName, $action);
+        $params = $this->__makeParams($tableName, $action, $table);
 
         return View::make($this->getLayout())->nest('content', $params->view->name, $params->asArray());
+         * 
+         */
     }
 
     /**
@@ -423,86 +438,9 @@ class DbController extends AuthorizedController {
             }
         }
 
-        $params = $this->__makeParams(self::SUCCESS, "Records selected.", $table, $tableName, $action);
+        $params = $this->__makeParams($tableName, $action, $table);
 
         return View::make($this->getLayout())->nest('content', $params->view->name, $params->asArray());
-    }
-
-    /**
-     * Create a standard params object that will be passed to the view.  The params object (instance of Laravella\Crud\Params
-     * is at the heart of every view and contains all the variables that will be passed to the view, from the DbController.
-     * 
-     * Data is not fetched yet, use data->get(), or data->paginate() to fetch
-     * 
-     * @param type $data
-     * @param type $tableName
-     * @param type $action
-     * @return \Laravella\Crud\Params
-     */
-    protected function __makeParams($status, $message, $data, $tableName, $action, $frontend = false)
-    {
-
-        $this->log(self::INFO, "tableName = $tableName");
-
-        $prefix = array("id" => "/db/edit/$tableName/");
-
-        $tables = array();
-        $pkTables = array();
-
-        $tableMeta = Table::getTableMeta($tableName);
-
-        $view = $this->__getView($tableName, $action);
-
-        $tableActionViews = array();
-        try
-        {
-            if (is_object($view))
-            {
-                $tableActionViews = $this->__getTableActionView($tableName, $view->id, $action);
-            }
-        }
-        catch (Exception $e)
-        {
-            $tableActionViews = array();
-        }
-
-        $selects = $this->__getPkSelects($tableMeta['fields_array']);
-
-        $this->log(self::INFO, "makeParams");
-
-        if (is_object($data))
-        {
-
-            $pageSize = (is_object($view)) ? $view->page_size : 10;
-
-            $paginated = $data->paginate($pageSize);
-
-            $dataA = DbGopher::makeArray($tableMeta['fields'], $paginated);
-
-            $tables[$tableName] = new Table($tableName, $dataA, $tableMeta);
-
-            $pkTables = $this->__attachPkData($paginated, $tableMeta['fields_array']);
-
-            $relatedData = $this->__attachRelatedData($paginated, $tableMeta['fields_array']);
-
-            foreach ($pkTables as $pktName => $pkTable)
-            {
-                $tables[$pktName] = new Table($pktName, $this->dbTables[$pktName]['dataA'], $this->dbTables[$pktName]['meta']);
-//                $tables[$pktName] = new Table($pktName, array(), array());
-            }
-
-            $p = new Params($frontend, $status, $message, $this->log, $view, $action, $tableMeta, $tableActionViews, $prefix, $selects, $this->displayType, $dataA, $tables, $paginated, $pkTables);
-        }
-        else
-        {
-
-            $p = new Params($frontend, $status, $message, $this->log, $view, $action, $tableMeta, $tableActionViews, $prefix, $selects, $this->displayType);
-
-//            print_r($p);
-//            die;
-        }
-
-        return $p;
     }
 
     /**
@@ -520,19 +458,17 @@ class DbController extends AuthorizedController {
         try
         {
             DB::table($tableName)->where('id', '=', $recorid)->delete();
-            $params = $this->__makeParams(self::SUCCESS, "Record deleted.", null, $tableName, $action);
         }
         catch (Exception $e)
         {
-            $params = $this->__makeParams(self::IMPORTANT, "Failed to delete record.", null, $tableName, $action);
         }
+        $params = $this->__makeParams($tableName, $action, null);
         $res = '{"status":"failed"}';
         if (is_object($params))
         {
             $res = json_encode($params->asArray());
         }
-        echo $res;
-        die;
+        return $res;
     }
 
     /**
@@ -546,7 +482,7 @@ class DbController extends AuthorizedController {
     {
         $action = 'getInsert';
 
-        $params = $this->__makeParams(self::INFO, "Enter data to insert.", null, $tableName, $action);
+        $params = $this->__makeParams($tableName, $action, null);
 
         return View::make($this->getLayout())->nest('content', $params->view->name, $params->asArray());
     }
@@ -569,11 +505,11 @@ class DbController extends AuthorizedController {
 
         $table = DB::table($tableName)->where($pkName, '=', $pkValue);
 
-        $params = $this->__makeParams(self::INFO, 'Edit data.', $table, $tableName, $action);
+        $params = $this->__makeParams($tableName, $action, $table);
 
         $paramsA = $params->asArray();
 
-        return View::make($this->getLayout())->nest('content', $paramsA['view']->name, $paramsA);
+        return View::make($this->getLayout())->nest('content', $paramsA['view'], $paramsA);
     }
 
     /**
@@ -688,12 +624,12 @@ class DbController extends AuthorizedController {
                     $table = DB::table($tableName);
                 }
 
-                $params = $this->__makeParams(self::INFO, 'Edit data.', $table, $tableName, $action);
+                $params = $this->__makeParams($tableName, $action, $table);
                 $paramsA = $params->asArray();
 
                 if (isset($paramsA['view']))
                 {
-                    return View::make($paramsA['view']->name)->with($paramsA);
+                    return $this->makeView($paramsA); //View::make($paramsA['view']->name)->with($paramsA);
                 }
                 else
                 {
@@ -710,14 +646,6 @@ class DbController extends AuthorizedController {
     public function getTest()
     {
 
-//        $tables = Model::getInstance('_db_tables', array('name' => 'noTable'));
-//
-//        $field = Model::getInstance('_db_fields', array('id'=>1000, 'name' => 'noTable', 
-//            'fullname'=>'asdf', 'label'=>'asdf', 'table_id'=>0, 'pk_field_id'=>0, 'pk_display_field_id'=>0));
-//        
-//        return "save";
-//        $field = $tables->push($field);
-//        echo var_dump($field);
     }
 
     /**
@@ -733,6 +661,72 @@ class DbController extends AuthorizedController {
 //        return "missing";
     }
 
+    /**
+     * Create a standard params object that will be passed to the view.  The params object (instance of Laravella\Crud\Params
+     * is at the heart of every view and contains all the variables that will be passed to the view, from the DbController.
+     * 
+     * Data is not fetched yet, use data->get(), or data->paginate() to fetch
+     * 
+     * @param type $data
+     * @param type $tableName
+     * @param type $action
+     * @return \Laravella\Crud\Params
+     */
+    protected function __makeParams($tableName, $action, $data = null, $frontend = false)
+    {
+        $status = self::SUCCESS; 
+        $message = '';
+
+        $this->log(self::INFO, "tableName = $tableName");
+
+        $prefix = array("id" => "/db/edit/$tableName/");
+
+        $tables = array();
+        
+        $pkTables = array();
+
+        $tableMeta = Table::getTableMeta($tableName);
+
+        $view = $this->__getView($tableName, $action);
+        
+        $tableActionViews = $this->__getTableActionView($tableName, null, $action);
+        
+        $selects = $this->__getPkSelects($tableMeta['fields_array']);
+
+        $this->log(self::INFO, "makeParams");
+
+        if (is_object($data))
+        {
+
+            $pageSize = DbGopher::coalesce($view, 'page_size', 10);
+
+            $paginated = $data->paginate($pageSize);
+
+            $dataA = DbGopher::makeArray($tableMeta['fields'], $paginated);
+
+            $tables[$tableName] = new Table($tableName, $dataA, $tableMeta);
+
+            $pkTables = $this->__attachPkData($paginated, $tableMeta['fields_array']);
+
+            $relatedData = $this->__attachRelatedData($paginated, $tableMeta['fields_array']);
+
+            foreach ($pkTables as $pktName => $pkTable)
+            {
+                $tables[$pktName] = new Table($pktName, $this->dbTables[$pktName]['dataA'], $this->dbTables[$pktName]['meta']);
+//                $tables[$pktName] = new Table($pktName, array(), array());
+            }
+
+            $p = new Params($frontend, $status, $message, $this->log, $view, $action, $tableMeta, $tableActionViews, $prefix, $selects, $this->displayType, $dataA, $tables, $paginated, $pkTables);
+        }
+        else
+        {
+
+            $p = new Params($frontend, $status, $message, $this->log, $view, $action, $tableMeta, $tableActionViews, $prefix, $selects, $this->displayType);
+
+        }
+
+        return $p;
+    }
 }
 
 ?>

@@ -34,6 +34,8 @@ class CreateFieldsTable extends Migration {
                         $table->string('default', 100)->nullable();         // default value
                         $table->string('extra', 100)->nullable();
                         $table->string('href', 100)->nullable();                        //hyperlink this field with the href link
+                        $table->string('description', 100)->nullable();                 //description of the field
+                        $table->string('help', 250)->nullable();                        //help regarding the field
                         $table->integer('table_id')->unsigned();                               // links to _db_tables.id
 //                        $table->integer('pk_field_id')->unsigned()->nullable();                // links to _db_fields.id (the id of the primary key)
 //                        $table->integer('pk_display_field_id')->unsigned()->nullable();        // links to _db_fields.id (the id of a field in the primary table that will be used as a description of the primary key id)

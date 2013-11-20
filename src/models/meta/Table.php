@@ -18,7 +18,7 @@ class Table extends Eloquent {
             '_db_fields.key', '_db_fields.display_type_id', '_db_fields.type', '_db_fields.length', 
             '_db_fields.default', '_db_fields.extra', '_db_fields.href', 
             '_db_key_fields.pk_field_id', '_db_key_fields.pk_display_field_id', 
-            '_db_fields.display_order', '_db_fields.width', 
+            '_db_fields.display_order', '_db_fields.width', '_db_fields.help', '_db_fields.description', 
             '_db_fields.widget_type_id', '_db_fields.searchable');
     }
     

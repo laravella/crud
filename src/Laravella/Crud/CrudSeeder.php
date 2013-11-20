@@ -21,38 +21,43 @@ class CrudSeeder extends Seeder {
     /**
      * 
      */
-    public function addContents($slug, $title, $excerpt, $contents) {
-        $arr = array('slug'=>$slug, 'title'=>$title, 'excerpt'=>$excerpt, 'content'=>$contents);
+    public function addContents($slug, $title, $excerpt, $contents)
+    {
+        $arr = array('slug' => $slug, 'title' => $title, 'excerpt' => $excerpt, 'content' => $contents);
         $id = DB::table('contents')->insertGetId($arr);
         Log::write("success", " - $title content inserted");
         return $id;
     }
-    
+
     /**
      * 
      * @param type $contentSlug
      * @param type $pageSlug
      */
-    public function linkContentToPage($contentSlug, $pageSlug) {
+    public function linkContentToPage($contentSlug, $pageSlug)
+    {
         $contentId = null;
-        if (is_numeric($contentSlug)) {
+        if (is_numeric($contentSlug))
+        {
             $contentId = $contentSlug;
-        } else {
+        }
+        else
+        {
             $contentId = $this->getId('contents', 'slug', $contentSlug);
         }
-        
-        echo 'linking content slug : '.$contentSlug.' = '.$contentId.' to pageslug : '.$pageSlug;
-        
-        $this->updateOrInsert('_db_pages', array('slug'=>$pageSlug), array('content_id'=>$contentId));
+
+        echo 'linking content slug : ' . $contentSlug . ' = ' . $contentId . ' to pageslug : ' . $pageSlug;
+
+        $this->updateOrInsert('_db_pages', array('slug' => $pageSlug), array('content_id' => $contentId));
     }
-    
+
     /**
      * Set the title of a page
      */
     public function setTitle($slug, $title)
     {
         $recs = DB::table('_db_pages')
-                ->where('slug',  strtolower($slug))
+                ->where('slug', strtolower($slug))
                 ->update(array('title' => $title));
         return $recs;
     }
@@ -71,11 +76,12 @@ class CrudSeeder extends Seeder {
      * @param type $fullName
      * @param type $label
      */
-    public function setFieldTitle($fullName, $label) {
+    public function setFieldTitle($fullName, $label)
+    {
         //change field labels
-        $this->updateOrInsert('_db_fields', array('fullname'=>$fullName), array('label'=>$label));
-    }    
-    
+        $this->updateOrInsert('_db_fields', array('fullname' => $fullName), array('label' => $label));
+    }
+
     /**
      * Link an object and a table by inserting _db_objects.id 
      * and _db_tables.id into _db_object_tables
@@ -83,41 +89,49 @@ class CrudSeeder extends Seeder {
      * @param type $objectId
      * @param type $tableId
      */
-    public function linkPageToTable($slug, $tableName) {
-        echo $slug." ";
+    public function linkPageToTable($slug, $tableName)
+    {
+        echo $slug . " ";
         echo $tableName;
         $pageId = $this->getId('_db_pages', 'slug', $slug);
-        $tableId =  $this->getId('_db_tables', 'name', $tableName);
-        $id = DB::table('_db_page_tables')->insertGetId(array('page_id'=>$pageId, 'table_id'=>$tableId));
+        $tableId = $this->getId('_db_tables', 'name', $tableName);
+        $id = DB::table('_db_page_tables')->insertGetId(array('page_id' => $pageId, 'table_id' => $tableId));
         return $id;
     }
-    
+
     /*
      * Set the page's type
      */
-    public function setPageType() {
+
+    public function setPageType()
+    {
         
     }
-    
+
     /*
      * Set the asset's type
      */
-    public function setAssetType() {
+
+    public function setAssetType()
+    {
         
     }
-    
-    public function setDisplayType($fullName, $displayName) {
+
+    public function setDisplayType($fullName, $displayName)
+    {
         $nodisplayId = $this->getId('_db_display_types', 'name', $displayName);
-        $this->updateOrInsert('_db_fields', array('fullname'=>$fullName), array('display_type_id'=>$nodisplayId));
-    }    
-    
+        $this->updateOrInsert('_db_fields', array('fullname' => $fullName), array('display_type_id' => $nodisplayId));
+    }
+
     /**
      * 
      * @param type $id
      * @param type $slugs
      */
-    public function linkAssetPageGroups($assetGroup, $pageGroup){
-        try {
+    public function linkAssetPageGroups($assetGroup, $pageGroup)
+    {
+        try
+        {
             $this->info("getting asset types $pageGroup");
             $pageTypes = DB::table('_db_option_types as ot1')
                     ->join('_db_option_types as ot2', 'ot1.parent_id', '=', 'ot2.id')
@@ -125,7 +139,7 @@ class CrudSeeder extends Seeder {
                     ->where('ot1.name', $pageGroup)
                     ->select('ot1.id')
                     ->first();
-            
+
             $this->info("getting asset types $assetGroup");
             $assetTypes = DB::table('_db_option_types as ot1')
                     ->join('_db_option_types as ot2', 'ot1.parent_id', '=', 'ot2.id')
@@ -133,16 +147,16 @@ class CrudSeeder extends Seeder {
                     ->where('ot1.name', $assetGroup)
                     ->select('ot1.id')
                     ->first();
-            
-            $this->updateOrInsert('_db_page_assets', 
-                    array('asset_type_id' => $assetTypes->id, 'page_type_id' => $pageTypes->id));
-        } catch (Exception $e) {
+
+            $this->updateOrInsert('_db_page_assets', array('asset_type_id' => $assetTypes->id, 'page_type_id' => $pageTypes->id));
+        }
+        catch (Exception $e)
+        {
             echo $e->getMessage();
             var_dump(debug_backtrace());
         }
     }
-    
-    
+
     /**
      * 
      * @param type $tableName The name of the table 
@@ -177,19 +191,19 @@ class CrudSeeder extends Seeder {
         $widgetTypeId = DB::table('_db_widget_types')
                 ->where('name', $widgetType)
                 ->pluck('id');
-        
+
         //get the id of the primary key field in _db_fields
         //for each field in the _db_fields table there will thus be a reference to 
         $displayTypeId = DB::table('_db_display_types')
                 ->where('name', 'widget')
                 ->pluck('id');
-        
+
         DB::table('_db_fields')
                 ->where('table_id', $tableId)
                 ->where('name', $fieldName)
                 ->update(array('widget_type_id' => $widgetTypeId, 'display_type_id' => $displayTypeId));
     }
-    
+
     /**
      * 
      * @param type $tableName
@@ -239,11 +253,11 @@ class CrudSeeder extends Seeder {
      * @param type $vendor
      * @param type $version
      */
-    public function addAsset($url, $type = '', $assetGroup='', $position='top', $vendor = '', $version = '')
+    public function addAsset($url, $type = '', $assetGroup = '', $position = 'top', $vendor = '', $version = '')
     {
         $optionTypes = $this->getOptionType($assetGroup);
         $assetTypeID = $optionTypes[0]['id'];
-        $values = array('url' => $url, 'type' => $type, 'asset_type_id' => $assetTypeID, 
+        $values = array('url' => $url, 'type' => $type, 'asset_type_id' => $assetTypeID,
             'vendor' => $vendor, 'version' => $version, 'position' => $position);
         $id = $this->updateOrInsert('_db_assets', array('url' => $url), $values);
         return $id;
@@ -264,9 +278,9 @@ class CrudSeeder extends Seeder {
                 //all slugs
                 $this->info("linking asset id $id with *");
                 $pageTypes = DB::table('_db_option_types as ot1')
-                        ->join('_db_option_types as ot2', 'ot1.parent_id', '=', 'ot2.id')
-                        ->select('ot1.id')
-                        ->where('ot2.name', 'pages')->get();
+                                ->join('_db_option_types as ot2', 'ot1.parent_id', '=', 'ot2.id')
+                                ->select('ot1.id')
+                                ->where('ot2.name', 'pages')->get();
                 foreach ($pageTypes as $pageType)
                 {
                     $this->updateOrInsert('_db_page_assets', array('asset_type_id' => $id, 'page_type_id' => $pageType->id));
@@ -586,7 +600,7 @@ class CrudSeeder extends Seeder {
                     ->select('ot1.name', 'ot1.id')
                     ->get();
         }
-        foreach($optionTypes as $optionType) 
+        foreach ($optionTypes as $optionType)
         {
             $optionTypeA[] = array('id' => $optionType->id, 'name' => $optionType->name);
         }
@@ -612,13 +626,14 @@ class CrudSeeder extends Seeder {
      * @param type $pageType
      * @return type
      */
-    public function addPageType($pageType) {
+    public function addPageType($pageType)
+    {
         $crudId = $this->addOptionType('crud');
         $pagesId = $this->addOptionType('pages', $crudId);
         $pageTypeId = $this->addOptionType($pageType, $pagesId);
         return $pageTypeId;
     }
-    
+
     /**
      * Add a new usergroup
      * 
@@ -857,47 +872,50 @@ class CrudSeeder extends Seeder {
         Log::write("success", " - $viewName view inserted");
     }
 
-    public function getPageTypeId($viewName) {
+    public function getPageTypeId($viewName)
+    {
         $pageTypes = $this->getOptionType($viewName); //frontendpages
-        
 //        echo "$viewName \n";
 //        echo var_dump($pageTypes);
 //        echo "\n";
-        
+
         $pageTypeId = null;
-        if (isset($pageTypes[0]) && isset($pageTypes[0]['id'])) {
+        if (isset($pageTypes[0]) && isset($pageTypes[0]['id']))
+        {
             $pageTypeId = $pageTypes[0]['id'];
         }
-        
+
         return $pageTypeId;
-    }    
-    
+    }
+
     /**
      * Get an entire _db_view record by name
      * @param type $viewName
      * @return type
      */
-    public function getView($viewName) {
-        Log::write(Log::INFO, "getting record for ".$viewName);
+    public function getView($viewName)
+    {
+        Log::write(Log::INFO, "getting record for " . $viewName);
         $view = DB::table('_db_views')->where('name', $viewName)->first();
         echo var_dump($view);
         return $view;
     }
-    
+
     /**
      * Get an array of all actions with their views array('action'=>'view',...)
      * @return string
      */
-    public function getActionViews() {
+    public function getActionViews()
+    {
         $actionViews = array();
-        
+
         $skins = Config::get('app.skins');
-        
-        $dbView = $this->getView($skins['admin'].'.dbview');
-        $upView = $this->getView($skins['admin'].'.uploadview');
-        $feView = $this->getView($skins['frontend'].'.frontview');
-        $acView = $this->getView($skins['admin'].'.login');
-        
+
+        $dbView = $this->getView($skins['admin'] . '.dbview');
+        $upView = $this->getView($skins['admin'] . '.uploadview');
+        $feView = $this->getView($skins['frontend'] . '.frontview');
+        $acView = $this->getView($skins['admin'] . '.login');
+
         $actionViews['getEdit'] = $dbView;
         $actionViews['getInsert'] = $dbView;
         $actionViews['getObject'] = $dbView;
@@ -909,10 +927,10 @@ class CrudSeeder extends Seeder {
         $actionViews['postUpload'] = $upView;
         $actionViews['getPage'] = $feView;
         $actionViews['getLogin'] = $acView;
-        
+
         return $actionViews;
     }
-    
+
     /**
      * Populate table _db_pages
      * 
@@ -937,31 +955,31 @@ class CrudSeeder extends Seeder {
             }
             Log::write(Log::INFO, "getting actionViews");
             $actionViews = $this->getActionViews();
-            
+
 //            echo var_dump($actionViews);
-            
+
             Log::write(Log::INFO, "getting skins from config");
 //            $skins = Config::get('app.skins');
             $skins = Options::getSkin();
-                  
+
             foreach ($tables as $table)
             {
-                Log::write(Log::INFO, "Creating page for table ".$table->name);
+                Log::write(Log::INFO, "Creating page for table " . $table->name);
                 foreach ($actions as $action)
                 {
 
-                    Log::write(Log::INFO, "Creating page for action ".$action->name);
+                    Log::write(Log::INFO, "Creating page for action " . $action->name);
                     $view = $actionViews[$action->name];
                     echo " {$view->name} \n";
 
                     $pageTypeId = $this->getPageTypeId($view->name);
 
                     $slug = strtolower($table->name . '_' . $action->name);
-                    Log::write("info", "Linking table " . $table->name . ", \t view " . 
+                    Log::write("info", "Linking table " . $table->name . ", \t view " .
                             $view->name . ", \t action " . $action->name);
                     $arrTav = array('table_id' => $table->id, 'action_id' => $action->id,
                         'view_id' => $view->id, 'page_size' => 10, 'title' => $table->name, 'slug' => $slug,
-                        'page_type_id'=>$pageTypeId);
+                        'page_type_id' => $pageTypeId);
 
                     DB::table('_db_pages')->insert($arrTav);
                     /*
@@ -1018,6 +1036,26 @@ class CrudSeeder extends Seeder {
             Log::write("success", "fieldtype : $fieldType");
         }
         return $fieldType;
+    }
+
+    /**
+     * Add a description and help to a field
+     * 
+     * @param type $field can either be the fullname (table.fieldname) of the field or the field id
+     * @param type $description
+     * @param type $help
+     */
+    public function setFieldHelp($field, $description = "", $help = "")
+    {
+        if (empty($field))
+        {
+        }
+        else if (is_numeric($field))
+        {
+            $this->updateOrInsert('_db_fields', array('id' => $field), array('description' => $description, 'help' => $help));
+        } else {
+            $this->updateOrInsert('_db_fields', array('fullname' => $field), array('description' => $description, 'help' => $help));
+        }
     }
 
     /**

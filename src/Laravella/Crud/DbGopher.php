@@ -1,6 +1,8 @@
-<?php namespace Laravella\Crud;
-use \DB;
+<?php
 
+namespace Laravella\Crud;
+
+use \DB;
 use Laravella\Crud\Exceptions\DBException;
 
 /**
@@ -14,27 +16,27 @@ class DbGopher {
      * Turn a StdClass object into an array using an array of meta data objects.
      * 
      * @param type $meta An array of stdClass objects, each object representing a field's metadata (_db_fields). 
-     *  You can use Table::getMeta($tableName) to get this.
+     *  You can use Table::getMeta($tableName) or Table::getTableMeta($tableName)['fields'] to get this.
      * @param type $data An array of stdClass objects, each object a record. (the result of DB::table('tableName')->get() not ->first() )
      */
     public static function makeArray($meta, $data)
     {
-        
+
         $pkName = "";
         $arr = array();
-        
+
 //        echo var_dump($meta);
-        
         //loop through records
         foreach ($data as $rec)
         {
-            
+
             $recA = array();
             //for each fieldname in metadata
             foreach ($meta as $metaField)
             {
                 //find the name of the primary key so that we can index the array according to that field's values
-                if ($metaField->key == 'PRI') {
+                if ($metaField->key == 'PRI')
+                {
                     $pkName = $metaField->name;
                 }
                 //get field name
@@ -53,7 +55,7 @@ class DbGopher {
 //        
 //        echo var_dump($arr);
 //        die;
-        
+
         return $arr;
     }
 
@@ -90,27 +92,43 @@ class DbGopher {
     }
 
     /**
-     * check if a StdObj exists as an object and then returns a field from it.
+     * Synonymn for pick
      */
-    public static function pick($result, $fieldName) {
-        $value = null;
-        if (is_object($result)) {
-            $value = $result->$fieldName;
-        } else {
-            throw new DBException('Empty record.');
-        }
-        return $value;
+    public static function coalesce($result, $fieldName, $default = null) {
+        return self::pick($result, $fieldName, $default);
     }
     
     /**
+     * check if a StdObj exists as an object and then returns a field from it.
+     */
+    public static function pick($result, $fieldName, $default = null)
+    {
+        $value = $default;
+        if (is_object($result) && property_exists($result, $fieldName))
+        {
+            $value = $result->$fieldName;
+        }
+        else if (is_object($result) && property_exists($result, $fieldName))
+        {
+            $value = $result->$fieldName;
+        }
+        else
+        {
+            //throw new DBException('Empty record.');
+        }
+        return $value;
+    }
+
+    /**
      * Return last executed query
      */
-    public static function getLastQuery() {
+    public static function getLastQuery()
+    {
         $queries = DB::getQueryLog();
-        $lastQuery = end($queries);        
+        $lastQuery = end($queries);
         return $lastQuery;
     }
-    
+
 }
 
 ?>

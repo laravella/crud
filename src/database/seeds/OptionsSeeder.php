@@ -46,6 +46,21 @@ class SeedOptions extends CrudSeeder {
         
         $optionTypeId = $this->addOptionType('installation');
         $this->addOption($optionTypeId, 'status', 0);
+
+        $memberTypeId = $this->addOptionType('member-type'); //this is a type of object member e.g. property / method / event
+        $methodTypeId = $this->addOptionType('method', $memberTypeId);
+        $propertyTypeId = $this->addOptionType('property', $memberTypeId);
+        $eventTypeId = $this->addOptionType('event', $memberTypeId);
+        $typeId = $this->addOptionType('onGet', $eventTypeId);
+        $typeId = $this->addOptionType('onPost', $eventTypeId);
+        $typeId = $this->addOptionType('onBeforeSearch', $eventTypeId);
+        $typeId = $this->addOptionType('onAfterSearch', $eventTypeId);
+        $typeId = $this->addOptionType('onApiGet', $eventTypeId);
+        $typeId = $this->addOptionType('onApiPost', $eventTypeId);
+        $typeId = $this->addOptionType('onBeforeInsert', $eventTypeId);
+        $typeId = $this->addOptionType('onAfterInsert', $eventTypeId);
+        $typeId = $this->addOptionType('onBeforeEdit', $eventTypeId);
+        $typeId = $this->addOptionType('onAfterEdit', $eventTypeId);
         
         //'site_root'
         $this->addOption($optionTypeId, 'site_root', base_path());

@@ -9,13 +9,16 @@ use Laravella\Crud\Params;
 class PageController extends DbController {
     public $displayType = self::HTML; //or self::JSON or self::HTML
 
+    protected $layoutName = '.frontlayout';
+    protected $viewName = '.frontview';
+    
     /**
      * 
      * @param type $page
      */
-    public function getPage($page='contents') {
+    public function getPage($contentsSlug='contents', $action=null, $frontend=false) {
         
-        return $this->getIndex($page);
+        return $this->getIndex($contentsSlug);
         
     }
     

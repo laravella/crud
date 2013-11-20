@@ -19,6 +19,7 @@ Route::filter('crudauth', function()
 Route::when('db/*', 'crudauth');
 Route::when('pg/*', 'crudauth');
 Route::when('dbapi/*', 'crudauth');
+Route::when('admin', 'crudauth');
 
 Route::get('/query', function()
 {
@@ -57,7 +58,7 @@ Route::get('login', function()
 
 Route::get('admin', function()
 {
-//            return Redirect::to('/db/select/contents');
+            return Redirect::to('/db/select/contents');
 });
 
 Route::controller('db', 'DbController');

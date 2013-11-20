@@ -21,7 +21,10 @@ class Params extends CrudSeeder {
     public $page = null; //the junction between table, view and action
     public $contents = array(); // the text contents of the page
     public $assets = null;
+    
     public $view = null;
+    public $layout = null;
+    
     public $frontend = false;
     public $skin = null;
     public $selects = array();
@@ -49,6 +52,21 @@ class Params extends CrudSeeder {
         $params->view = $view;
         $params->slug = $slug;
         return $params->asArray();
+    }
+    
+    public function skin() {
+        $skins = Options::getSkin();
+        $this->skin = array();
+        
+        if ($this->frontend) {
+            $this->skin['name'] = $skins['name'];
+            $this->skin['fullname'] = $skins['frontend'];
+            $this->layout = Options::get('skin', 'frontend') . '.frontlayout';
+        } else {
+            $this->skin['name'] = $skins['adminName'];
+            $this->skin['fullname'] = $skins['admin'];
+            $this->layout = Options::get('skin', 'admin') . '.default';
+        }
     }
     
     /**
@@ -84,21 +102,13 @@ class Params extends CrudSeeder {
         {
             $this->pageSize = 10;
         }
+        
         $this->prefix = $prefix;
         $this->page = $tableActionViews;  //single, called by first()
         $this->view = $view;
         $this->frontend = $frontend;
 
-        $skins = Options::getSkin();
-        $this->skin = array();
-        
-        if ($frontend) {
-            $this->skin['name'] = $skins['name'];
-            $this->skin['fullname'] = $skins['frontend'];
-        } else {
-            $this->skin['name'] = $skins['adminName'];
-            $this->skin['fullname'] = $skins['admin'];
-        }
+        $this->skin();
         
         $this->selects = $selects;
         $this->displayType = $displayType;
@@ -281,12 +291,15 @@ class Params extends CrudSeeder {
      */
     public function asArray()
     {
+        $viewName = (is_object($this->view))?$this->view->name:$this->view;
+        
         $returnA = array("action" => $this->action,
             "meta" => $this->tableMeta['fields_array'],
             "tableName" => $this->tableMeta['table']['name'],
             "prefix" => $this->prefix,
             "pageSize" => $this->pageSize,
-            "view" => $this->view,
+            "view" => $viewName,
+            "layout" => $this->layout,
             "frontend" => $this->frontend,
             "skin" => $this->skin,
             "slug" => $this->slug,
