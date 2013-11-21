@@ -962,6 +962,8 @@ class CrudSeeder extends Seeder {
 //            $skins = Config::get('app.skins');
             $skins = Options::getSkin();
 
+            DB::table('contents')->delete();
+            
             foreach ($tables as $table)
             {
                 Log::write(Log::INFO, "Creating page for table " . $table->name);
@@ -977,9 +979,16 @@ class CrudSeeder extends Seeder {
                     $slug = strtolower($table->name . '_' . $action->name);
                     Log::write("info", "Linking table " . $table->name . ", \t view " .
                             $view->name . ", \t action " . $action->name);
+                    
+                    //insert a record into contents with the same slug as _db_pages
+//                    $contentId = $this->updateOrInsert('contents', array('slug' => $slug, 'title'=>$slug, 'content'=>$slug, 'excerpt'=>$slug));
+
+                    $contentId = $this->addContents($slug, $slug.' title', $slug.' excerpt', $slug.' contents');
+  //                  $this->linkContentToPage($slug, $slug);
+                    
                     $arrTav = array('table_id' => $table->id, 'action_id' => $action->id,
                         'view_id' => $view->id, 'page_size' => 10, 'title' => $table->name, 'slug' => $slug,
-                        'page_type_id' => $pageTypeId);
+                        'page_type_id' => $pageTypeId, 'content_id' => $contentId);
 
                     DB::table('_db_pages')->insert($arrTav);
                     /*

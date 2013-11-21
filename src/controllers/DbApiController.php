@@ -5,7 +5,11 @@
  * It just formats the data differently but the work is still done by DbController class.
  */
 class DbApiController extends DbController {
-    protected $layout = 'crud::layouts.content';
+    
+    private $layoutName = '.content';
+    private $viewName = '.dbview';
+    
+    
     public $displayType = self::XML; //or self::JSON or self::HTML
     
 }

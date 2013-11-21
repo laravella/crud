@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use \Table;
+use \Log;
+use \Model;
 
 /**
  * 
@@ -42,16 +44,16 @@ class Params extends CrudSeeder {
      * 
      * @param type $slug
      */
-    public static function bySlug($frontend, $slug, $view) {
+    public static function bySlug($frontend, $slug, $displayType, $view) {
         
         $contentsA = Table::asArray('contents', array('slug'=>$slug));
         
-        $params = new Params($frontend, null, null, $view);
+        $params = new Params($frontend, $view, $displayType);
         
         $params->contents = $contentsA;
         $params->view = $view;
         $params->slug = $slug;
-        return $params->asArray();
+        return $params;
     }
     
     public function skin() {
@@ -84,14 +86,13 @@ class Params extends CrudSeeder {
      * @param type $prefix Used to prepend the href on the primary key
      * @param type $view An entry in _db_views
      */
-    public function __construct($frontend = false, $status='success', $message='', $log=array(), 
-            $view = null, $action = "", $tableMeta = null, 
+    public function __constructx($frontend = false, $view = null, $action = "", $tableMeta = null, 
             $tableActionViews = null, $prefix = "", $selects = null, $displayType = "", $dataA = array(), 
             $tables = array(), $paginated = array(), $primaryTables = array())
     {
         $this->user = Auth::user();
-        $this->status = $status;
-        $this->message = $message;
+        $this->status = '';
+        $this->message = '';
         $this->action = $action;
         $this->tableMeta = $tableMeta;
         if (is_object($view))
@@ -112,7 +113,7 @@ class Params extends CrudSeeder {
         
         $this->selects = $selects;
         $this->displayType = $displayType;
-        $this->log = $log;
+        $this->log = array();
         //potentially null
         $this->paginated = $paginated;
         $this->tables = $tables;
@@ -130,7 +131,7 @@ class Params extends CrudSeeder {
     }
 
     /**
-     * 
+     * MOVE TO MODEL
      */
     private function __getAssets() {
         $assetsA = array();
@@ -202,6 +203,8 @@ class Params extends CrudSeeder {
     
     /**
      * 
+     * MOVE TO MODEL
+     * 
      * @param type $userId
      * @return type
      */
@@ -266,12 +269,12 @@ class Params extends CrudSeeder {
      */
     public static function forEdit($status = "success", $message = "", $log = array(), $view = null, $action = "", $tableMeta = null, $tableActionViews = null, $prefix = "", $selects = null, $displayType = "text/html", $tables = null, $paginated = null, $primaryTables = null)
     {
-        $params = new Params(false, $status, $message, $log);
+        $params = new Params(false, $log);
         return $params;
     }
 
     /**
-     * 
+     * MOVE TO MODEL
      */
     public function getObject($pageId) {
         $object = DB::table('_db_pages as p')
@@ -338,6 +341,218 @@ class Params extends CrudSeeder {
         return $returnA;
     }
 
+    
+    /**
+     * A cache of db tables to minimize db requests. See getPkSelects()
+     * 
+     * @var type 
+     */
+    private $dbTables = array();
+    
+    
+    /**
+     * Create a standard params object that will be passed to the view.  The params object (instance of Laravella\Crud\Params
+     * is at the heart of every view and contains all the variables that will be passed to the view, from the DbController.
+     * 
+     * Data is not fetched yet, use data->get(), or data->paginate() to fetch
+     * 
+     * @param type $data
+     * @param type $tableName
+     * @param type $action
+     * @return \Laravella\Crud\Params
+     */
+    public function __construct($tableName, $action, $displayType, $data = null, $frontend = false)
+    {
+        Log::info("constructing Params for : tableName = $tableName");
+
+        $prefix = array("id" => "/db/edit/$tableName/");
+
+        $tables = array();
+        $dataA = array();
+        $pkTables = array();
+        $paginated = array();
+
+        $tableMeta = Table::getTableMeta($tableName);
+        $view = Model::getViewData($tableName, $action);
+        $tableActionViews = Model::getPageData($tableName, null, $action);
+        $selects = Model::getPkSelects($tableMeta['fields_array']);
+        
+        if (is_object($data))
+        {
+            $pageSize = DbGopher::coalesce($view, 'page_size', 10);
+            $paginated = $data->paginate($pageSize);
+            $dataA = DbGopher::makeArray($tableMeta['fields'], $paginated);
+            $tables[$tableName] = new Table($tableName, $dataA, $tableMeta);
+            $pkTables = $this->__attachPkData($paginated, $tableMeta['fields_array']);
+            $relatedData = $this->__attachRelatedData($paginated, $tableMeta['fields_array']);
+
+            foreach ($pkTables as $pktName => $pkTable)
+            {
+                $tables[$pktName] = new Table($pktName, $this->dbTables[$pktName]['dataA'], $this->dbTables[$pktName]['meta']);
+            }
+        }
+        
+        /*
+        $p = new Params($frontend, $view, $action, $tableMeta, $tableActionViews, 
+                $prefix, $selects, $displayType, $dataA, $tables, $paginated, $pkTables);
+        */
+//    public function __constructx($frontend = false, $view = null, $action = "", $tableMeta = null, 
+//            $tableActionViews = null, 
+//            $prefix = "", $selects = null, $displayType = "", $dataA = array(), $tables = array(), 
+//            $paginated = array(), $primaryTables = array())
+        
+        $this->user = Auth::user();
+        $this->status = '';
+        $this->message = '';
+        $this->action = $action;
+        $this->tableMeta = $tableMeta;
+        if (is_object($view))
+        {
+            $this->pageSize = $view->page_size;
+        }
+        else
+        {
+            $this->pageSize = 10;
+        }
+        
+        $this->prefix = $prefix;
+        $this->page = $tableActionViews;  //single, called by first()
+        $this->view = $view;
+        $this->frontend = $frontend;
+
+        $this->skin();
+        
+        $this->selects = $selects;
+        $this->displayType = $displayType;
+        $this->log = array();
+        //potentially null
+        $this->paginated = $paginated;
+        $this->tables = $tables;
+        $this->primaryTables = $pkTables;
+        $this->assets = $this->__getAssets();
+        $this->dataA = $dataA;
+        $this->displayTypes = $this->__getDisplayTypes();
+        $this->widgetTypes = $this->__getWidgetTypes();
+
+        if (Auth::check())
+        {
+            $userId = Auth::user()->id;
+            $this->menu = $this->getMenu($userId);
+        }        
+        
+//        return $p;
+    }
+    
+    protected function __attachRelatedData($records, $ma)
+    {
+        $fkTables = array();
+        return $fkTables;
+    }
+
+    /**
+     * 
+     * 
+     * @param type $records
+     * @param type $ma
+     * @return array
+     */
+    protected function __attachPkData($records, $ma)
+    {
+        $pkTables = array();
+        $pkRec = array();
+
+        foreach ($records as $record)
+        {
+            foreach ($record as $name => $value)
+            {
+                if (isset($ma[$name]['pk']))
+                {
+                    Log::info("{$ma[$name]['name']} has a pk");
+                    //$name is a foreign key, it contains a reference to a primary key
+                    //pk display field's meta data array
+                    $pkdfMetaA = $ma[$name]['pk_display'];
+
+                    //pk meta data array
+                    $pkfMetaA = $ma[$name]['pk'];
+
+                    //get the name of the display field
+                    $pkdfName = $pkdfMetaA['name'];
+
+                    //get the name of the pk field
+                    $pkfName = $pkfMetaA['name'];
+
+                    //the primary key's tablename
+                    $pkTableName = $ma[$name]['pk']['tableName'];
+
+                    //the value of the foreign key, which is also the value of the pk we are looking for
+                    $pkValue = $value;
+
+                    if (!array_key_exists($pkTableName, $this->dbTables))
+                    {
+                        $pkData = DB::table($pkTableName)->get();
+                        $pkData = $this->__indexByPk($pkData, $pkfName);
+                        $pktMeta = Table::getTableMeta($pkTableName);
+//an array of 
+                        $pkDataA = DbGopher::makeArray($pktMeta['fields'], $pkData);
+                        $this->dbTables[$pkTableName] = array('data' => $pkData, 'meta' => $pktMeta, 'dataA' => $pkDataA);
+//                        $this->dbTables[$pkTableName] = array();
+                    }
+
+                    //get the actual data of the primary key related to this field (not the meta data)
+                    $pkData = DB::table($pkTableName)->where($pkfName, $pkValue)->get();
+
+                    //get the value of the display field related to the pk
+                    if (isset($this->dbTables[$pkTableName]['data'][$pkValue]))
+                    {
+                        $pkdValue = $this->dbTables[$pkTableName]['data'][$pkValue]->$pkdfName;
+                    }
+                    else
+                    {
+                        $pkdValue = '';
+                    }
+
+                    $pkRec[$pkValue] = $pkdValue;
+                    Log::info("{$ma[$name]['name']} : key {$pkTableName}.{$pkfName} = {$pkValue} display : {$pkdfName} = {$pkRec[$pkValue]}");
+                    if (!array_key_exists($pkTableName, $pkTables))
+                    {
+                        $pkTables[$pkTableName] = array();
+                    }
+                    $pkTables[$pkTableName][$pkValue] = $pkdValue;
+                }
+            }
+        }
+//        print_r($pkTables);
+        return $pkTables;
+    }
+    
+
+    /**
+     * Index an array of records (of type StdClass) according to the pk value
+     */
+    protected function __indexByPk($array, $pkFieldName)
+    {
+        $newArray = array();
+        foreach ($array as $key => $rec)
+        {
+            $newArray[$rec->$pkFieldName] = $rec;
+        }
+        return $newArray;
+    }
+
+    /**
+     * Index an array of records according to the value of $fieldName
+     */
+    protected function __indexByValue($array, $fieldName)
+    {
+        $newArray = array();
+        foreach ($array as $key => $rec)
+        {
+            $newArray[$rec[$fieldName]] = $rec;
+        }
+        return $newArray;
+    }
+    
+    
 }
 
 ?>

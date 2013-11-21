@@ -38,7 +38,7 @@ class CreateAssetsTable extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('_db_events');
+        Schema::dropIfExists('_db_assets');
     }
 
 }

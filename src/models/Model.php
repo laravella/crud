@@ -1,11 +1,11 @@
-<?php
+<?php use Laravella\Crud\DbGopher;
 
 /**
  * Description of generic Model
  *
  * @author Victor
  */
-class Model extends Eloquent {
+class Model extends Eloquent {  //why a Model and a meta.Table? Maybe extend meta.Table here
 
     protected $metaData = null;
     protected $primaryKey = "id";
@@ -272,6 +272,147 @@ class Model extends Eloquent {
         return $this->metaData;
     }
 
+    /**
+     * Find the right view to use with the action
+     * 
+     * @param type $tableName
+     * @param type $action
+     */
+    public static function getViewData($tableName, $action)
+    {
+        $views = DB::table('_db_pages')
+                ->join('_db_tables', '_db_pages.table_id', '=', '_db_tables.id')
+                ->join('_db_actions', '_db_pages.action_id', '=', '_db_actions.id')
+                ->join('_db_views', '_db_pages.view_id', '=', '_db_views.id')
+                ->where('_db_actions.name', '=', $action)
+                ->where('_db_tables.name', '=', $tableName)
+                ->select('_db_views.id', '_db_views.name', '_db_pages.page_size')
+                ->first();
+        return $views;
+    }
+
+
+    /**
+     * Get a record from _db_pages as an stdClass object
+     * 
+     * @param type $tableName
+     * @param type $viewId
+     * @param type $action
+     * @return type
+     */
+    public static function getPageData($tableName = null, $view = null, $action = null, $contentId = null)
+    {
+        $viewId = null;
+
+        if (empty($view)) { 
+            
+            if (!empty($tableName) && !empty($action)) {
+                $view = Model::getViewData($tableName, $action);
+            }
+            $viewId = DbGopher::coalesce($view, 'id');
+        } else {
+            if(!is_numeric($view))
+            {
+                $viewO = DB::table('_db_views')->where('name', $view)->first();
+                $viewId = $viewO->id;
+            }
+        }
+        
+        $tavO = DB::table('_db_pages')
+                ->join('_db_tables', '_db_pages.table_id', '=', '_db_tables.id')
+                ->join('_db_actions', '_db_pages.action_id', '=', '_db_actions.id')
+                ->join('_db_views', '_db_pages.view_id', '=', '_db_views.id')
+                ->select('_db_pages.view_id', '_db_pages.id as page_id', '_db_pages.action_id', 
+                        '_db_pages.content_id', '_db_pages.slug',
+                        '_db_views.name as view_name', '_db_actions.name as action_name', 
+                        '_db_tables.name as table_name', '_db_pages.title');
+        if (isset($viewId) && !empty($viewId))
+        {
+            $tavO = $tavO->where('_db_pages.view_id', '=', $viewId);
+        }
+        if (isset($action) && !empty($action))
+        {
+            $tavO = $tavO->where('_db_actions.name', '=', $action);
+        }
+        if (isset($tableName) && !empty($tableName))
+        {
+            $tavO = $tavO->where('_db_tables.name', '=', $tableName);
+        }
+        if (isset($contentId) && !empty($contentId))
+        {
+            $tavO = $tavO->where('_db_pages.content_id', '=', $contentId);
+        }
+        $tva = $tavO->first();
+        
+//        p(DbGopher::getLastQuery());
+//        die;
+        
+        return $tva;
+    }
+    
+    /**
+     * Find the right object and view to use with the page slug
+     * 
+     * @param type $tableName
+     * @param type $action
+     */
+    public static function getSlug($slug)
+    {
+        $views = DB::table('_db_pages')
+                ->join('_db_objects', '_db_pages.object_id', '=', '_db_objects.id')
+                ->join('_db_views', '_db_pages.view_id', '=', '_db_views.id')
+                ->where('_db_pages.slug', '=', $slug)
+                ->first();
+        return $views;
+    }
+    
+    /**
+     * Loop through foreign keys and generate an array of select boxes for each
+     * related primary key
+     * 
+     * @param type $meta
+     */
+    public static function getPkSelects($meta)
+    {
+        $selectA = array();
+        foreach ($meta as $metaField)
+        {
+            if (isset($metaField['pk']))
+            {
+                //metadata of the primary key
+                $pk = $metaField['pk'];
+
+                //meta data of the field used to display the primary key
+                $pkd = $pk;
+                if (isset($metaField['pk_display']) && !empty($metaField['pk_display']))
+                {
+                    $pkd = $metaField['pk_display'];
+                }
+
+                //get an array of key-value pairs to be used as select boxes in the front end
+                $selectA[$metaField['name']] = self::getSelectBox($pk['tableName'], $pk['name'], $pkd['name']);
+            }
+        }
+        return $selectA;
+    }
+
+    /**
+     * Get a select array(object(value, text))
+     */
+    public static function getSelectBox($table, $valueField, $textField)
+    {
+        $data = DB::table($table)->select($valueField, $textField)->get();
+        $arr = array();
+        if (is_array($data))
+        {
+            foreach ($data as $rec)
+            {
+                $arr[$rec->$valueField] = array('value' => $rec->$valueField, 'text' => $rec->$textField);
+            }
+        }
+        return $arr;
+    }
+    
 }
 
 ?>
