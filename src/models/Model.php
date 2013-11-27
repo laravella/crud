@@ -243,6 +243,78 @@ class Model extends Eloquent {  //why a Model and a meta.Table? Maybe extend met
     }
 
     /**
+     * 
+     * 
+     * @param type $userId
+     * @return type
+     */
+    public static function getUserMenu ($userId = null) {
+        if ($userId == null) {
+            $userId = Auth::user()->id;
+        }
+        
+        $menus = DB::table('users as u')->join('usergroups as ug', 'u.usergroup_id', '=', 'ug.id')
+                ->join('_db_menu_permissions as mp', 'mp.usergroup_id', '=', 'ug.id')
+                ->join('_db_menus as m', 'm.id', '=', 'mp.menu_id')
+                ->join('_db_menus as m2', 'm2.parent_id', '=', 'm.id')
+                ->where('u.id', '=', $userId)
+                ->select('u.username', 'ug.group', 
+                        'm.id', 'm.icon_class', 'm.label', 'm.href', 'm.parent_id', 
+                        'm2.id as m2_id', 'm2.icon_class as m2_icon_class', 'm2.label as m2_label', 
+                        'm2.href as m2_href', 'm2.parent_id as m2_parent_id')->get();
+
+
+        
+        $menuA = array();
+        foreach($menus as $menu) {
+            if (!isset($menuA[$menu->label])) {
+                $menuA[$menu->label] = array();
+            }
+            $menuA[$menu->label][] = array('username'=>$menu->username, 'group'=>$menu->group, 
+                'id'=>$menu->id, 'icon_class'=>$menu->icon_class, 'label'=>$menu->label, 
+                'href'=>$menu->href, 'parent_id'=>$menu->parent_id, 'm2_id'=>$menu->m2_id, 
+                'm2_icon_class'=>$menu->m2_icon_class, 'm2_label'=>$menu->m2_label, 
+                'm2_href'=>$menu->m2_href, 'm2_parent_id'=>$menu->m2_parent_id);
+        }
+        return $menuA;
+    }
+    
+    /**
+     * Get assets linked to a page
+     */
+    public static function getAssets($page) {
+        $assetsA = array();
+
+        $assetType = "default";
+        
+        $pot = Options::get('skin').".dbview";
+        
+        if (isset($page) && is_object($page))
+        {
+            $pot = $page->view_name;
+        }
+        
+        $assets = DB::table('_db_page_assets as pa')
+        ->join('_db_option_types as pot', 'pot.id', '=', 'pa.page_type_id')
+        ->join('_db_option_types as aot', 'aot.id', '=', 'pa.asset_type_id')
+        ->join('_db_assets as a', 'a.asset_type_id', '=', 'pa.asset_type_id')
+        ->join('_db_pages as p', 'p.page_type_id', '=', 'pa.page_type_id')
+        ->select('pa.id', 'pa.page_type_id', 'pa.asset_type_id', 'a.id', 
+        'p.id', 'aot.name', 'pot.name', 'a.url', 'a.vendor', 'a.type', 'a.version', 
+        'a.position', 'p.action_id', 'p.view_id', 'p.content_id', 'p.page_size', 
+                'p.title', 'p.slug')
+        /*->where('pot.name', $pot)*/  //TODO : had to comment this out because upload isn't properly linked to assets and pages
+        ->where('p.slug', '_db_actions_getselect')
+        ->get();
+
+        foreach($assets as $asset) {
+            $assetsA[] = array('url'=>$asset->type."/".$asset->url, 'type'=>$asset->type, 'position'=>$asset->position);
+        }
+
+        return $assetsA;
+    }
+    
+    /**
      * Setter for table
      * 
      * @param type $tableName

@@ -19,6 +19,7 @@ class DbController extends AuthorizedController {
     const SUCCESS = "success";
     const INFO = "info";
     const IMPORTANT = "important";
+    
     const HTML = "text/html";
     const XML = "text/xml";
     const JSON = "text/json";
@@ -26,7 +27,8 @@ class DbController extends AuthorizedController {
     private $model = null;
     
     public $displayType = self::HTML;
-
+    
+    public $params = null;
 
     public function getSkin()
     {
@@ -64,34 +66,9 @@ class DbController extends AuthorizedController {
      */
     public function getIndex($contentSlug = 'contents_getpage')
     {
-
-        $contentsA = Table::asArray('contents', array('slug' => $contentSlug));
-
-        $params = array();
-
-        //see if contents.id links to _db_pages.content_id to fetch relevant data
-        if (isset($contentsA) && !empty($contentsA))
-        {
-            
-            $contentId = $contentsA[0]['id'];
-            $tav = Model::getPageData(null, null, null, $contentId);
-            
-            $tableName = DbGopher::coalesce($tav, 'table_name');
-            $actionName = DbGopher::coalesce($tav, 'action_name');
-            
-            $data = DB::table($tableName);
-            $params = new Params($tableName, $actionName, $this->displayType, $data, true);
-
-            $params->contents = $contentsA;
-//            $params->view = $viewName;
-            $params->slug = DbGopher::coalesce($tav, 'slug');
-        }
-        else
-        {
-            $params = Params::bySlug(true, $contentSlug, $this->displayType, $this->getView('frontend'));
-        }
-
-        return $this->makeView($params->asArray());
+        
+        $this->params = Params::bySlug(true, $contentSlug, $this->displayType, $this->getView('frontend'));
+        return $this->makeView();
         
     }
 
@@ -112,9 +89,8 @@ class DbController extends AuthorizedController {
     protected function getPage($table = 'contents', $action = 'getPage', $frontend = false)
     {
         //get related data
-        $params = new Params($table, $action, $this->displayType, DB::table($table), $frontend);
-        $paramsA = $params->asArray();
-        return $this->makeView($paramsA);
+        $this->params = new Params($table, $action, $this->displayType, DB::table($table), $frontend);
+        return $this->makeView();
     }
 
     /**
@@ -122,16 +98,21 @@ class DbController extends AuthorizedController {
      * @param type $paramsArray Params->asArray()
      * @return type
      */
-    public function makeView($paramsArray) {
+    public function makeView() {
         
-        //return View::make($paramsArray['layout'])->nest('content', $paramsArray['view'], $paramsArray);
-        
-        //convert boolean type to skintype
-        $skinType = $paramsArray['frontend']?'frontend':'admin';
-        $layout = $this->getLayout($skinType);
-        $view = $this->getView($skinType);
-        return View::make($layout)->nest('content', $view, $paramsArray);
-        
+        $paramsA = $this->params->asArray();
+
+        if (!isset($paramsA['view']) || empty($paramsA['view']))
+        {
+            $skinType = $paramsA['frontend']?'frontend':'admin';
+            $paramsA['view'] = $this->getView($skinType);
+        }
+        if (!isset($paramsA['layout']) || empty($paramsA['layout']))
+        {
+            $skinType = $paramsA['frontend']?'frontend':'admin';
+            $paramsA['layout'] = $this->getView($skinType);
+        }
+        return View::make($paramsA['layout'])->nest('content', $paramsA['view'], $paramsA);
     }
 
     /**
@@ -167,25 +148,19 @@ class DbController extends AuthorizedController {
     {
         $action = 'getSelect';
 
-        //get the json string from the http querystring ?q=json
-//        $json = Input::get('q');
-        $json = $q;
-
-        $searchObj = json_decode($json, true);
-
+        $searchObj = json_decode($q, true);
         foreach ($searchObj as $sTable => $sFields)
         {
             $table = DB::table($sTable);
-
             foreach ($sFields as $sField => $sValue)
             {
                 $table->where($sField, '=', $sValue);
             }
         }
 
-        $params = new Params($tableName, $action, $this->displayType, $table);
+        $this->params = new Params($tableName, $action, $this->displayType, $table);
 
-        return $this->makeView($params->asArray());
+        return $this->makeView();
         
     }
 
@@ -200,7 +175,6 @@ class DbController extends AuthorizedController {
     {
         //check for foreign key constraints
         $action = 'getDelete';
-        $params = null;
         try
         {
             DB::table($tableName)->where('id', '=', $recorid)->delete();
@@ -208,11 +182,11 @@ class DbController extends AuthorizedController {
         catch (Exception $e)
         {
         }
-        $params = new Params($tableName, $action, $this->displayType, null);
+        $this->params = new Params($tableName, $action, $this->displayType, null);
         $res = '{"status":"failed"}';
-        if (is_object($params))
+        if (is_object($this->params))
         {
-            $res = json_encode($params->asArray());
+            $res = json_encode($this->params->asArray());
         }
         return $res;
     }
@@ -228,9 +202,9 @@ class DbController extends AuthorizedController {
     {
         $action = 'getInsert';
 
-        $params = new Params($tableName, $action, $this->displayType, null);
+        $this->params = new Params($tableName, $action, $this->displayType, null);
 
-        return $this->makeView($params->asArray());
+        return $this->makeView();
         
     }
 
@@ -252,9 +226,9 @@ class DbController extends AuthorizedController {
 
         $table = DB::table($tableName)->where($pkName, '=', $pkValue);
 
-        $params = new Params($tableName, $action, $this->displayType, $table);
+        $this->params = new Params($tableName, $action, $this->displayType, $table);
 
-        return $this->makeView($params->asArray());
+        return $this->makeView();
 
     }
 
@@ -324,17 +298,10 @@ class DbController extends AuthorizedController {
                     $table = DB::table($tableName);
                 }
 
-                $params = new Params($tableName, $action, $this->displayType, $table);
-                $paramsA = $params->asArray();
+                $this->params = new Params($tableName, $action, $this->displayType, $table);
 
-                if (isset($paramsA['view']))
-                {
-                    return $this->makeView($paramsA); //View::make($paramsA['view']->name)->with($paramsA);
-                }
-                else
-                {
-                    return View::make(Options::get('skin') . '.default');
-                }
+                $this->makeView();
+                
             }
         }
         else
@@ -362,9 +329,6 @@ class DbController extends AuthorizedController {
 //        print_r($parameters);
 //        return "missing";
     }
-
-//-----------------------------------move to Model--------------------------------------------------------------------------------------
-    
 
 
 }

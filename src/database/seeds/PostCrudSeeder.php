@@ -69,7 +69,7 @@ class PostCrudSeeder extends CrudSeeder {
         $this->setFieldHelp('_db_pages.content_id', 'Link to text contents of the page.', 'The \'contents\' table might contain textual content that can be displayed on the page in addition to the records linked to the page.  Add a record in the \'contents\' table and link it here.');
 
         //add contents to contents table
-        $contentId = $this->addContents('home', 'Cart', 'Welcome', 'Welcome');
+        //$contentId = $this->addContents('home', 'Cart', 'Welcome', 'Welcome');
         //$this->linkPageToTable($slug, $tableName);
         //link the above contents to a page
         //$this->linkContentToPage('home', 'contents_getpage');
