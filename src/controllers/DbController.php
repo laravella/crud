@@ -45,7 +45,9 @@ class DbController extends AuthorizedController {
      */
     public function getLayout($type = 'admin')
     {
-        return Options::get('skin', $type) . $this->layoutName;
+//        return Options::get('skin', $type) . $this->layoutName;
+        $skin = Options::getSkin();
+        return $viewName = $skin[$type] . $this->layoutName;
     }
 
     /**
@@ -55,7 +57,9 @@ class DbController extends AuthorizedController {
      */
     public function getView($type = 'admin')
     {
-        return Options::get('skin', $type) . $this->viewName;
+        $skin = Options::getSkin();
+        return $viewName = $skin[$type] . $this->viewName;
+//        return Options::get('skin', $type) . $this->viewName;
     }
 
     /**
@@ -102,6 +106,9 @@ class DbController extends AuthorizedController {
         
         $paramsA = $this->params->asArray();
 
+        $skinType = $paramsA['frontend']?'frontend':'admin';
+        $paramsA['view'] = $this->getView($skinType);
+
         if (!isset($paramsA['view']) || empty($paramsA['view']))
         {
             $skinType = $paramsA['frontend']?'frontend':'admin';
@@ -110,7 +117,7 @@ class DbController extends AuthorizedController {
         if (!isset($paramsA['layout']) || empty($paramsA['layout']))
         {
             $skinType = $paramsA['frontend']?'frontend':'admin';
-            $paramsA['layout'] = $this->getView($skinType);
+            $paramsA['layout'] = $this->getLayout($skinType);
         }
         return View::make($paramsA['layout'])->nest('content', $paramsA['view'], $paramsA);
     }

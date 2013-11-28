@@ -91,7 +91,8 @@ class Params extends CrudSeeder {
      * @param type $action
      * @return \Laravella\Crud\Params
      */
-    public function __construct($tableName, $action, $displayType, $data = null, $frontend = false, $contentSlug = 'contents_getpage')
+    public function __construct($tableName, $action, $displayType, $data = null, 
+            $frontend = false, $contentSlug = 'contents_getpage')
     {
         Log::info("constructing Params for : tableName = $tableName");
 
@@ -165,16 +166,22 @@ class Params extends CrudSeeder {
     
     public function skin() {
         $skins = Options::getSkin();
+//        p($skins);
+//        die;
         $this->skin = array();
         
         if ($this->frontend) {
             $this->skin['name'] = $skins['name'];
             $this->skin['fullname'] = $skins['frontend'];
-            $this->layout = Options::get('skin', 'frontend') . '.frontlayout';
+            $this->skin['vendor'] = $skins['vendor'];
+            $this->skin['package'] = $skins['package'];
+            $this->layout = $skins['frontend'] . '.frontlayout';
         } else {
             $this->skin['name'] = $skins['adminName'];
             $this->skin['fullname'] = $skins['admin'];
-            $this->layout = Options::get('skin', 'admin') . '.default';
+            $this->skin['vendor'] = $skins['adminVendor'];
+            $this->skin['package'] = $skins['adminPackage'];
+            $this->layout = $skins['admin'] . '.default';
         }
     }
 

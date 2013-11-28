@@ -38,22 +38,56 @@ class Options {
         $skinAdmin = Options::get('skin', 'admin');
         $skinA = explode('::', $skinFront);
         $adminSkinA = explode('::', $skinAdmin);
-        
-        if (count($skinA) > 1) {
+        $skinVendor = 'laravella';
+        $adminSkinVendor = 'laravella';
+
+        if (count($skinA) == 3) {
+            $skinVendor = $skinA[0];
+            $skinPackage = $skinA[1];
+            $skinName = $skinA[2];
+            $skinFront = $skinPackage."::".$skinName;
+                    
+            $adminSkinVendor = $adminSkinA[0];
+            $adminSkinPackage = $adminSkinA[1];
+            $adminSkinName = $adminSkinA[2];
+            $skinAdmin = $adminSkinPackage."::".$adminSkinName;
+        } else if (count($skinA) == 2) {
+            $skinPackage = $skinA[0];
             $skinName = $skinA[1];
+            $skinFront = $skinPackage."::".$skinName;
+            
+            $adminSkinPackage = $adminSkinA[0];
             $adminSkinName = $adminSkinA[1];
+            $skinAdmin = $adminSkinPackage."::".$adminSkinName;
         } else if (count($skinA) == 1) {
+            $skinPackage = 'skins';
             $skinName = $skinA[0];
+            $skinFront = $skinPackage."::".$skinName;
+            
+            $adminSkinPackage = 'skins';
             $adminSkinName = $adminSkinA[0];
+            $skinAdmin = $adminSkinPackage."::".$adminSkinName;
         } else {
+            $skinPackage = '';
+            $adminSkinPackage = '';
+            $skinFront = $skinPackage."::".$skinName;
+            
             $skinName = '';
             $adminSkinName = '';
+            $skinAdmin = $adminSkinPackage."::".$adminSkinName;
         }
-        
-        $skin = array('admin'=>$skinAdmin, 
-            'frontend'=>$skinFront,
+
+        $skin = array(
+            'package'=>$skinPackage, 
+            'admin'=>$skinAdmin, 
             'name'=>$skinName,
-            'adminName'=>$adminSkinName);        
+            'vendor'=>$skinVendor,
+            
+            'adminPackage'=>$adminSkinPackage, 
+            'frontend'=>$skinFront,
+            'adminName'=>$adminSkinName,
+            'adminVendor' => $adminSkinVendor
+            );
         
         return $skin;
     }
