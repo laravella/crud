@@ -37,7 +37,8 @@ class CrudUpdateCommand extends Command {
 	 */
 	public function fire()
 	{
-		$this->call('db:seed',array('--class'=>'Laravella\\Crud\\PostCrudSeeder'));
+		//$this->call('db:seed',array('--class'=>'Laravella\\Crud\\PostCrudSeeder'));
+		$this->call('db:seed',array('--class'=>'Laravella\\Crud\\JsonSeeder'));
 		$this->info('CRUD update complete.');
 	}
 

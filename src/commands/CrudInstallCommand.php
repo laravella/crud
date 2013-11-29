@@ -43,7 +43,9 @@ class CrudInstallCommand extends Command {
 		$this->info('Crud::migrations ran.');
 		$this->call('db:seed',array('--class'=>'Laravella\\Crud\\CrudDatabaseSeeder'));
 		$this->info('Crud::CrudDatabaseSeeder ran.');
+		$this->call('db:seed',array('--class'=>'Laravella\\Crud\\JsonSeeder'));
 		$this->info('CRUD installation complete.');
+                
 	}
 
 	/**
