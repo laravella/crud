@@ -21,13 +21,13 @@ class CrudSeeder extends Seeder {
 
     /**
      * 
-     * 
-     * @param type $keys
+     * @param type $keys Valid elements : pk_field, pk_display_field, fk_field, fk_display_field, key_type, order
      */
     public function addKeys($keys) 
     {
         foreach ($keys as $key) {
-            $this->addKey($key['pk_field'], $key['pk_display_field'], $key['fk_field'], $key['fk_display_field'], $key['key_type'], $key['order']);
+            $this->addKey($key['pk_field'], $key['pk_display_field'], $key['fk_field'], $key['fk_display_field'], 
+                    $this->coa($key, 'key_type', 'primary'), $this->coa($key, 'order', 0));
         }
     }
     
@@ -118,6 +118,19 @@ class CrudSeeder extends Seeder {
         if (isset($label) && !is_null($label)) {
             //change field labels
             $this->updateOrInsert('_db_fields', array('fullname' => $fullName), array('label' => $label));
+        }
+    }
+
+    /**
+     * Create a link to add additional tables to a page
+     * 
+     * @param type $links
+     */
+    public function linkPageToTables($links)
+    {
+        foreach($links as $link) 
+        {
+            $this->linkPageToTable($link['page_slug'], $link['tablename']);
         }
     }
 
@@ -503,6 +516,29 @@ class CrudSeeder extends Seeder {
          */
     }
 
+    /**
+     * 
+     * @param type $types
+     */
+    public function addOptionTypes($types)
+    {
+        foreach ($types as $type)
+        {
+            $id = $this->getId("_db_option_types", "name", $type['parent']);
+            $this->addOptionType($type['type'], $id);
+        }
+    }
+
+    public function addOptions($options)
+    {
+//        {"type" : "admin", "name" : "debug", "value" : "0"},
+        foreach($options as $option)
+        {
+            $optionTypeId = $this->getId("_db_option_types", "name", $option['type']);
+            $this->addOption($optionTypeId, $option['name'], $option['value']);
+        }
+    }
+    
     /**
      * Get the id of a record based on the value of another field
      * 
