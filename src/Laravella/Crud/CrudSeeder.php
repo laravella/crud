@@ -18,6 +18,43 @@ class CrudSeeder extends Seeder {
     private $pkTypeId = null;
     private $fkTypeId = null;
 
+
+    /**
+     * 
+     * 
+     * @param type $keys
+     */
+    public function addKeys($keys) 
+    {
+        foreach ($keys as $key) {
+            $this->addKey($key['pk_field'], $key['pk_display_field'], $key['fk_field'], $key['fk_display_field'], $key['key_type'], $key['order']);
+        }
+    }
+    
+    /**
+     * Add a primary key - foreign key combination to key_fields
+     * 
+     * @param type $pk_field
+     * @param type $pk_display_field
+     * @param type $fk_field
+     * @param type $fk_display_field
+     * @param type $key_type
+     * @param type $order
+     */
+    public function addKey($pk_field, $pk_display_field, $fk_field, $fk_display_field, $key_type, $order) 
+    {
+            $pk_fullname = explode('.', $pk_field);
+            $fk_fullname = explode('.', $fk_field);
+            
+            $pk_table = $pk_fullname[0];
+            $pk_field = $pk_fullname[1];
+            
+            $fk_table = $fk_fullname[0];
+            $fk_field = $fk_fullname[1];
+            
+            $this->updateReference($fk_table, $fk_field, $pk_table, $pk_field, $pk_display_field);
+    }
+    
     /**
      * 
      */
@@ -78,8 +115,10 @@ class CrudSeeder extends Seeder {
      */
     public function setFieldTitle($fullName, $label)
     {
-        //change field labels
-        $this->updateOrInsert('_db_fields', array('fullname' => $fullName), array('label' => $label));
+        if (isset($label) && !is_null($label)) {
+            //change field labels
+            $this->updateOrInsert('_db_fields', array('fullname' => $fullName), array('label' => $label));
+        }
     }
 
     /**
@@ -117,6 +156,11 @@ class CrudSeeder extends Seeder {
         
     }
 
+    /**
+     * 
+     * @param type $fullName
+     * @param type $displayName
+     */
     public function setDisplayType($fullName, $displayName)
     {
         $nodisplayId = $this->getId('_db_display_types', 'name', $displayName);
@@ -176,6 +220,33 @@ class CrudSeeder extends Seeder {
     }
 
     /**
+     * 
+     */
+    public function setWidget($fullName, $widgetType) {
+        
+        echo 'setting '.$fullName.' '.$widgetType." \n";
+        
+        //get the id of the primary key field in _db_fields
+        //for each field in the _db_fields table there will thus be a reference to 
+        $widgetTypeId = DB::table('_db_widget_types')
+                ->where('name', $widgetType)
+                ->pluck('id');
+
+        //get the id of the primary key field in _db_fields
+        //for each field in the _db_fields table there will thus be a reference to 
+        $displayTypeId = DB::table('_db_display_types')
+                ->where('name', 'widget')
+                ->pluck('id');
+        
+        $result = DB::table('_db_fields')
+                ->where('fullname', $fullName)
+                ->update(array('widget_type_id' => $widgetTypeId, 'display_type_id' => $displayTypeId));
+        
+        echo $result.' '.$fullName.' set to '.$widgetTypeId.' '.$displayTypeId." \n";
+        
+    }
+    
+    /**
      * Set the displayType of a field to 'widget' and set the widgetType to $widgetType
      * 
      * @param type $tableName The name of the table 
@@ -184,6 +255,10 @@ class CrudSeeder extends Seeder {
      */
     public function setWidgetType($tableName, $fieldName, $widgetType)
     {
+        
+        return $this->setWidget($tableName.'.'.$fieldName, $widgetType);
+        
+        /*
         $tableId = DB::table('_db_tables')->where('name', $tableName)->pluck('id');
 
         //get the id of the primary key field in _db_fields
@@ -202,6 +277,8 @@ class CrudSeeder extends Seeder {
                 ->where('table_id', $tableId)
                 ->where('name', $fieldName)
                 ->update(array('widget_type_id' => $widgetTypeId, 'display_type_id' => $displayTypeId));
+         * 
+         */
     }
 
     /**
@@ -680,7 +757,7 @@ class CrudSeeder extends Seeder {
     public function updateOrInsert($updateTable, $whereValues, array $insertValues = null)
     {
 
-        if (is_null($insertValues))
+        if (is_null($insertValues) || empty($insertValues))
         {
             $insertValues = $whereValues;
         }
@@ -728,6 +805,52 @@ class CrudSeeder extends Seeder {
         return $ids;
     }
 
+    /**
+     * 
+     */
+    public static function coa($array, $val, $default = null) {
+        return (isset($array[$val]))?$array[$val]:$default;
+    }
+    
+    /**
+     * Build an array that can be inserted into _db_fields that only contains valid values
+     */
+    public function buildArray($field) {
+        $fieldsA = array();
+        //searchable, display_order, width, default, href, description, help
+        $attrNames = array('searchable', 'display_order', 'width', 'default', 'href', 'description', 'help');
+        foreach ($attrNames as $attrName) {
+            $a = self::coa($field, $attrName);
+            if (!is_null($a)) {
+                $fieldsA[$attrName] = $a;
+            }
+        }
+        return $fieldsA;
+    }
+    /**
+     * Update the _db_fields table
+     * 
+     * @param array $fields valid elements : fullname, label, display_type, searchable, display_order, width, widget_type, default, href, description, help
+     */
+    public function updateFields($fields) {
+        foreach($fields as $field) {
+            //fullname, label
+            $this->setFieldTitle($field['fullname'], self::coa($field, 'label'));
+            
+            //display_type, 
+            $this->setDisplayType($field['fullname'], self::coa($field, 'display_type'));
+
+            //widget_type
+            $this->setWidget($field['fullname'], self::coa($field, 'widget_type'));
+            
+            //searchable, display_order, width, default, href, description, help
+            $attrs = $this->buildArray($field);
+            echo var_dump($attrs);
+            $this->updateOrInsert('_db_fields', array("fullname"=>$field['fullname']), $attrs);
+
+        }
+    }
+    
     public function addDivider($parentId)
     {
         $rec = array('label' => 'divider', 'href' => '', 'parent_id' => $parentId, 'icon_class' => '');
