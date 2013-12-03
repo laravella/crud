@@ -19,9 +19,10 @@ class CreateMenusTable extends Migration {
 			$table->increments('id');
 			$table->string('icon_class')->nullable();
 			$table->string('label');
-			$table->integer('weight')->default(0);
 			$table->string('href')->nullable();
+			$table->integer('page_id')->unsigned()->nullable();
 			$table->integer('parent_id')->nullable();
+			$table->integer('weight')->default(0);
                         $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
                         $table->timestamp('updated_at')->default('0000-00-00 00:00:00');
 		});

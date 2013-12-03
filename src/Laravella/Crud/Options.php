@@ -3,6 +3,7 @@
 namespace Laravella\Crud;
 
 use \DB;
+use \Config;
 
 /**
  * Description of Options
@@ -11,6 +12,18 @@ use \DB;
  */
 class Options {
 
+
+    /**
+     * 
+     * @param type $name
+     * @return type
+     */
+    public static function getJsonOptions($name) {
+        $objectsPath = Config::get('app.objects');
+        $json = json_decode(file_get_contents($objectsPath), true);
+        return $json[$name];
+    }
+    
     public static function get($name, $type=null)
     {
         $setting = '';

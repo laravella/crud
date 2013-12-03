@@ -10,7 +10,7 @@ class SeedViews extends CrudSeeder {
     public function run()
     {
         
-        $skins = Config::get('app.skins'); //"flatly";
+        $skins = Options::getJsonOptions('skins'); //Config::get('app.skins');
         
         DB::table('_db_views')->delete();
         

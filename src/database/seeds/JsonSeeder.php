@@ -37,7 +37,6 @@ class JsonSeeder extends CrudSeeder {
       _db_user_permissions #user-pages
       _db_usergroup_permissions #usergroup-pages
      * 
-     * 
      */
     public function run()
     {
@@ -49,13 +48,56 @@ class JsonSeeder extends CrudSeeder {
         $this->updateFields($json['fields']);
         $this->linkPageToTables($json['page_tables']);
         $this->addData($json['data']);
-        
+        $this->addMenusJson($json['menus']);
+
 //        App::instance('meta', $json);
     }
-    
-    public function addData($tables) 
+
+    /**
+     * 
+     * 
+     * @param type $menus
+     */
+    public function addMenusJson($menus, $parentId = null)
     {
-        foreach ($tables as $table=>$data) {
+        foreach($menus as $menu) {
+            try {
+                $slug = self::coa($menu, 'slug');
+                $pageId = $this->getId('_db_pages', 'slug', $slug);
+                $subMenus = self::coa($menu, 'sub_menus');
+                $usergroups = self::coa($menu, 'usergroups');
+                $menuA = $this->buildArray($menu, array("icon_class", "label", "href", "weight")); //array('page_id'=>$pageId);
+                $menuA['page_id'] = $pageId;
+                $menuA['parent_id'] = $parentId;
+                $mId = DB::table('_db_menus')->insertGetId($menuA);
+                if (!empty($usergroups)) 
+                {
+                    echo "\n";
+                    foreach($usergroups as $usergroup) {
+                        echo "linking menu ".$mId." to ".$usergroup."\n";
+                        $this->addMenuPermissions($mId, $usergroup);
+                    }
+                    die;
+                }
+                if (!empty($subMenus)) 
+                {
+                    $this->addMenusJson($subMenus, $mId);
+                }
+            } catch (Exception $e) {
+                //echo $e->getMessage();
+            }
+        }
+    }
+
+    /**
+     * Add any type of data, particularly for tables that don't contain foreign keys
+     * 
+     * @param type $tables
+     */
+    public function addData($tables)
+    {
+        foreach ($tables as $table => $data)
+        {
             DB::table($table)->insert($data);
         }
     }

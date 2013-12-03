@@ -49,6 +49,7 @@ class UpdateReferences extends CrudSeeder {
             echo "_db_usergroup_permissions done. \n";
             
             $this->updateReference('_db_menus', 'parent_id', '_db_menus', 'id', 'label');
+            $this->updateReference('_db_menus', 'page_id', '_db_pages', 'id', 'slug');
             echo "_db_menus done. \n";
 
             $this->updateReference('_db_menu_permissions', 'menu_id', '_db_menus', 'id', 'label');
