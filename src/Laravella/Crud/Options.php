@@ -19,8 +19,8 @@ class Options {
      * @return type
      */
     public static function getJsonOptions($name) {
-        $objectsPath = Config::get('app.objects');
-        $json = json_decode(file_get_contents($objectsPath), true);
+        $objectsPath = Config::get('app.preseed');
+        $json = json_decode(file_get_contents($objectsPath[0]), true);  //there could be more than one file
         return $json[$name];
     }
     

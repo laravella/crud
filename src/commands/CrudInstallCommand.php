@@ -37,15 +37,15 @@ class CrudInstallCommand extends Command {
 	 */
 	public function fire()
 	{
-                $this->call('config:publish',array('package'=>'laravella/crud'));
-                $this->call('asset:publish',array('package'=>'laravella/crud'));
-                $this->call('migrate',array('--package'=>'laravella/crud'));
-		$this->info('Crud::migrations ran.');
-		$this->call('db:seed',array('--class'=>'Laravella\\Crud\\CrudDatabaseSeeder'));
-		$this->info('Crud::CrudDatabaseSeeder ran.');
-		$this->call('db:seed',array('--class'=>'Laravella\\Crud\\JsonSeeder'));
-		$this->info('CRUD installation complete.');
-                
+            $this->call('config:publish',array('package'=>'laravella/crud'));
+            $this->call('asset:publish',array('package'=>'laravella/crud'));
+            $this->call('migrate',array('--package'=>'laravella/crud'));
+            $this->info('Crud::migrations ran.');
+            $this->call('db:seed',array('--class'=>'Laravella\\Crud\\PreJsonSeeder'));
+            $this->call('db:seed',array('--class'=>'Laravella\\Crud\\CrudDatabaseSeeder'));
+            $this->info('Crud::CrudDatabaseSeeder ran.');
+            $this->call('db:seed',array('--class'=>'Laravella\\Crud\\PostJsonSeeder'));
+            $this->info('CRUD installation complete.');
 	}
 
 	/**

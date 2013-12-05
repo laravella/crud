@@ -26,7 +26,8 @@ class CrudSeeder extends Seeder {
     {
         foreach ($keys as $key)
         {
-            $this->addKey($key['pk_field'], $key['pk_display_field'], $key['fk_field'], $key['fk_display_field'], $this->coa($key, 'key_type', 'primary'), $this->coa($key, 'order', 0));
+            $this->addKey($key['pk_field'], $key['pk_display_field'], $key['fk_field'], 
+                    $key['fk_display_field'], $this->coa($key, 'key_type', 'primary'), $this->coa($key, 'order', 0));
         }
     }
 
@@ -44,14 +45,16 @@ class CrudSeeder extends Seeder {
     {
         $pk_fullname = explode('.', $pk_field);
         $fk_fullname = explode('.', $fk_field);
+        $pk_display_fullname = explode('.', $pk_display_field);
 
         $pk_table = $pk_fullname[0];
         $pk_field = $pk_fullname[1];
-
+        $pkd_field = $pk_display_fullname[count($pk_display_fullname)-1];
+        
         $fk_table = $fk_fullname[0];
         $fk_field = $fk_fullname[1];
 
-        $this->updateReference($fk_table, $fk_field, $pk_table, $pk_field, $pk_display_field);
+        $this->updateReference($fk_table, $fk_field, $pk_table, $pk_field, $pkd_field);
     }
 
     /**
@@ -146,11 +149,63 @@ class CrudSeeder extends Seeder {
         echo $slug . " ";
         echo $tableName;
         $pageId = $this->getId('_db_pages', 'slug', $slug);
+        if (is_null($pageId) || empty($pageId)) {
+            echo $slug . " not found. Cannot be linked to $tableName";
+            die;
+        }
         $tableId = $this->getId('_db_tables', 'name', $tableName);
         $id = DB::table('_db_page_tables')->insertGetId(array('page_id' => $pageId, 'table_id' => $tableId));
         return $id;
     }
 
+    /**
+     * 
+     * 
+     * @param type $menus
+     */
+    public function addMenusJson($menus, $parentId = null)
+    {
+        foreach($menus as $menu) {
+            try {
+                $slug = self::coa($menu, 'slug');
+                $pageId = $this->getId('_db_pages', 'slug', $slug);
+                $subMenus = self::coa($menu, 'sub_menus');
+                $usergroups = self::coa($menu, 'usergroups');
+                $menuA = $this->buildArray($menu, array("icon_class", "label", "href", "weight")); //array('page_id'=>$pageId);
+                $menuA['page_id'] = $pageId;
+                $menuA['parent_id'] = $parentId;
+                $mId = DB::table('_db_menus')->insertGetId($menuA);
+                if (!empty($usergroups)) 
+                {
+                    echo "\n";
+                    foreach($usergroups as $usergroup) {
+                        echo "linking menu ".$mId." to ".$usergroup."\n";
+                        $this->addMenuPermissions($mId, $usergroup);
+                    }
+                }
+                if (!empty($subMenus)) 
+                {
+                    $this->addMenusJson($subMenus, $mId);
+                }
+            } catch (Exception $e) {
+                //echo $e->getMessage();
+            }
+        }
+    }
+
+    /**
+     * Add any type of data, particularly for tables that don't contain foreign keys
+     * 
+     * @param type $tables
+     */
+    public function addData($tables)
+    {
+        foreach ($tables as $table => $data)
+        {
+            DB::table($table)->insert($data);
+        }
+    }
+    
     /*
      * Set the page's type
      */

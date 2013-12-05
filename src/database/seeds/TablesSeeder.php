@@ -5,28 +5,6 @@ use \Seeder;
 use \DB;
 
 class SeedTables extends CrudSeeder {
-    
-    private function addWidgetTypes()
-    {
-        $wTypes = array();
-
-        DB::table('_db_widget_types')->delete();
-
-        $wTypes['input:text'] = $this->addWidgetType('input:text');
-        $wTypes['input:hidden'] = $this->addWidgetType('input:hidden');
-        $wTypes['input:text'] = $this->addWidgetType('input:text');
-        $wTypes['input:checkbox'] = $this->addWidgetType('input:checkbox');
-        $wTypes['input:radio'] = $this->addWidgetType('input:radio');
-        $wTypes['textarea'] = $this->addWidgetType('textarea');
-        $wTypes['select'] = $this->addWidgetType('select');
-        $wTypes['multiselect'] = $this->addWidgetType('multiselect');
-        $wTypes['ckeditor'] = $this->addWidgetType('ckeditor');
-        $wTypes['span'] = $this->addWidgetType('span');
-        $wTypes['password'] = $this->addWidgetType('password');
-        $wTypes['password:hashed'] = $this->addWidgetType('password:hashed');
-        $wTypes['password:md5'] = $this->addWidgetType('password:md5');
-        $wTypes['thumbnail'] = $this->addWidgetType('thumbnail');
-    }
 
     private function addDisplayTypes()
     {
@@ -55,7 +33,7 @@ class SeedTables extends CrudSeeder {
 
         $displayTypes = $this->addDisplayTypes();
 
-        $widgetTypes = $this->addWidgetTypes();
+//        $widgetTypes = $this->addWidgetTypes();
 
 //get the list of tables from the database metadata
         $tables = DB::select('show tables');

@@ -333,6 +333,8 @@ class Params extends CrudSeeder {
                     Log::info("{$ma[$name]['name']} has a pk");
                     //$name is a foreign key, it contains a reference to a primary key
                     //pk display field's meta data array
+//                    p($ma[$name]);
+//                    die;
                     $pkdfMetaA = $ma[$name]['pk_display'];
 
                     //pk meta data array

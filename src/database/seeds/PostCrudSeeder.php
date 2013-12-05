@@ -54,11 +54,11 @@ class PostCrudSeeder extends CrudSeeder {
 
         $ugId = $this->getId('usergroups', 'group', 'admin');
         
-        $mId = $this->getId('_db_menus', 'label', 'Meta Data');
-        $this->delete('_db_menu_permissions', array('usergroup_id'=>$ugId, 'menu_id'=>$mId));
-        
-        $mId = $this->getId('_db_menus', 'label', 'Menus');
-        $this->delete('_db_menu_permissions', array('usergroup_id'=>$ugId, 'menu_id'=>$mId));
+//        $mId = $this->getId('_db_menus', 'label', 'Meta Data');
+//        $this->delete('_db_menu_permissions', array('usergroup_id'=>$ugId, 'menu_id'=>$mId));
+//        
+//        $mId = $this->getId('_db_menus', 'label', 'Menus');
+//        $this->delete('_db_menu_permissions', array('usergroup_id'=>$ugId, 'menu_id'=>$mId));
         
         $this->setWidgetType('medias', 'id', 'thumbnail');
         
