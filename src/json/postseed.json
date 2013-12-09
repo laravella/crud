@@ -118,7 +118,7 @@
         }
     ],
     "skins": {
-        "frontend": "dataphile::firecracker::capetown",
+        "frontend": "laravella::skins::flatly",
         "admin": "laravella::skins::flatly"
     },
     "data": {
