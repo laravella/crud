@@ -16,6 +16,8 @@
         "valid widget_types : input:text, input:hidden, input:text, input:checkbox, input:radio, textarea, select, multiselect, ckeditor, span, password, password:hashed, password:md5, thumbnail"
     ],
     "fields": [
+        {"fullname": "services.short_description", "widget_type": "ckeditor", "help": "Short Description"},
+        {"fullname": "services.description", "widget_type": "ckeditor", "label": "Long Description", "description": "Long Description", "help": "Description"}
     ],
     "page_tables": [
     ],
@@ -75,12 +77,21 @@
                     "usergroups": ["admin", "superadmin"]
                 },
                 {
-                    "label": "Admin", "slug": "", "icon_class": "icon-file", "href": "", "weight": "0",
+                    "label": "CCI", "slug": "", "icon_class": "icon-file", "href": "", "weight": "3",
+                    "sub_menus": [
+                        {"label": "Services", "slug": "", "icon_class": "icon-file", "href": "/db/select/services"},
+                        {"label": "Homepage", "slug": "", "icon_class": "icon-file", "href": "/db/select/contents"},
+                        {"label": "Homepage Highlights", "slug": "", "icon_class": "icon-file", "href": "/db/select/contents"}
+                    ],
+                    "usergroups": ["admin", "superadmin"]
+                },
+                {
+                    "label": "Admin", "slug": "", "icon_class": "icon-file", "href": "", "weight": "1",
                     "sub_menus": [
                         {"label": "Users", "slug": "", "icon_class": "icon-file", "href": "/db/select/users"},
                         {"label": "Groups", "slug": "", "icon_class": "icon-file", "href": "/db/select/usergroups", "weight": "0"},
                         {"label": "divider"},
-                        {"label": "Menus", "href": "/db/select/menus", "icon_class": "icon-file"},
+                        {"label": "Menus", "href": "/db/select/_db_menus", "icon_class": "icon-file"},
                         {"label": "Menu Permissions", "href": "/db/select/_db_menu_permissions", "icon_class": "icon-file"},
                         {"label": "divider"},
                         {"label": "Options", "href": "/db/select/_db_options", "icon_class": "icon-file"}
@@ -88,16 +99,16 @@
                     "usergroups": ["admin", "superadmin"]
                 },
                 {
-                    "label": "Meta Data", "slug": "", "icon_class": "icon-file", "href": "", "weight": "0",
+                    "label": "Meta Data", "slug": "", "icon_class": "icon-file", "href": "", "weight": "2",
                     "sub_menus": [
                         {"label": "Home", "slug": "", "icon_class": "icon-file", "href": "/"},
                         {"label": "divider"},
                         {"label": "Pages", "slug": "", "icon_class": "icon-file", "href": "/db/select/_db_pages", "weight": "0"},
-                        {"label": "Tables", "href": "/db/select/menus", "icon_class": "icon-file"},
+                        {"label": "Tables", "href": "/db/select/_db_tables", "icon_class": "icon-file"},
                         {"label": "Fields", "href": "/db/select/_db_menu_permissions", "icon_class": "icon-file"},
-                        {"label": "Keys", "href": "/db/select/_db_menu_permissions", "icon_class": "icon-file"},
-                        {"label": "Actions", "href": "/db/select/_db_menu_permissions", "icon_class": "icon-file"},
-                        {"label": "Views", "href": "/db/select/_db_menu_permissions", "icon_class": "icon-file"},
+                        {"label": "Keys", "href": "/db/select/_db_keys", "icon_class": "icon-file"},
+                        {"label": "Actions", "href": "/db/select/_db_actions", "icon_class": "icon-file"},
+                        {"label": "Views", "href": "/db/select/_db_views", "icon_class": "icon-file"},
                         {"label": "divider"},
                         {"label": "Key Types", "href": "/db/select/_db_key_types", "icon_class": "icon-file"},
                         {"label": "Option Types", "href": "/db/select/_db_option_types", "icon_class": "icon-file"},
