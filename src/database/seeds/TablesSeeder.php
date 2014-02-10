@@ -1,4 +1,6 @@
-<?php namespace Laravella\Crud;
+<?php
+
+namespace Laravella\Crud;
 
 use Laravella\Crud\Log;
 use \Seeder;
@@ -25,6 +27,23 @@ class SeedTables extends CrudSeeder {
         return $types;
     }
 
+    /**
+     * Get widget types
+     * 
+     * @return type
+     */
+    public function getWidgetTypes()
+    {
+        $wts = DB::table('_db_widget_types')->get();
+        $wtsA = array();
+        foreach ($wts as $wt)
+        {
+            $wtsA[$wt->name] = $wt->id;
+        }
+
+        return $wtsA;
+    }
+
     public function run()
     {
 
@@ -32,9 +51,8 @@ class SeedTables extends CrudSeeder {
         DB::table('_db_fields')->delete();
 
         $displayTypes = $this->addDisplayTypes();
-
-//        $widgetTypes = $this->addWidgetTypes();
-
+        $widgetTypes = $this->getWidgetTypes();
+        
 //get the list of tables from the database metadata
         $tables = DB::select('show tables');
 //loop through records, each record has a tablename
@@ -45,57 +63,7 @@ class SeedTables extends CrudSeeder {
 //there is only one field, get it
                 foreach ($table as $tableName)
                 {
-//insert it into _db_tables
-                    $id = DB::table('_db_tables')->insertGetId(array('name' => $tableName));
-                    Log::write("success", "Added $tableName to _db_table with id $id");
-                    try
-                    {
-//get columns from database
-                        $cols = DB::select("show columns from $tableName");
-//loop through list of columns
-                        $displayOrder = 0;
-                        foreach ($cols as $col)
-                        {
-                            try
-                            {
-// the fields that will go into _db_fields
-                                $colRec = array();
-                                $colRec['table_id'] = $id;
-                                $colRec['name'] = $col->Field;
-                                $colRec['fullname'] = $tableName . "." . $col->Field;
-                                $colRec['label'] = $this->makeLabel($col->Field);
-                                $colRec['searchable'] = 1;
-                                $colRec['display_order'] = $displayOrder++;
-                                $colRec['type'] = $this->getFieldType($col->Type);
-                                $colRec['length'] = $this->getFieldLength($col->Type);
-                                $colRec['width'] = $this->getFieldWidth($colRec['type'], $colRec['length']);
-                                $colRec['widget_type_id'] = $this->getFieldWidget($colRec['type'], $colRec['length']);
-                                $colRec['null'] = $col->Null;
-                                $colRec['key'] = $col->Key;
-                                $colRec['default'] = $col->Default;
-                                $colRec['extra'] = $col->Extra;
-
-                                $colRec['display_type_id'] = $this->getDisplayType($colRec, $displayTypes);
-
-                                $fid = DB::table('_db_fields')->insertGetId($colRec);
-                                Log::write("success", " - {$colRec['name']} inserted with id $fid");
-                            }
-                            catch (Exception $e)
-                            {
-                                Log::write("important", $e->getMessage());
-                                $message = " x column {$colRec['name']} could not be inserted.";
-                                Log::write("important", $message);
-                                throw new Exception($message, 1, $e);
-                            }
-                        }
-                    }
-                    catch (Exception $e)
-                    {
-                        Log::write("important", $e->getMessage());
-                        $message = "Could not select columns for table $tableName";
-                        Log::write("important", $message);
-                        throw new Exception($message, 1, $e);
-                    }
+                    $this->addTable($tableName, $displayTypes, $widgetTypes);
                 }
             }
             catch (Exception $e)
@@ -105,6 +73,62 @@ class SeedTables extends CrudSeeder {
                 Log::write("important", $message);
                 throw new Exception($message, 1, $e);
             }
+        }
+    }
+
+    public function addTable($tableName, $displayTypes, $widgetTypes)
+    {
+
+//insert it into _db_tables
+        $id = DB::table('_db_tables')->insertGetId(array('name' => $tableName));
+        Log::write("success", "Added $tableName to _db_table with id $id");
+        try
+        {
+//get columns from database
+            $cols = DB::select("show columns from $tableName");
+//loop through list of columns
+            $displayOrder = 0;
+            foreach ($cols as $col)
+            {
+                try
+                {
+// the fields that will go into _db_fields
+                    $colRec = array();
+                    $colRec['table_id'] = $id;
+                    $colRec['name'] = $col->Field;
+                    $colRec['fullname'] = $tableName . "." . $col->Field;
+                    $colRec['label'] = $this->makeLabel($col->Field);
+                    $colRec['searchable'] = 1;
+                    $colRec['display_order'] = $displayOrder++;
+                    $colRec['type'] = $this->getFieldType($col->Type);
+                    $colRec['length'] = $this->getFieldLength($col->Type);
+                    $colRec['width'] = $this->getFieldWidth($colRec['type'], $colRec['length']);
+                    $colRec['widget_type_id'] = $widgetTypes['input_text'];
+                    $colRec['null'] = $col->Null;
+                    $colRec['key'] = $col->Key;
+                    $colRec['default'] = $col->Default;
+                    $colRec['extra'] = $col->Extra;
+
+                    $colRec['display_type_id'] = $this->getDisplayType($colRec, $displayTypes);
+
+                    $fid = DB::table('_db_fields')->insertGetId($colRec);
+                    Log::write("success", " - {$colRec['name']} inserted with id $fid");
+                }
+                catch (Exception $e)
+                {
+                    Log::write("important", $e->getMessage());
+                    $message = " x column {$colRec['name']} could not be inserted.";
+                    Log::write("important", $message);
+                    throw new Exception($message, 1, $e);
+                }
+            }
+        }
+        catch (Exception $e)
+        {
+            Log::write("important", $e->getMessage());
+            $message = "Could not select columns for table $tableName";
+            Log::write("important", $message);
+            throw new Exception($message, 1, $e);
         }
     }
 

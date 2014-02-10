@@ -44,9 +44,10 @@ class PostJsonSeeder extends CrudSeeder {
         foreach($objectsPaths as $objectsPath) {
             $json = json_decode(file_get_contents($objectsPath), true);
             $this->addKeys($json['keys']);
-            $this->updateFields($json['fields']);
+//            $this->updateFields($json['fields']);
             $this->linkPageToTables($json['page_tables']);
             $this->addMenusJson($json['menus']);
+//            $this->addTableWidgets($json['table_widgets']);
         }
 //        App::instance('meta', $json);
     }

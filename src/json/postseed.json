@@ -13,11 +13,9 @@
     ],
     "fields_comments": [
         "valid elements : fullname, label, display_type, searchable, display_order, width, widget_type, default, href, description, help",
-        "valid widget_types : input:text, input:hidden, input:text, input:checkbox, input:radio, textarea, select, multiselect, ckeditor, span, password, password:hashed, password:md5, thumbnail"
+        "valid widget_types : input_text, input_hidden, input_text, input_checkbox, input_radio, textarea, select, multiselect, ckeditor, span, password, password_hashed, password_md5, thumbnail"
     ],
     "fields": [
-        {"fullname": "services.short_description", "widget_type": "ckeditor", "help": "Short Description"},
-        {"fullname": "services.description", "widget_type": "ckeditor", "label": "Long Description", "description": "Long Description", "help": "Description"}
     ],
     "page_tables": [
     ],
@@ -77,16 +75,7 @@
                     "usergroups": ["admin", "superadmin"]
                 },
                 {
-                    "label": "CCI", "slug": "", "icon_class": "icon-file", "href": "", "weight": "3",
-                    "sub_menus": [
-                        {"label": "Services", "slug": "", "icon_class": "icon-file", "href": "/db/select/services"},
-                        {"label": "Homepage", "slug": "", "icon_class": "icon-file", "href": "/db/select/contents"},
-                        {"label": "Homepage Highlights", "slug": "", "icon_class": "icon-file", "href": "/db/select/contents"}
-                    ],
-                    "usergroups": ["admin", "superadmin"]
-                },
-                {
-                    "label": "Admin", "slug": "", "icon_class": "icon-file", "href": "", "weight": "1",
+                    "label": "Admin", "slug": "", "icon_class": "icon-file", "href": "", "weight": "0",
                     "sub_menus": [
                         {"label": "Users", "slug": "", "icon_class": "icon-file", "href": "/db/select/users"},
                         {"label": "Groups", "slug": "", "icon_class": "icon-file", "href": "/db/select/usergroups", "weight": "0"},
@@ -99,16 +88,16 @@
                     "usergroups": ["admin", "superadmin"]
                 },
                 {
-                    "label": "Meta Data", "slug": "", "icon_class": "icon-file", "href": "", "weight": "2",
+                    "label": "Meta Data", "slug": "", "icon_class": "icon-file", "href": "", "weight": "0",
                     "sub_menus": [
                         {"label": "Home", "slug": "", "icon_class": "icon-file", "href": "/"},
                         {"label": "divider"},
                         {"label": "Pages", "slug": "", "icon_class": "icon-file", "href": "/db/select/_db_pages", "weight": "0"},
-                        {"label": "Tables", "href": "/db/select/_db_tables", "icon_class": "icon-file"},
+                        {"label": "Tables", "href": "/db/select/menus", "icon_class": "icon-file"},
                         {"label": "Fields", "href": "/db/select/_db_menu_permissions", "icon_class": "icon-file"},
-                        {"label": "Keys", "href": "/db/select/_db_keys", "icon_class": "icon-file"},
-                        {"label": "Actions", "href": "/db/select/_db_actions", "icon_class": "icon-file"},
-                        {"label": "Views", "href": "/db/select/_db_views", "icon_class": "icon-file"},
+                        {"label": "Keys", "href": "/db/select/_db_menu_permissions", "icon_class": "icon-file"},
+                        {"label": "Actions", "href": "/db/select/_db_menu_permissions", "icon_class": "icon-file"},
+                        {"label": "Views", "href": "/db/select/_db_menu_permissions", "icon_class": "icon-file"},
                         {"label": "divider"},
                         {"label": "Key Types", "href": "/db/select/_db_key_types", "icon_class": "icon-file"},
                         {"label": "Option Types", "href": "/db/select/_db_option_types", "icon_class": "icon-file"},
@@ -129,9 +118,18 @@
         }
     ],
     "skins": {
-        "frontend": "laravella::skins::flatly",
+        "frontend": "dataphile::firecracker::capetown",
         "admin": "laravella::skins::flatly"
     },
+    "table_widgets": [
+        {"table": "contents", "action": "getDelete", "display_type": "widget", "widget_type": "getdelete"},
+        {"table": "contents", "action": "getEdit", "display_type": "widget", "widget_type": "getedit"},
+        {"table": "contents", "action": "getIndex", "display_type": "widget", "widget_type": "getindex"},
+        {"table": "contents", "action": "getInsert", "display_type": "widget", "widget_type": "getinsert"},
+        {"table": "contents", "action": "getPage", "display_type": "widget", "widget_type": "getpage"},
+        {"table": "contents", "action": "getSearch", "display_type": "widget", "widget_type": "getsearch"},
+        {"table": "contents", "action": "getSelect", "display_type": "widget", "widget_type": "getselect"}
+    ],
     "data": {
         "_db_key_types": [
             {"name": "primary"},
@@ -168,20 +166,21 @@
             {"name" :"important"}
         ],
         "_db_widget_types": [
-            {"name": "input:text"},
-            {"name": "input:hidden"},
-            {"name": "input:text"},
-            {"name": "input:checkbox"},
-            {"name": "input:radio"},
+            {"name": "input_text"},
+            {"name": "input_hidden"},
+            {"name": "input_text"},
+            {"name": "input_checkbox"},
+            {"name": "input_radio"},
             {"name": "textarea"},
             {"name": "select"},
             {"name": "multiselect"},
             {"name": "ckeditor"},
             {"name": "span"},
             {"name": "password"},
-            {"name": "password:hashed"},
-            {"name": "password:md5"},
-            {"name": "thumbnail"}
+            {"name": "password_hashed"},
+            {"name": "password_md5"},
+            {"name": "thumbnail"},
+            {"name": "flashcard"}
         ]
     }
 }

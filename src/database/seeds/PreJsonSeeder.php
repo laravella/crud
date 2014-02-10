@@ -52,6 +52,10 @@ class PreJsonSeeder extends CrudSeeder {
         DB::table('_db_severities')->delete();
         DB::table('_db_widget_types')->delete();
         
+//        DB::table('_db_option_types')->delete();
+//        DB::table('_db_options')->delete();
+        
+        
         $objectsPaths = Config::get('app.preseed');
         foreach($objectsPaths as $objectsPath) {
             $json = json_decode(file_get_contents($objectsPath), true);

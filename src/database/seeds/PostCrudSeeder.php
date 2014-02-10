@@ -45,8 +45,8 @@ class PostCrudSeeder extends CrudSeeder {
         //hide fields
         $this->setDisplayType('contents.content_mime_type', 'nodisplay');
         
-        $this->setWidgetType('medias', 'approved', 'input:checkbox');
-        $this->setWidgetType('medias', 'publish', 'input:checkbox');
+        $this->setWidgetType('medias', 'approved', 'input_checkbox');
+        $this->setWidgetType('medias', 'publish', 'input_checkbox');
 
         //change field labels
         $this->setFieldTitle('contents.lang', 'Language');

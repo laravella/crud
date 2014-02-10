@@ -202,9 +202,14 @@ class Table extends Eloquent {
      */
     public static function val($arr, $key) {
         $val = null;
-  //      if (!isset($arr) && !empty($arr) && isset($key) && !empty($key) && is_array($arr) && isset($arr[$key])) {
+        if (isset($arr) && !empty($arr) && isset($key) && !empty($key) && is_array($arr) && isset($arr[$key])) {
             $val = $arr[$key];
-//        }
+        } else {
+            echo "Table.val() : attribute not found : $key \n";
+            echo var_dump($arr);
+            var_dump(DbGopher::backtrace());
+            die;
+        }
         return $val;
     }
     

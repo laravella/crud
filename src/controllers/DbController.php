@@ -1,6 +1,7 @@
 <?php use Laravella\Crud\Params;
 use Laravella\Crud\DbGopher;
 use Laravella\Crud\Options;
+use Laravella\Crud\CrudSeeder;
 
 /**
  * All database requests are handled by this controller, 
@@ -119,6 +120,7 @@ class DbController extends AuthorizedController {
             $skinType = $paramsA['frontend']?'frontend':'admin';
             $paramsA['layout'] = $this->getLayout($skinType);
         }
+        
         return View::make($paramsA['layout'])->nest('content', $paramsA['view'], $paramsA);
     }
 
@@ -239,6 +241,15 @@ class DbController extends AuthorizedController {
 
     }
 
+    /**
+     * Alter Meta data
+     */
+    public function getAlter() {
+        $ts = new TableSeeder();
+        $ts->addTable('tableName', array(), array());
+        return "hello";
+    }
+    
     /**
      * Update data to the database
      * 

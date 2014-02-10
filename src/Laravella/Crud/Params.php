@@ -1,4 +1,6 @@
-<?php namespace Laravella\Crud;
+<?php
+
+namespace Laravella\Crud;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -23,10 +25,8 @@ class Params extends CrudSeeder {
     public $page = null; //the junction between table, view and action
     public $contents = array(); // the text contents of the page
     public $assets = null;
-    
     public $view = null;
     public $layout = null;
-    
     public $frontend = false;
     public $skin = null;
     public $selects = array();
@@ -38,7 +38,7 @@ class Params extends CrudSeeder {
     public $widgetTypes = array();
     public $menu = array();
     public $user = null;
-    
+
     /**
      * A cache of db tables to minimize db requests. See getPkSelects()
      * 
@@ -51,35 +51,42 @@ class Params extends CrudSeeder {
      * 
      * @param type $slug
      */
-    public static function bySlug($frontend, $slug, $displayType, $view) {
-        
+    public static function bySlug($frontend, $slug, $displayType, $view)
+    {
+
         $contentsA = Table::asArray('contents', array('slug' => $slug));
         //see if contents.id links to _db_pages.content_id to fetch relevant data
-        if (isset($contentsA) && !empty($contentsA))
+        if (isset($contentsA) && !empty($contentsA) && isset($contentsA[0]['id']))
         {
             $contentId = $contentsA[0]['id'];
             $tav = Model::getPageData(null, null, null, $contentId);
-            
+
             $tableName = DbGopher::coalesce($tav, 'table_name');
             $actionName = DbGopher::coalesce($tav, 'action_name');
-            
+
             $data = DB::table($tableName);
-            
+
             $params = new Params($tableName, $actionName, $displayType, $data, true);
 
             $params->contents = $contentsA;
-//            $params->view = $viewName;
+            //            $params->view = $viewName;
             $params->slug = DbGopher::coalesce($tav, 'slug');
-        } else {
-            throw new \Exception($slug.' not found');
         }
-        
+        else
+        {
+            var_dump($contentsA[0]);
+            
+            DbGopher::backtrace();
+            die;
+//            throw new \Exception($slug.' not found');
+        }
+
         $params->contents = $contentsA;
         $params->view = $view;
         $params->slug = $slug;
         return $params;
     }
-    
+
     /**
      * Create a standard params object that will be passed to the view.  The params object (instance of Laravella\Crud\Params
      * is at the heart of every view and contains all the variables that will be passed to the view, from the DbController.
@@ -91,8 +98,7 @@ class Params extends CrudSeeder {
      * @param type $action
      * @return \Laravella\Crud\Params
      */
-    public function __construct($tableName, $action, $displayType, $data = null, 
-            $frontend = false, $contentSlug = 'contents_getpage')
+    public function __construct($tableName, $action, $displayType, $data = null, $frontend = false, $contentSlug = 'contents_getpage')
     {
         Log::info("constructing Params for : tableName = $tableName");
 
@@ -107,7 +113,7 @@ class Params extends CrudSeeder {
         $view = Model::getViewData($tableName, $action);
         $tableActionViews = Model::getPageData($tableName, null, $action);
         $selects = Model::getPkSelects($tableMeta['fields_array']);
-        
+
         if (is_object($data))
         {
             $pageSize = DbGopher::coalesce($view, 'page_size', 10);
@@ -122,7 +128,7 @@ class Params extends CrudSeeder {
                 $tables[$pktName] = new Table($pktName, $this->dbTables[$pktName]['dataA'], $this->dbTables[$pktName]['meta']);
             }
         }
-        
+
         $this->user = Auth::user();
         $this->status = 'success';
         $this->message = '';
@@ -136,14 +142,14 @@ class Params extends CrudSeeder {
         {
             $this->pageSize = 10;
         }
-        
+
         $this->prefix = $prefix;
         $this->page = $tableActionViews;  //single, called by first()
         $this->view = $view;
         $this->frontend = $frontend;
 
         $this->skin();
-        
+
         $this->selects = $selects;
         $this->displayType = $displayType;
         $this->log = array();
@@ -160,23 +166,26 @@ class Params extends CrudSeeder {
         {
             $userId = Auth::user()->id;
             $this->menu = Model::getUserMenu($userId);
-        }        
-        
+        }
     }
-    
-    public function skin() {
+
+    public function skin()
+    {
         $skins = Options::getSkin();
 //        p($skins);
 //        die;
         $this->skin = array();
-        
-        if ($this->frontend) {
+
+        if ($this->frontend)
+        {
             $this->skin['name'] = $skins['name'];
             $this->skin['fullname'] = $skins['frontend'];
             $this->skin['vendor'] = $skins['vendor'];
             $this->skin['package'] = $skins['package'];
             $this->layout = $skins['frontend'] . '.frontlayout';
-        } else {
+        }
+        else
+        {
             $this->skin['name'] = $skins['adminName'];
             $this->skin['fullname'] = $skins['admin'];
             $this->skin['vendor'] = $skins['adminVendor'];
@@ -191,30 +200,34 @@ class Params extends CrudSeeder {
      * 
      * @return type
      */
-    private function __getDisplayTypes() {
+    private function __getDisplayTypes()
+    {
         $displayTypes = DB::table('_db_display_types')->get();
         $dtA = array();
-        foreach($displayTypes as $displayType) {
+        foreach ($displayTypes as $displayType)
+        {
             $dtA[$displayType->id] = $displayType->name;
         }
         return $dtA;
     }
-    
+
     /**
      * get all entries from _db_widget_types
      * This determines how a field will be displayed, what it will look like
      * 
      * @return type
      */
-    private function __getWidgetTypes() {
+    private function __getWidgetTypes()
+    {
         $widgetTypes = DB::table('_db_widget_types')->get();
         $dtA = array();
-        foreach($widgetTypes as $widgetType) {
+        foreach ($widgetTypes as $widgetType)
+        {
             $dtA[$widgetType->id] = $widgetType->name;
         }
         return $dtA;
     }
-    
+
     /**
      * Instantiate a Params object to use for Editing
      * 
@@ -241,15 +254,16 @@ class Params extends CrudSeeder {
     /**
      * MOVE TO MODEL
      */
-    public function getObject($pageId) {
+    public function getObject($pageId)
+    {
         $object = DB::table('_db_pages as p')
-                ->join('_db_page_tables as pt', 'pt.page_id', '=', 'p.id')
-                ->join('_db_tables as t', 'pt.table_id', '=', 't.id')
-                ->select('p.id as page_id', 'p.slug as slug', 't.id as table_id', 't.name as table_name')
-                ->where('p.id', $pageId)->get();
+                        ->join('_db_page_tables as pt', 'pt.page_id', '=', 'p.id')
+                        ->join('_db_tables as t', 'pt.table_id', '=', 't.id')
+                        ->select('p.id as page_id', 'p.slug as slug', 't.id as table_id', 't.name as table_name')
+                        ->where('p.id', $pageId)->get();
         return $object;
     }
-    
+
     /*
      * meta
      * data
@@ -257,10 +271,12 @@ class Params extends CrudSeeder {
      * pagesize
      * selects
      */
+
     public function asArray()
     {
-        $viewName = (is_object($this->view))?$this->view->name:$this->view;
-        
+
+        $viewName = (is_object($this->view)) ? $this->view->name : $this->view;
+
         $returnA = array("action" => $this->action,
             "meta" => $this->tableMeta['fields_array'],
             "tableName" => $this->tableMeta['table']['name'],
@@ -299,7 +315,8 @@ class Params extends CrudSeeder {
             $returnA["title"] = "";
         }
 
-        if (Options::get('debug')){
+        if (Options::get('debug'))
+        {
             $returnA['params'] = json_encode($returnA);
         }
 
@@ -389,7 +406,6 @@ class Params extends CrudSeeder {
 //        print_r($pkTables);
         return $pkTables;
     }
-    
 
     /**
      * Index an array of records (of type StdClass) according to the pk value
@@ -416,8 +432,7 @@ class Params extends CrudSeeder {
         }
         return $newArray;
     }
-    
-    
+
 }
 
 ?>

@@ -13,7 +13,7 @@
     ],
     "fields_comments": [
         "valid elements : fullname, label, display_type, searchable, display_order, width, widget_type, default, href, description, help",
-        "valid widget_types : input:text, input:hidden, input:text, input:checkbox, input:radio, textarea, select, multiselect, ckeditor, span, password, password:hashed, password:md5, thumbnail"
+        "valid widget_types : input_text, input_hidden, input_text, input_checkbox, input_radio, textarea, select, multiselect, ckeditor, span, password, password_hashed, password_md5, thumbnail"
     ],
     "fields": [
     ],
@@ -59,9 +59,66 @@
         {"type": "installation", "name": "status", "value": 0}
     ],
     "menus": [
+        {
+            "slug": "topmenu", "icon_class": "icon-file", "label": "TopMenu", "href": "", "weight": "0",
+            "sub_menus": [
+                {
+                    "label": "Contents", "slug": "", "icon_class": "icon-file", "href": "", "weight": "0",
+                    "sub_menus": [
+                        {"label": "Contents", "slug": "", "icon_class": "icon-file", "href": "/db/select/contents"},
+                        {"label": "Post Categories", "slug": "", "icon_class": "icon-file", "href": "/db/select/categories", "weight": "0"},
+                        {"label": "divider"},
+                        {"label": "Media", "href": "/db/select/medias", "icon_class": "icon-file"},
+                        {"label": "Collections", "href": "/db/select/mcollections", "icon_class": "icon-file"},
+                        {"label": "Galleries", "href": "/db/select/galleries", "icon_class": "icon-file"}
+                    ],
+                    "usergroups": ["admin", "superadmin"]
+                },
+                {
+                    "label": "Admin", "slug": "", "icon_class": "icon-file", "href": "", "weight": "0",
+                    "sub_menus": [
+                        {"label": "Users", "slug": "", "icon_class": "icon-file", "href": "/db/select/users"},
+                        {"label": "Groups", "slug": "", "icon_class": "icon-file", "href": "/db/select/usergroups", "weight": "0"},
+                        {"label": "divider"},
+                        {"label": "Menus", "href": "/db/select/menus", "icon_class": "icon-file"},
+                        {"label": "Menu Permissions", "href": "/db/select/_db_menu_permissions", "icon_class": "icon-file"},
+                        {"label": "divider"},
+                        {"label": "Options", "href": "/db/select/_db_options", "icon_class": "icon-file"}
+                    ],
+                    "usergroups": ["admin", "superadmin"]
+                },
+                {
+                    "label": "Meta Data", "slug": "", "icon_class": "icon-file", "href": "", "weight": "0",
+                    "sub_menus": [
+                        {"label": "Home", "slug": "", "icon_class": "icon-file", "href": "/"},
+                        {"label": "divider"},
+                        {"label": "Pages", "slug": "", "icon_class": "icon-file", "href": "/db/select/_db_pages", "weight": "0"},
+                        {"label": "Tables", "href": "/db/select/_db_menus", "icon_class": "icon-file"},
+                        {"label": "Fields", "href": "/db/select/_db_fields", "icon_class": "icon-file"},
+                        {"label": "Keys", "href": "/db/select/_db_keys", "icon_class": "icon-file"},
+                        {"label": "Actions", "href": "/db/select/_db_actions", "icon_class": "icon-file"},
+                        {"label": "Views", "href": "/db/select/_db_views", "icon_class": "icon-file"},
+                        {"label": "divider"},
+                        {"label": "Key Types", "href": "/db/select/_db_key_types", "icon_class": "icon-file"},
+                        {"label": "Option Types", "href": "/db/select/_db_option_types", "icon_class": "icon-file"},
+                        {"label": "Display Types", "href": "/db/select/_db_display_types", "icon_class": "icon-file"},
+                        {"label": "Widget Types", "href": "/db/select/_db_widget_types", "icon_class": "icon-file"},
+                        {"label": "divider"},
+                        {"label": "Objects", "href": "/db/select/_db_objects", "icon_class": "icon-file"},
+                        {"label": "Assets", "href": "/db/select/_db_assets", "icon_class": "icon-file"},
+                        {"label": "Events", "href": "/db/select/_db_events", "icon_class": "icon-file"},
+                        {"label": "divider"},
+                        {"label": "Log", "href": "/db/select/_db_logs", "icon_class": "icon-file"},
+                        {"label": "Audit", "href": "/db/select/_db_audit", "icon_class": "icon-file"}
+                    ],
+                    "usergroups": ["admin", "superadmin"]
+                }
+            ],
+            "usergroups": ["admin", "superadmin"]
+        }
     ],
     "skins": {
-        "frontend": "laravella::skins::flatly",
+        "frontend": "dataphile::firecracker::capetown",
         "admin": "laravella::skins::flatly"
     },
     "data": {
@@ -100,20 +157,21 @@
             {"name" :"important"}
         ],
         "_db_widget_types": [
-            {"name": "input:text"},
-            {"name": "input:hidden"},
-            {"name": "input:text"},
-            {"name": "input:checkbox"},
-            {"name": "input:radio"},
+            {"name": "input_text"},
+            {"name": "input_hidden"},
+            {"name": "input_text"},
+            {"name": "input_checkbox"},
+            {"name": "input_radio"},
             {"name": "textarea"},
             {"name": "select"},
             {"name": "multiselect"},
             {"name": "ckeditor"},
             {"name": "span"},
             {"name": "password"},
-            {"name": "password:hashed"},
-            {"name": "password:md5"},
-            {"name": "thumbnail"}
+            {"name": "password_hashed"},
+            {"name": "password_md5"},
+            {"name": "thumbnail"},
+            {"name": "flashcard"}
         ]
     }
 

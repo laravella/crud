@@ -26,8 +26,7 @@ class CrudSeeder extends Seeder {
     {
         foreach ($keys as $key)
         {
-            $this->addKey($key['pk_field'], $key['pk_display_field'], $key['fk_field'], 
-                    $key['fk_display_field'], $this->coa($key, 'key_type', 'primary'), $this->coa($key, 'order', 0));
+            $this->addKey($key['pk_field'], $key['pk_display_field'], $key['fk_field'], $key['fk_display_field'], $this->coa($key, 'key_type', 'primary'), $this->coa($key, 'order', 0));
         }
     }
 
@@ -49,8 +48,8 @@ class CrudSeeder extends Seeder {
 
         $pk_table = $pk_fullname[0];
         $pk_field = $pk_fullname[1];
-        $pkd_field = $pk_display_fullname[count($pk_display_fullname)-1];
-        
+        $pkd_field = $pk_display_fullname[count($pk_display_fullname) - 1];
+
         $fk_table = $fk_fullname[0];
         $fk_field = $fk_fullname[1];
 
@@ -149,7 +148,8 @@ class CrudSeeder extends Seeder {
         echo $slug . " ";
         echo $tableName;
         $pageId = $this->getId('_db_pages', 'slug', $slug);
-        if (is_null($pageId) || empty($pageId)) {
+        if (is_null($pageId) || empty($pageId))
+        {
             echo $slug . " not found. Cannot be linked to $tableName";
             die;
         }
@@ -160,13 +160,34 @@ class CrudSeeder extends Seeder {
 
     /**
      * 
+     * @param type $tableWidgets
+     */
+    public function addTableWidgets($tableWidgets)
+    {
+        foreach($tableWidgets as $tableWidget)
+        {
+            $tableId = $this->getId('_db_tables', 'name', $tableWidget->table);
+            $actionId = $this->getId('_db_actions', 'name', $tableWidget->action);
+            $displayTypeId = $this->getId('_db_display_types', 'name', $tableWidget->display_type);
+            $widgetTypeId = $this->getId('_db_widget_types', 'name', $tableWidget->widget_type);
+            $id = DB::table('_db_table_widgets')->insertGetId(
+                    array('table_id' => $tableId, 'action_id' => $actionId, 'displayTypeId'=>$displayTypeId, 'widgetTypeId'=>$widgetTypeId)
+                );
+            return $id;
+        }
+    }
+
+    /**
+     * 
      * 
      * @param type $menus
      */
     public function addMenusJson($menus, $parentId = null)
     {
-        foreach($menus as $menu) {
-            try {
+        foreach ($menus as $menu)
+        {
+            try
+            {
                 $slug = self::coa($menu, 'slug');
                 $pageId = $this->getId('_db_pages', 'slug', $slug);
                 $subMenus = self::coa($menu, 'sub_menus');
@@ -175,19 +196,22 @@ class CrudSeeder extends Seeder {
                 $menuA['page_id'] = $pageId;
                 $menuA['parent_id'] = $parentId;
                 $mId = DB::table('_db_menus')->insertGetId($menuA);
-                if (!empty($usergroups)) 
+                if (!empty($usergroups))
                 {
                     echo "\n";
-                    foreach($usergroups as $usergroup) {
-                        echo "linking menu ".$mId." to ".$usergroup."\n";
+                    foreach ($usergroups as $usergroup)
+                    {
+                        echo "linking menu " . $mId . " to " . $usergroup . "\n";
                         $this->addMenuPermissions($mId, $usergroup);
                     }
                 }
-                if (!empty($subMenus)) 
+                if (!empty($subMenus))
                 {
                     $this->addMenusJson($subMenus, $mId);
                 }
-            } catch (Exception $e) {
+            }
+            catch (Exception $e)
+            {
                 //echo $e->getMessage();
             }
         }
@@ -205,7 +229,7 @@ class CrudSeeder extends Seeder {
             DB::table($table)->insert($data);
         }
     }
-    
+
     /*
      * Set the page's type
      */
@@ -572,8 +596,9 @@ class CrudSeeder extends Seeder {
     }
 
     /**
+     *       
+     * @param array $types array('type'=>'bart', 'parent'=>'homer')
      * 
-     * @param type $types
      */
     public function addOptionTypes($types)
     {
@@ -607,7 +632,7 @@ class CrudSeeder extends Seeder {
         $cosmeticQuery = $table . ' ';
         $idCache = array();
         $id = null;
-        
+
         if (is_array($whereField))
         {
             $m = Model::getInstance(array(), $table);
@@ -637,8 +662,10 @@ class CrudSeeder extends Seeder {
                     $this->idCache[$cacheKey] = $recs[0]->id;
                     $id = $this->idCache[$cacheKey];
                 }
-            } else {
-                    $id = $this->idCache[$cacheKey];
+            }
+            else
+            {
+                $id = $this->idCache[$cacheKey];
             }
         }
         return $id;
@@ -941,6 +968,10 @@ class CrudSeeder extends Seeder {
      */
     public function updateFields($fields)
     {
+        
+        //suspicious
+        
+        
         foreach ($fields as $field)
         {
             //fullname, label
@@ -954,7 +985,7 @@ class CrudSeeder extends Seeder {
 
             //searchable, display_order, width, default, href, description, help
             $attrs = $this->buildArray($field, array('searchable', 'display_order', 'width', 'default', 'href', 'description', 'help'));
-            echo var_dump($attrs);
+//            echo var_dump($attrs);
             $this->updateOrInsert('_db_fields', array("fullname" => $field['fullname']), $attrs);
         }
     }

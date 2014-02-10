@@ -12,6 +12,28 @@ use Laravella\Crud\Exceptions\DBException;
  */
 class DbGopher {
 
+    public static function backtrace() {
+        $bt = debug_backtrace();
+        $arr = array();
+        $i = 0;
+        foreach($bt as $btx) {
+            if(isset($btx['file'])) {  
+                echo $btx['file']." : ".$btx['line']."\n";
+            }
+            
+            /*
+            $i++;
+            $arr[] = array("file"=>$btx['file'], "line"=>$btx['line']);
+            if ($i == 10) {
+                return $arr;
+                exit();
+            }
+             * 
+             */
+        }
+        return array();
+    }
+    
     /**
      * Turn a StdClass object into an array using an array of meta data objects.
      * 
