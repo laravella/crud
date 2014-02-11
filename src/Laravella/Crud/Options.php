@@ -95,7 +95,6 @@ class Options {
             'admin'=>$skinAdmin, 
             'name'=>$skinName,
             'vendor'=>$skinVendor,
-            
             'adminPackage'=>$adminSkinPackage, 
             'frontend'=>$skinFront,
             'adminName'=>$adminSkinName,
@@ -211,11 +210,8 @@ class Options {
      */
     public static function getType($name)
     {
-
         $types = static::getTypes($name);
-
         $values = static::getValues($types);
-
         return $values;
     }
 

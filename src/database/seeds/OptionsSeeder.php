@@ -28,7 +28,7 @@ class SeedOptions extends CrudSeeder {
         $type['medium'] = $this->addOptionType('medium', $type['image_versions']);
         $type['thumbnail'] = $this->addOptionType('thumbnail', $type['image_versions']);
         
-        $type['member-type'] = $this->addOptionType('thumbnail', $type['image_versions']);
+        $type['member-type'] = $this->addOptionType('member-type');
         $type['method'] = $this->addOptionType('method', $type['member-type']);
         $type['property'] = $this->addOptionType('property', $type['member-type']);
         $type['event'] = $this->addOptionType('event', $type['member-type']);

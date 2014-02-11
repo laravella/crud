@@ -93,11 +93,11 @@
                         {"label": "Home", "slug": "", "icon_class": "icon-file", "href": "/"},
                         {"label": "divider"},
                         {"label": "Pages", "slug": "", "icon_class": "icon-file", "href": "/db/select/_db_pages", "weight": "0"},
-                        {"label": "Tables", "href": "/db/select/menus", "icon_class": "icon-file"},
-                        {"label": "Fields", "href": "/db/select/_db_menu_permissions", "icon_class": "icon-file"},
-                        {"label": "Keys", "href": "/db/select/_db_menu_permissions", "icon_class": "icon-file"},
-                        {"label": "Actions", "href": "/db/select/_db_menu_permissions", "icon_class": "icon-file"},
-                        {"label": "Views", "href": "/db/select/_db_menu_permissions", "icon_class": "icon-file"},
+                        {"label": "Tables", "href": "/db/select/_db_tables", "icon_class": "icon-file"},
+                        {"label": "Fields", "href": "/db/select/_db_fields", "icon_class": "icon-file"},
+                        {"label": "Keys", "href": "/db/select/_db_keys", "icon_class": "icon-file"},
+                        {"label": "Actions", "href": "/db/select/_db_actions", "icon_class": "icon-file"},
+                        {"label": "Views", "href": "/db/select/_db_views", "icon_class": "icon-file"},
                         {"label": "divider"},
                         {"label": "Key Types", "href": "/db/select/_db_key_types", "icon_class": "icon-file"},
                         {"label": "Option Types", "href": "/db/select/_db_option_types", "icon_class": "icon-file"},
@@ -118,7 +118,7 @@
         }
     ],
     "skins": {
-        "frontend": "dataphile::firecracker::capetown",
+        "frontend": "laravella::cart::capetown",
         "admin": "laravella::skins::flatly"
     },
     "table_widgets": [
