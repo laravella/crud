@@ -55,7 +55,6 @@ class PreJsonSeeder extends CrudSeeder {
 //        DB::table('_db_option_types')->delete();
 //        DB::table('_db_options')->delete();
         
-        
         $objectsPaths = Config::get('app.preseed');
         foreach($objectsPaths as $objectsPath) {
             $json = json_decode(file_get_contents($objectsPath), true);
@@ -63,10 +62,8 @@ class PreJsonSeeder extends CrudSeeder {
             $this->addOptionTypes($json['types']);
             $this->addOptions($json['options']);
         }
-        
 //        App::instance('meta', $json);
     }
-
 }
 
 ?>

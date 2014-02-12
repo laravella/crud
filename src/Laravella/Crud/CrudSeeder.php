@@ -255,8 +255,11 @@ class CrudSeeder extends Seeder {
      */
     public function setDisplayType($fullName, $displayName)
     {
-        $nodisplayId = $this->getId('_db_display_types', 'name', $displayName);
-        $this->updateOrInsert('_db_fields', array('fullname' => $fullName), array('display_type_id' => $nodisplayId));
+        $displayId = $this->getId('_db_display_types', 'name', $displayName);
+        $this->updateOrInsert('_db_fields', array('fullname' => $fullName), array('display_type_id' => $displayId));
+        if ($displayName == 'textarea') {
+            $this->updateOrInsert('_db_fields', array('fullname' => $fullName), array('width' => 445));
+        }
     }
 
     /**
@@ -335,6 +338,10 @@ class CrudSeeder extends Seeder {
                 ->where('fullname', $fullName)
                 ->update(array('widget_type_id' => $widgetTypeId, 'display_type_id' => $displayTypeId));
 
+        if ($widgetType == 'textarea') {
+            $this->updateOrInsert('_db_fields', array('fullname' => $fullName), array('width' => 445));
+        }
+        
         echo $result . ' ' . $fullName . ' set to ' . $widgetTypeId . ' ' . $displayTypeId . " \n";
     }
 
@@ -1368,7 +1375,7 @@ class CrudSeeder extends Seeder {
     public function getDisplayType($colRec, $types)
     {
 
-        $displayTypeId = $types['edit'];
+        $displayTypeId = $types['widget'];
 
         if ($colRec['name'] == "created_at" || $colRec['name'] == "updated_at")
         {

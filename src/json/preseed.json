@@ -159,7 +159,6 @@
         "_db_widget_types": [
             {"name": "input_text"},
             {"name": "input_hidden"},
-            {"name": "input_text"},
             {"name": "input_checkbox"},
             {"name": "input_radio"},
             {"name": "textarea"},

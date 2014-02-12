@@ -17,7 +17,7 @@ class SeedTables extends CrudSeeder {
          * force 0 for nodisplay (possibly obsolete)
          */
         $types['nodisplay'] = $this->addDisplayType('nodisplay');
-        $types['edit'] = $this->addDisplayType('edit');
+//        $types['edit'] = $this->addDisplayType('edit');
         $types['display'] = $this->addDisplayType('display');
         $types['hidden'] = $this->addDisplayType('hidden');
         $types['link'] = $this->addDisplayType('link');
