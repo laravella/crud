@@ -27,9 +27,14 @@ class AccountController extends DbController {
     {
         $skin = Options::getSkin();
         $viewName = $skin['admin'] . '.accountindex';
-//        $viewName = Options::get('skin', 'admin') . '.accountindex';
+        
+        $segments = explode('::', $viewName);
+        if (count($segments) == 3)
+        {
+            $viewName = $segments[1]."::".$segments[2];
+        }        
         $params = new Params(false, self::SUCCESS, '', null, $viewName, 'getSelect');
-
+        
         return View::make($viewName)->with($params->asArray());
     }
 
@@ -176,8 +181,15 @@ class AccountController extends DbController {
 //        {
 //            return Redirect::to('account');
 //        }
-
+        
         $viewName = Options::get('skin', 'admin') . '.register';
+        
+        $segments = explode('::', $viewName);
+        if (count($segments) == 3)
+        {
+            $viewName = $segments[1]."::".$segments[2];
+        }        
+
         $params = new Params(false, self::SUCCESS, '', null, $viewName, 'getRegister');
 
         // Show the page.
@@ -195,7 +207,7 @@ class AccountController extends DbController {
     {
         // Declare the rules for the form validation.
         //
-		$rules = array(
+        $rules = array(
             'first_name' => 'required',
             'last_name' => 'required',
             'email' => 'required|email|unique:users',
