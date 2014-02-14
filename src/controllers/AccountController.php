@@ -26,13 +26,9 @@ class AccountController extends DbController {
     public function getIndex($slug = '')
     {
         $skin = Options::getSkin();
-        $viewName = $skin['admin'] . '.accountindex';
         
-        $segments = explode('::', $viewName);
-        if (count($segments) == 3)
-        {
-            $viewName = $segments[1]."::".$segments[2];
-        }        
+        $viewName = Options::getSkinName($skin, 'admin', 'accountindex');
+        
         $params = new Params(false, self::SUCCESS, '', null, $viewName, 'getSelect');
         
         return View::make($viewName)->with($params->asArray());

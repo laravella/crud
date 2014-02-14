@@ -43,6 +43,23 @@ class Options {
     }
 
     /**
+     * Removes the package name from a view if it exists.
+     * 
+     * @param type $skin the result of Options::getSkin()
+     * @param type $type 'frontend' or 'admin'
+     * @param type $suffix the name of the view
+     */
+    public static function getSkinName($skin, $type, $suffix) {
+        $viewName = $skin[$type] . "." . $suffix;        
+        $segments = explode('::', $viewName);
+        if (count($segments) == 3)
+        {
+            $viewName = $segments[1]."::".$segments[2];
+        }        
+        return $viewName;
+    }
+    
+    /**
      * 
      * @return type
      */

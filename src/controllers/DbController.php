@@ -52,6 +52,74 @@ class DbController extends AuthorizedController {
     }
 
     /**
+     * Display a form to edit keys between tables
+     * 
+     * @return type
+     */
+    public function getKeys() {
+        
+        /*
+
+select k.id, k.`name`, pkfi.id, pkfi.fullname, pkfn.id, pkfn.fullname, 
+fkfi.id, fkfi.fullname, fkfn.id, fkfn.fullname, kf.id, kf.order, kf.key_type_id
+from _db_key_fields kf 
+inner join _db_keys k on kf.key_id = k.id
+inner join _db_key_types kt on coalesce(k.key_type_id, kf.key_type_id) = kt.id
+inner join _db_fields pkfi on kf.pk_field_id = pkfi.id
+inner join _db_fields pkfn on kf.pk_display_field_id = pkfn.id
+inner join _db_fields fkfi on kf.fk_field_id = fkfi.id
+inner join _db_fields fkfn on kf.fk_display_field_id = fkfn.id;
+         *          */
+
+                // _db_keys.id, _db_keys.name, 
+                // _db_fields.id, _db_fields.fullname, 
+                //_db_key_fields.id, _db_key_fields.order, 
+                //_db_key_fields.key_type_id
+        
+        
+        $keys = DB::table('_db_key_fields as kf')
+                ->join('_db_keys as k', 'kf.key_id', '=', 'k.id')
+                ->join('_db_key_types as kt', 'kf.key_type_id', '=', 'kt.id')
+                ->join('_db_fields as pkfi', 'kf.pk_field_id', '=', 'pkfi.id')
+                ->join('_db_fields as pkfn', 'kf.pk_display_field_id', '=', 'pkfn.id')
+                ->join('_db_fields as fkfi', 'kf.fk_field_id', '=', 'fkfi.id')
+                ->join('_db_fields as fkfn', 'kf.fk_display_field_id', '=', 'fkfn.id')
+                ->select('k.id as key_id', 'k.name as key_name', 
+                        'pkfi.id as pkfi_fid', 'pkfn.fullname as pkfi_fin', 
+                        'pkfn.id as pkfn_fid', 'pkfn.fullname as pkfn_fin', 
+                        'fkfi.id as fkfi_fid', 'fkfi.fullname as fkfi_fin', 
+                        'fkfn.id as fkfn_fid', 'fkfn.fullname as fkfn_fin', 
+                        'kf.id as key_field_id', 'kf.order', 'kf.key_type_id')
+                ->get();
+        
+        $kA = array();
+        foreach($keys as $n=>$k) {
+            $kA[] = array('pkfi_fid'=>$k->pkfi_fid, 'pkfi_fin'=>$k->pkfi_fin, 
+                'fkfi_fid'=>$k->fkfi_fid, 'fkfi_fin'=>$k->fkfi_fin,
+                'key_id'=>$k->key_id, 'key_name'=>$k->key_name, 'key_field_id'=>$k->key_field_id, 
+                'order'=>$k->order, 'key_type_id'=>$k->key_type_id);
+        }
+        
+        $this->params = new Params('_db_tables', 'getSelect', 'admin');
+        
+        $paramsA = $this->params->asArray();
+        
+        $paramsA['dataA'] = $kA;
+        $paramsA['action'] = 'getKeys';
+        
+        if (!isset($paramsA['layout']) || empty($paramsA['layout']))
+        {
+            $skinType = $paramsA['frontend']?'frontend':'admin';
+            $paramsA['layout'] = $this->getLayout($skinType);
+        }
+        
+        $skin = Options::getSkin();
+        $viewName = Options::getSkinName($skin, 'admin', 'dbview');
+        
+        return View::make($paramsA['layout'])->nest('content', $viewName, $paramsA);
+    }
+    
+    /**
      * 
      * @param type $type
      * @return type
