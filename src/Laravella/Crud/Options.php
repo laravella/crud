@@ -12,7 +12,6 @@ use \Config;
  */
 class Options {
 
-
     /**
      * 
      * @param type $name

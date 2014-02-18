@@ -1,4 +1,6 @@
-<?php use Laravella\Crud\Params;
+<?php
+
+use Laravella\Crud\Params;
 use Laravella\Crud\DbGopher;
 use Laravella\Crud\Options;
 use Laravella\Crud\CrudSeeder;
@@ -11,24 +13,19 @@ class DbController extends AuthorizedController {
 
     private $layoutName = '.default';
     private $viewName = '.dbview';
-    
     private $skinType = 'admin'; //admin, front, (later : upload ... etc.)
-    
     //protected $layout = //getLayout;
     private $log = array();
 
     const SUCCESS = "success";
     const INFO = "info";
     const IMPORTANT = "important";
-    
     const HTML = "text/html";
     const XML = "text/xml";
     const JSON = "text/json";
 
     private $model = null;
-    
     public $displayType = self::HTML;
-    
     public $params = null;
 
     public function getSkin()
@@ -52,73 +49,148 @@ class DbController extends AuthorizedController {
     }
 
     /**
+     * Does a $haystack containt a $needle?
+     * 
+     * @param String $haystack
+     * @param String $needle
+     * @return boolean
+     */
+    public static function contains($haystack, $needle)
+    {
+        $pos = strpos($haystack, $needle);
+
+        if ($pos === false)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    /**
+     * Add or update keys
+     */
+    public function postKeys()
+    {
+        $input = Input::all();
+        $name = '';
+        $keyFields = array();
+        
+        foreach ($input as $field => $value)
+        {
+            $parts = explode(":", $field);
+            
+            if ($field == 'key_name')
+            {
+                $name = $value;
+            }
+            else if (static::contains($field, 'order'))
+            {
+                $kfId = $parts[1];
+                $keyFields[$kfId]['order'] = $value;
+            }
+            else if (static::contains($field, 'pkfi_fid'))
+            {
+                $kfId = $parts[1];
+                $keyFields[$kfId]['pkfi_fid'] = $value;
+            }
+            else if (static::contains($field, 'pkfn_fid'))
+            {
+                $kfId = $parts[1];
+                $keyFields[$kfId]['pkfn_fid'] = $value;
+            }
+            else if (static::contains($field, 'fkfi_fid'))
+            {
+                $kfId = $parts[1];
+                $keyFields[$kfId]['fkfi_fid'] = $value;
+            }
+            else if (static::contains($field, 'fkfn_fid'))
+            {
+                $kfId = $parts[1];
+                $keyFields[$kfId]['fkfn_fid'] = $value;
+            }
+            
+        }
+        var_dump($keyFields);
+        die;
+    }
+
+    /**
      * Display a form to edit keys between tables
      * 
      * @return type
      */
-    public function getKeys() {
-        
-        /*
+    public function getKeys($id = null)
+    {
+        $action = '';
+        $selects = array();
 
-select k.id, k.`name`, pkfi.id, pkfi.fullname, pkfn.id, pkfn.fullname, 
-fkfi.id, fkfi.fullname, fkfn.id, fkfn.fullname, kf.id, kf.order, kf.key_type_id
-from _db_key_fields kf 
-inner join _db_keys k on kf.key_id = k.id
-inner join _db_key_types kt on coalesce(k.key_type_id, kf.key_type_id) = kt.id
-inner join _db_fields pkfi on kf.pk_field_id = pkfi.id
-inner join _db_fields pkfn on kf.pk_display_field_id = pkfn.id
-inner join _db_fields fkfi on kf.fk_field_id = fkfi.id
-inner join _db_fields fkfn on kf.fk_display_field_id = fkfn.id;
-         *          */
+        if (isset($id) && !empty($id))
+        {
+            $keys = DB::table('_db_key_fields as kf')
+                    ->join('_db_keys as k', 'kf.key_id', '=', 'k.id')
+                    ->join('_db_key_types as kt', 'kf.key_type_id', '=', 'kt.id')
+                    ->join('_db_fields as pkfi', 'kf.pk_field_id', '=', 'pkfi.id')
+                    ->join('_db_fields as pkfn', 'kf.pk_display_field_id', '=', 'pkfn.id')
+                    ->join('_db_fields as fkfi', 'kf.fk_field_id', '=', 'fkfi.id')
+                    ->join('_db_fields as fkfn', 'kf.fk_display_field_id', '=', 'fkfn.id')
+                    ->where('k.id', '=', $id)
+                    ->select('k.id as key_id', 'k.name as key_name', 'pkfi.id as pkfi_fid', 'pkfi.fullname as pkfi_fin', 'pkfn.id as pkfn_fid', 'pkfn.fullname as pkfn_fin', 'fkfi.id as fkfi_fid', 'fkfi.fullname as fkfi_fin', 'fkfn.id as fkfn_fid', 'fkfn.fullname as fkfn_fin', 'kf.id as key_field_id', 'kf.order', 'kf.key_type_id')
+                    ->get();
 
-                // _db_keys.id, _db_keys.name, 
-                // _db_fields.id, _db_fields.fullname, 
-                //_db_key_fields.id, _db_key_fields.order, 
-                //_db_key_fields.key_type_id
-        
-        
-        $keys = DB::table('_db_key_fields as kf')
-                ->join('_db_keys as k', 'kf.key_id', '=', 'k.id')
-                ->join('_db_key_types as kt', 'kf.key_type_id', '=', 'kt.id')
-                ->join('_db_fields as pkfi', 'kf.pk_field_id', '=', 'pkfi.id')
-                ->join('_db_fields as pkfn', 'kf.pk_display_field_id', '=', 'pkfn.id')
-                ->join('_db_fields as fkfi', 'kf.fk_field_id', '=', 'fkfi.id')
-                ->join('_db_fields as fkfn', 'kf.fk_display_field_id', '=', 'fkfn.id')
-                ->select('k.id as key_id', 'k.name as key_name', 
-                        'pkfi.id as pkfi_fid', 'pkfn.fullname as pkfi_fin', 
-                        'pkfn.id as pkfn_fid', 'pkfn.fullname as pkfn_fin', 
-                        'fkfi.id as fkfi_fid', 'fkfi.fullname as fkfi_fin', 
-                        'fkfn.id as fkfn_fid', 'fkfn.fullname as fkfn_fin', 
-                        'kf.id as key_field_id', 'kf.order', 'kf.key_type_id')
-                ->get();
-        
-        $kA = array();
-        foreach($keys as $n=>$k) {
-            $kA[] = array('pkfi_fid'=>$k->pkfi_fid, 'pkfi_fin'=>$k->pkfi_fin, 
-                'fkfi_fid'=>$k->fkfi_fid, 'fkfi_fin'=>$k->fkfi_fin,
-                'key_id'=>$k->key_id, 'key_name'=>$k->key_name, 'key_field_id'=>$k->key_field_id, 
-                'order'=>$k->order, 'key_type_id'=>$k->key_type_id);
+            $selects['fullname'] = Model::getSelectBox('_db_fields', 'id', 'fullname');
+            $selects['key_type_id'] = Model::getSelectBox('_db_key_types', 'id', 'name');
+
+            $action = "getKeyEdit";
         }
-        
+        else
+        {
+            $keys = DB::table('_db_key_fields as kf')
+                    ->join('_db_keys as k', 'kf.key_id', '=', 'k.id')
+                    ->join('_db_key_types as kt', 'kf.key_type_id', '=', 'kt.id')
+                    ->join('_db_fields as pkfi', 'kf.pk_field_id', '=', 'pkfi.id')
+                    ->join('_db_fields as pkfn', 'kf.pk_display_field_id', '=', 'pkfn.id')
+                    ->join('_db_fields as fkfi', 'kf.fk_field_id', '=', 'fkfi.id')
+                    ->join('_db_fields as fkfn', 'kf.fk_display_field_id', '=', 'fkfn.id')
+                    ->select('k.id as key_id', 'k.name as key_name', 'pkfi.id as pkfi_fid', 
+                            'pkfi.fullname as pkfi_fin', 'pkfn.id as pkfn_fid', 'pkfn.fullname as pkfn_fin', 
+                            'fkfi.id as fkfi_fid', 'fkfi.fullname as fkfi_fin', 'fkfn.id as fkfn_fid', 
+                            'fkfn.fullname as fkfn_fin', 'kf.id as key_field_id', 'kf.order', 'kf.key_type_id')
+                    ->get();
+            $action = "getKeys";
+        }
+
+        $kA = array();
+        foreach ($keys as $n => $k)
+        {
+            $kA[] = array(
+                'pkfi_fid' => $k->pkfi_fid, 'pkfn_fid' => $k->pkfn_fid,
+                'fkfi_fid' => $k->fkfi_fid, 'fkfn_fid' => $k->fkfn_fid,
+                'key_id' => $k->key_id, 'key_name' => $k->key_name,
+                'key_field_id' => $k->key_field_id,
+                'order' => $k->order, 'key_type_id' => $k->key_type_id);
+        }
+
         $this->params = new Params('_db_tables', 'getSelect', 'admin');
-        
         $paramsA = $this->params->asArray();
-        
         $paramsA['dataA'] = $kA;
-        $paramsA['action'] = 'getKeys';
-        
+        $paramsA['action'] = $action;
+        $paramsA['selects'] = $selects;
+
         if (!isset($paramsA['layout']) || empty($paramsA['layout']))
         {
-            $skinType = $paramsA['frontend']?'frontend':'admin';
+            $skinType = $paramsA['frontend'] ? 'frontend' : 'admin';
             $paramsA['layout'] = $this->getLayout($skinType);
         }
-        
+
         $skin = Options::getSkin();
         $viewName = Options::getSkinName($skin, 'admin', 'dbview');
-        
+
         return View::make($paramsA['layout'])->nest('content', $viewName, $paramsA);
     }
-    
+
     /**
      * 
      * @param type $type
@@ -139,10 +211,8 @@ inner join _db_fields fkfn on kf.fk_display_field_id = fkfn.id;
      */
     public function getIndex($contentSlug = 'contents_getpage')
     {
-        
         $this->params = Params::bySlug(true, $contentSlug, $this->displayType, $this->getView('frontend'));
         return $this->makeView();
-        
     }
 
     /**
@@ -171,24 +241,25 @@ inner join _db_fields fkfn on kf.fk_display_field_id = fkfn.id;
      * @param type $paramsArray Params->asArray()
      * @return type
      */
-    public function makeView() {
-        
+    public function makeView()
+    {
+
         $paramsA = $this->params->asArray();
 
-        $skinType = $paramsA['frontend']?'frontend':'admin';
+        $skinType = $paramsA['frontend'] ? 'frontend' : 'admin';
         $paramsA['view'] = $this->getView($skinType);
 
         if (!isset($paramsA['view']) || empty($paramsA['view']))
         {
-            $skinType = $paramsA['frontend']?'frontend':'admin';
+            $skinType = $paramsA['frontend'] ? 'frontend' : 'admin';
             $paramsA['view'] = $this->getView($skinType);
         }
         if (!isset($paramsA['layout']) || empty($paramsA['layout']))
         {
-            $skinType = $paramsA['frontend']?'frontend':'admin';
+            $skinType = $paramsA['frontend'] ? 'frontend' : 'admin';
             $paramsA['layout'] = $this->getLayout($skinType);
         }
-        
+
         return View::make($paramsA['layout'])->nest('content', $paramsA['view'], $paramsA);
     }
 
@@ -238,7 +309,6 @@ inner join _db_fields fkfn on kf.fk_display_field_id = fkfn.id;
         $this->params = new Params($tableName, $action, $this->displayType, $table);
 
         return $this->makeView();
-        
     }
 
     /**
@@ -258,6 +328,7 @@ inner join _db_fields fkfn on kf.fk_display_field_id = fkfn.id;
         }
         catch (Exception $e)
         {
+            
         }
         $this->params = new Params($tableName, $action, $this->displayType, null);
         $res = '{"status":"failed"}';
@@ -282,7 +353,6 @@ inner join _db_fields fkfn on kf.fk_display_field_id = fkfn.id;
         $this->params = new Params($tableName, $action, $this->displayType, null);
 
         return $this->makeView();
-        
     }
 
     /**
@@ -306,18 +376,18 @@ inner join _db_fields fkfn on kf.fk_display_field_id = fkfn.id;
         $this->params = new Params($tableName, $action, $this->displayType, $table);
 
         return $this->makeView();
-
     }
 
     /**
      * Alter Meta data
      */
-    public function getAlter() {
+    public function getAlter()
+    {
         $ts = new TableSeeder();
         $ts->addTable('tableName', array(), array());
         return "hello";
     }
-    
+
     /**
      * Update data to the database
      * 
@@ -387,7 +457,6 @@ inner join _db_fields fkfn on kf.fk_display_field_id = fkfn.id;
                 $this->params = new Params($tableName, $action, $this->displayType, $table);
 
                 $this->makeView();
-                
             }
         }
         else
@@ -398,7 +467,7 @@ inner join _db_fields fkfn on kf.fk_display_field_id = fkfn.id;
 
     public function getTest()
     {
-
+        
     }
 
     /**
@@ -409,13 +478,12 @@ inner join _db_fields fkfn on kf.fk_display_field_id = fkfn.id;
      */
     public function missingMethod($parameters)
     {
-        
+
         return $this->_customAction($parameters);
-        
+
 //        print_r($parameters);
 //        return "missing";
     }
-
 
 }
 
