@@ -58,9 +58,10 @@ Route::get('login', function()
 
 Route::get('admin', function()
 {
-            return Redirect::to('/db/select/contents');
+    return Redirect::to('/db/select/contents');
 });
 
+Route::controller('key', 'KeysController');
 Route::controller('db', 'DbController');
 Route::controller('pg', 'DbController');
 Route::controller('dbapi', 'DbApiController');
