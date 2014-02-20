@@ -1,5 +1,8 @@
 <?php
 
+use Laravella\Crud\Params;
+use Laravella\Crud\DbGopher;
+
 /**
  * This is used for ajax calls. 
  * It just formats the data differently but the work is still done by DbController class.
@@ -152,8 +155,8 @@ class KeysController extends DbController {
         $paramsA = $this->params->asArray();
         $paramsA['dataA'] = $kA;
         $paramsA['tableName'] = '_db_keys';
-        $paramsA['action'] = $action;
-        $paramsA['selects'] = $selects;
+        $paramsA['action'] = 'getSelect';
+        $paramsA['selects'] = array();
         $paramsA['displayType'] = $this->displayType;
 
         if (!isset($paramsA['layout']) || empty($paramsA['layout']))
