@@ -6,8 +6,8 @@
  */
 class DbApiController extends DbController {
     
-    private $layoutName = '.content';
-    private $viewName = '.dbview';
+    public $layoutName = '.content';
+    public $viewName = '.dbview';
     
     public $displayType = self::XML; //or self::JSON or self::HTML
     

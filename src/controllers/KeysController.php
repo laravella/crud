@@ -12,8 +12,7 @@ class KeysController extends DbController {
 //    private $layoutName = '.content';
 //    private $viewName = '.dbview';
 //    
-//    public $displayType = self::XML; //or self::JSON or self::HTML
-
+    public $displayType = self::HTML; //or self::JSON or self::HTML
 
     /**
      * Add or update keys
@@ -69,7 +68,6 @@ class KeysController extends DbController {
         //var_dump($keys);
         foreach($keyFields as $id=>$key) {
             $key['id'] = $id;
-            //var_dump($key);
             
             $cs->updateOrInsert('_db_key_fields', array("id"=>$key['id']), $key);
             $cs->updateOrInsert('_db_keys', array("id"=>$keys['id']), $keys);
@@ -124,12 +122,9 @@ class KeysController extends DbController {
             $action = "getKeys";
         }
 
-        $paramsA = $this->keyParams($keys);
+        $this->setParams($keys, $selects, $action);
         
-        $skin = Options::getSkin();
-        $viewName = Options::getSkinName($skin, 'admin', 'dbview');
-
-        return View::make($paramsA['layout'])->nest('content', $viewName, $paramsA);
+        return $this->makeView('.default', '.dbview');
     }
 
     /**
@@ -138,7 +133,7 @@ class KeysController extends DbController {
      * @param type $keys
      * @return type
      */
-    public function keyParams($keys) {
+    public function setParams($keys, $selects, $action, $displayType = self::HTML) {
 
         $kA = array();
         foreach ($keys as $n => $k)
@@ -151,30 +146,42 @@ class KeysController extends DbController {
                 'order' => $k->order, 'key_type_id' => $k->key_type_id);
         }
 
-        $this->params = new Params('_db_tables', 'getSelect', 'admin');
-        $paramsA = $this->params->asArray();
-        $paramsA['dataA'] = $kA;
-        $paramsA['tableName'] = '_db_keys';
-        $paramsA['action'] = 'getSelect';
-        $paramsA['selects'] = array();
-        $paramsA['displayType'] = $this->displayType;
-
-        if (!isset($paramsA['layout']) || empty($paramsA['layout']))
-        {
-            $skinType = $paramsA['frontend'] ? 'frontend' : 'admin';
-            $paramsA['layout'] = $this->getLayout($skinType);
-        }
-        return $paramsA;
+        $this->params = new Params('_db_keys', $action, $displayType);
+        $this->params->dataA = $kA;
+        $this->params->tableName = '_db_keys';
+        $this->params->action = $action;
+        $this->params->title = 'Keys';
+        $this->params->selects = $selects;
     }
 
-
+    /**
+     * Return a detail row
+     * 
+     * @param type $id
+     */
+    public function getField($id = null) {
+        $this->getData('getRow', $id);
+        return $this->makeView('.apilayout', '.apiview');
+    }
+    
     /**
      * 
      */
-    public function postKeyfield() {
+    public function postKeyfield($id = null) {
+        $this->getData('getRow', $id);
+        return $this->makeView('.apilayout', '.apiview');
+    }
+    
+    /**
+     * 
+     * @param type $id
+     * @param type $viewName
+     * @param type $layoutName
+     */
+    public function getData($action, $id = null) {
         
-        $action = '';
         $selects = array();
+        $keys = array();
 
         if (isset($id) && !empty($id))
         {
@@ -191,13 +198,10 @@ class KeysController extends DbController {
 
             $selects['fullname'] = Model::getSelectBox('_db_fields', 'id', 'fullname');
             $selects['key_type_id'] = Model::getSelectBox('_db_key_types', 'id', 'name');
-
-            $action = "getKeyEdit";
         }        
+        $this->setParams($keys, $selects, $action);
         
-        return "{'greeting':'serverhello'}";
     }
-        
     
 }
 

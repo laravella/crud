@@ -38,6 +38,7 @@ class Params extends CrudSeeder {
     public $widgetTypes = array();
     public $menu = array();
     public $user = null;
+    public $title = '';
 
     /**
      * A cache of db tables to minimize db requests. See getPkSelects()
@@ -310,9 +311,9 @@ class Params extends CrudSeeder {
             $returnA["title"] = $this->page->title;
             $returnA["object"] = $this->getObject($this->page->page_id);
         }
-        else
+        if (!isset($returnA["title"]) || empty($returnA["title"]))
         {
-            $returnA["title"] = "";
+            $returnA["title"] = $this->title;
         }
 
         if (Options::get('debug'))

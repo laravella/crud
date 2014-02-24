@@ -11,9 +11,9 @@ use Laravella\Crud\CrudSeeder;
  */
 class DbController extends AuthorizedController {
 
-    private $layoutName = '.default';
-    private $viewName = '.dbview';
-    private $skinType = 'admin'; //admin, front, (later : upload ... etc.)
+    public $layoutName = '.default';
+    public $viewName = '.dbview';
+    public $skinType = 'admin'; //admin, front, (later : upload ... etc.)
     //protected $layout = //getLayout;
     private $log = array();
 
@@ -41,11 +41,13 @@ class DbController extends AuthorizedController {
      * @param type $type Either 'admin' or 'frontend'
      * @return type
      */
-    public function getLayout($type = 'admin')
+    public function getLayout($type = 'admin', $layoutName = null)
     {
-//        return Options::get('skin', $type) . $this->layoutName;
         $skin = Options::getSkin();
-        return $viewName = $skin[$type] . $this->layoutName;
+        if (empty($layoutName)) {
+            $layoutName = $this->layoutName;
+        }
+        return $viewName = $skin[$type] . $layoutName;
     }
 
     /**
@@ -74,11 +76,14 @@ class DbController extends AuthorizedController {
      * @param type $type
      * @return type
      */
-    public function getView($type = 'admin')
+    public function getView($type = 'admin', $viewName = null)
     {
         $skin = Options::getSkin();
-        return $viewName = $skin[$type] . $this->viewName;
-//        return Options::get('skin', $type) . $this->viewName;
+        if (empty($viewName)) {
+            $viewName = $this->viewName;
+        }
+        $viewName = $skin[$type] . $viewName;
+        return $viewName;
     }
 
     /**
@@ -119,25 +124,18 @@ class DbController extends AuthorizedController {
      * @param type $paramsArray Params->asArray()
      * @return type
      */
-    public function makeView()
+    public function makeView($layout = null, $view = null)
     {
-
         $paramsA = $this->params->asArray();
 
         $skinType = $paramsA['frontend'] ? 'frontend' : 'admin';
-        $paramsA['view'] = $this->getView($skinType);
+        $paramsA['view'] = $this->getView($skinType, $view);
 
-        if (!isset($paramsA['view']) || empty($paramsA['view']))
+        if (!isset($paramsA['layout']) || empty($paramsA['layout']) || !empty($layout))
         {
             $skinType = $paramsA['frontend'] ? 'frontend' : 'admin';
-            $paramsA['view'] = $this->getView($skinType);
+            $paramsA['layout'] = $this->getLayout($skinType, $layout);
         }
-        if (!isset($paramsA['layout']) || empty($paramsA['layout']))
-        {
-            $skinType = $paramsA['frontend'] ? 'frontend' : 'admin';
-            $paramsA['layout'] = $this->getLayout($skinType);
-        }
-
         return View::make($paramsA['layout'])->nest('content', $paramsA['view'], $paramsA);
     }
 

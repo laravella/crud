@@ -9,8 +9,8 @@ use Laravella\Crud\Params;
 class PageController extends DbController {
     public $displayType = self::HTML; //or self::JSON or self::HTML
 
-    protected $layoutName = '.frontlayout';
-    protected $viewName = '.frontview';
+    public $layoutName = '.frontlayout';
+    public $viewName = '.frontview';
     
     /**
      * 
