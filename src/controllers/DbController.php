@@ -44,7 +44,7 @@ class DbController extends AuthorizedController {
     public function getLayout($type = 'admin', $layoutName = null)
     {
         $skin = Options::getSkin();
-        if (empty($layoutName)) {
+        if (!isset($layoutName) || is_null($layoutName) || empty($layoutName)) {
             $layoutName = $this->layoutName;
         }
         return $viewName = $skin[$type] . $layoutName;
@@ -131,11 +131,18 @@ class DbController extends AuthorizedController {
         $skinType = $paramsA['frontend'] ? 'frontend' : 'admin';
         $paramsA['view'] = $this->getView($skinType, $view);
 
-        if (!isset($paramsA['layout']) || empty($paramsA['layout']) || !empty($layout))
-        {
-            $skinType = $paramsA['frontend'] ? 'frontend' : 'admin';
+        if (is_null($layout) || empty($layout)) {
+            if (!isset($paramsA['layout']) || is_null($paramsA['layout']) || empty($paramsA['layout']))
+            {
+                $paramsA['layout'] = $this->getLayout($skinType, $layout);
+            }
+        } else {
             $paramsA['layout'] = $this->getLayout($skinType, $layout);
         }
+//        echo $layout."\n";
+//        echo $paramsA['layout']." : ".$paramsA["view"];
+//        die;
+        
         return View::make($paramsA['layout'])->nest('content', $paramsA['view'], $paramsA);
     }
 
