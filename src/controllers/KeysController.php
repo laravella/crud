@@ -89,13 +89,13 @@ class KeysController extends DbController {
 
         if (isset($id) && !empty($id))
         {
-            $keys = DB::table('_db_key_fields as kf')
-                    ->join('_db_keys as k', 'kf.key_id', '=', 'k.id')
-                    ->join('_db_key_types as kt', 'kf.key_type_id', '=', 'kt.id')
-                    ->join('_db_fields as pkfi', 'kf.pk_field_id', '=', 'pkfi.id')
-                    ->join('_db_fields as pkfn', 'kf.pk_display_field_id', '=', 'pkfn.id')
-                    ->join('_db_fields as fkfi', 'kf.fk_field_id', '=', 'fkfi.id')
-                    ->join('_db_fields as fkfn', 'kf.fk_display_field_id', '=', 'fkfn.id')
+            $keys = DB::table('_db_keys as k')
+                    ->leftJoin('_db_key_fields as kf', 'kf.key_id', '=', 'k.id')
+                    ->leftJoin('_db_key_types as kt', 'kf.key_type_id', '=', 'kt.id')
+                    ->leftJoin('_db_fields as pkfi', 'kf.pk_field_id', '=', 'pkfi.id')
+                    ->leftJoin('_db_fields as pkfn', 'kf.pk_display_field_id', '=', 'pkfn.id')
+                    ->leftJoin('_db_fields as fkfi', 'kf.fk_field_id', '=', 'fkfi.id')
+                    ->leftJoin('_db_fields as fkfn', 'kf.fk_display_field_id', '=', 'fkfn.id')
                     ->where('k.id', '=', $id)
                     ->select('k.id as key_id', 'k.name as key_name', 'pkfi.id as pkfi_fid', 'pkfi.fullname as pkfi_fin', 'pkfn.id as pkfn_fid', 'pkfn.fullname as pkfn_fin', 'fkfi.id as fkfi_fid', 'fkfi.fullname as fkfi_fin', 'fkfn.id as fkfn_fid', 'fkfn.fullname as fkfn_fin', 'kf.id as key_field_id', 'kf.order', 'kf.key_type_id')
                     ->get();
@@ -108,12 +108,12 @@ class KeysController extends DbController {
         else
         {
             $keys = DB::table('_db_key_fields as kf')
-                    ->join('_db_keys as k', 'kf.key_id', '=', 'k.id')
-                    ->join('_db_key_types as kt', 'kf.key_type_id', '=', 'kt.id')
-                    ->join('_db_fields as pkfi', 'kf.pk_field_id', '=', 'pkfi.id')
-                    ->join('_db_fields as pkfn', 'kf.pk_display_field_id', '=', 'pkfn.id')
-                    ->join('_db_fields as fkfi', 'kf.fk_field_id', '=', 'fkfi.id')
-                    ->join('_db_fields as fkfn', 'kf.fk_display_field_id', '=', 'fkfn.id')
+                    ->leftJoin('_db_keys as k', 'kf.key_id', '=', 'k.id')
+                    ->leftJoin('_db_key_types as kt', 'kf.key_type_id', '=', 'kt.id')
+                    ->leftJoin('_db_fields as pkfi', 'kf.pk_field_id', '=', 'pkfi.id')
+                    ->leftJoin('_db_fields as pkfn', 'kf.pk_display_field_id', '=', 'pkfn.id')
+                    ->leftJoin('_db_fields as fkfi', 'kf.fk_field_id', '=', 'fkfi.id')
+                    ->leftJoin('_db_fields as fkfn', 'kf.fk_display_field_id', '=', 'fkfn.id')
                     ->select('k.id as key_id', 'k.name as key_name', 'pkfi.id as pkfi_fid', 
                             'pkfi.fullname as pkfi_fin', 'pkfn.id as pkfn_fid', 'pkfn.fullname as pkfn_fin', 
                             'fkfi.id as fkfi_fid', 'fkfi.fullname as fkfi_fin', 'fkfn.id as fkfn_fid', 
@@ -159,16 +159,16 @@ class KeysController extends DbController {
      * 
      * @param type $id
      */
-    public function getField($id = null) {
-        $this->getData('getRow', $id);
+    public function getField($parentId = null, $id = null) {
+        $this->getData('getRow', $parentId, $id);
         return $this->makeView('.apilayout', '.apiview');
     }
     
     /**
      * 
      */
-    public function postKeyfield($id = null) {
-        $this->getData('getRow', $id);
+    public function postKeyfield($parentId = null, $id = null) {
+        $this->getData('getRow', $parentId, $id);
         return $this->makeView('.apilayout', '.apiview');
     }
     
@@ -178,28 +178,29 @@ class KeysController extends DbController {
      * @param type $viewName
      * @param type $layoutName
      */
-    public function getData($action, $id = null) {
+    public function getData($action, $parentId = null, $id = null) {
         $selects = array();
         $keys = array();
 
-        if (isset($id) && !empty($id))
+        if (!isset($id) || is_null($id) || empty($id) || !is_int($id))
         {
-            $keys = DB::table('_db_key_fields as kf')
-                    ->join('_db_keys as k', 'kf.key_id', '=', 'k.id')
-                    ->join('_db_key_types as kt', 'kf.key_type_id', '=', 'kt.id')
-                    ->join('_db_fields as pkfi', 'kf.pk_field_id', '=', 'pkfi.id')
-                    ->join('_db_fields as pkfn', 'kf.pk_display_field_id', '=', 'pkfn.id')
-                    ->join('_db_fields as fkfi', 'kf.fk_field_id', '=', 'fkfi.id')
-                    ->join('_db_fields as fkfn', 'kf.fk_display_field_id', '=', 'fkfn.id')
-                    ->where('kf.id', '=', $id)
-                    ->select('k.id as key_id', 'k.name as key_name', 'pkfi.id as pkfi_fid', 'pkfi.fullname as pkfi_fin', 'pkfn.id as pkfn_fid', 'pkfn.fullname as pkfn_fin', 'fkfi.id as fkfi_fid', 'fkfi.fullname as fkfi_fin', 'fkfn.id as fkfn_fid', 'fkfn.fullname as fkfn_fin', 'kf.id as key_field_id', 'kf.order', 'kf.key_type_id')
-                    ->get();
-
-            $selects['fullname'] = Model::getSelectBox('_db_fields', 'id', 'fullname');
-            $selects['key_type_id'] = Model::getSelectBox('_db_key_types', 'id', 'name');
-        }        
-        $this->setParams($keys, $selects, $action);
+            $id = DB::table('_db_key_fields')->insertGetId(array('key_id'=>$parentId));
+        }
         
+        $keys = DB::table('_db_key_fields as kf')
+            ->leftJoin('_db_keys as k', 'kf.key_id', '=', 'k.id')
+            ->leftJoin('_db_key_types as kt', 'kf.key_type_id', '=', 'kt.id')
+            ->leftJoin('_db_fields as pkfi', 'kf.pk_field_id', '=', 'pkfi.id')
+            ->leftJoin('_db_fields as pkfn', 'kf.pk_display_field_id', '=', 'pkfn.id')
+            ->leftJoin('_db_fields as fkfi', 'kf.fk_field_id', '=', 'fkfi.id')
+            ->leftJoin('_db_fields as fkfn', 'kf.fk_display_field_id', '=', 'fkfn.id')
+            ->where('kf.id', '=', $id)
+            ->select('k.id as key_id', 'k.name as key_name', 'pkfi.id as pkfi_fid', 'pkfi.fullname as pkfi_fin', 'pkfn.id as pkfn_fid', 'pkfn.fullname as pkfn_fin', 'fkfi.id as fkfi_fid', 'fkfi.fullname as fkfi_fin', 'fkfn.id as fkfn_fid', 'fkfn.fullname as fkfn_fin', 'kf.id as key_field_id', 'kf.order', 'kf.key_type_id')
+            ->get();
+            
+        $selects['fullname'] = Model::getSelectBox('_db_fields', 'id', 'fullname');
+        $selects['key_type_id'] = Model::getSelectBox('_db_key_types', 'id', 'name');
+        $this->setParams($keys, $selects, $action);
     }
     
 }
