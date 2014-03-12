@@ -143,6 +143,20 @@ class DbGopher {
         return $lastQuery;
     }
 
+    /**
+     * get the last part of a skin name
+     */
+    public static function getSimpleSkinName($skinName) {
+        $skinA = explode("::",$skinName);
+        $i = count($skinA);
+        $name = $skinName;
+        if ($i == 2) {
+            $name = $skinA[0]."::".$skinA[1];
+        } else if ($i == 3) {
+            $name = $skinA[1]."::".$skinA[2];
+        }
+        return $name;
+    }    
 }
 
 ?>

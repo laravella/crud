@@ -298,12 +298,13 @@ class Model extends Eloquent {  //why a Model and a meta.Table? Maybe extend met
         ->join('_db_option_types as aot', 'aot.id', '=', 'pa.asset_type_id')
         ->join('_db_assets as a', 'a.asset_type_id', '=', 'pa.asset_type_id')
         ->join('_db_pages as p', 'p.page_type_id', '=', 'pa.page_type_id')
+        ->join('_db_page_contents as pc', 'pc.page_id', '=', 'p.id')
         ->select('pa.id', 'pa.page_type_id', 'pa.asset_type_id', 'a.id', 
         'p.id', 'aot.name', 'pot.name', 'a.url', 'a.vendor', 'a.type', 'a.version', 
         'a.position', 'p.action_id', 'p.view_id', 'p.content_id', 'p.page_size', 
-                'p.title', 'p.slug')
+                'p.title', 'pc.slug')
         /*->where('pot.name', $pot)*/  //TODO : had to comment this out because upload isn't properly linked to assets and pages
-        ->where('p.slug', '_db_actions_getselect')
+        ->where('pc.slug', '_db_actions_getselect')
         ->get();
 
         foreach($assets as $asset) {

@@ -47,12 +47,83 @@ class Params extends CrudSeeder {
      */
     private $dbTables = array();
 
+
     /**
      * $slug pageslug
      * 
      * @param type $slug
      */
     public static function bySlug($frontend, $slug, $displayType, $view)
+    {
+
+//        $contentsA = Table::asArray('contents', array('slug' => $slug));
+        $contentsA = Table::asArray('_db_page_contents', array('slug' => $slug));
+        //see if contents.id links to _db_pages.content_id to fetch relevant data
+        if (isset($contentsA) && !empty($contentsA) && isset($contentsA[0]['id']))
+        {
+            $contentId = $contentsA[0]['content_id'];
+            $tav = Model::getPageData(null, null, null, $contentId);
+            if (!is_object($tav)) {
+                $tav = Model::getPageData('contents', '', 'getPage');
+            }
+
+            $tableName = DbGopher::coalesce($tav, 'table_name', 'contents');
+            $actionName = DbGopher::coalesce($tav, 'action_name', 'getPage');
+            
+            //get the page's layout or use the default
+            $layoutName = DbGopher::coalesce($tav, 'page_type', 'laravella::skins::common.default');
+            
+            //get the layout without the package name, the format which Laravel understands
+            $layout = DbGopher::getSimpleSkinName($layoutName);
+
+            $data = DB::table($tableName);
+            
+            //!!!!!!!!!!!!!!!!
+//            $data = array();
+            
+//            echo "$tableName : $actionName : $displayType";
+//            var_dump($data);
+//            die;
+            $params = new Params($tableName, $actionName, $displayType, $data, true);
+
+            $params->contents = $contentsA;
+            
+            $contentsA = Table::asArray('contents', array('id' => $contentId));
+            
+            //            $params->view = $viewName;
+            $params->slug = DbGopher::coalesce($tav, 'slug');
+        }
+        else
+        {
+            echo "Error finding page : ".$slug."\n";
+            if (isset($contentsA) && !empty($contentsA)) {
+                if (isset($contentsA[0]) && !empty($contentsA[0])) {
+                    var_dump($contentsA[0]);
+                } else {
+                    var_dump($contentsA);
+                }
+            }
+            DbGopher::backtrace();
+            die;
+//            throw new \Exception($slug.' not found');
+        }
+
+//        var_dump($params->asArray());
+//        die;
+        
+        $params->contents = $contentsA;
+        $params->view = $view;
+        $params->layout = $layout;
+        $params->slug = $slug;
+        return $params;
+    }
+    
+    /**
+     * $slug pageslug
+     * 
+     * @param type $slug
+     */
+    public static function xbySlug($frontend, $slug, $displayType, $view)
     {
 
         $contentsA = Table::asArray('contents', array('slug' => $slug));
