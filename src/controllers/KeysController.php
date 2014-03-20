@@ -20,6 +20,11 @@ class KeysController extends DbController {
     public function postKeys()
     {
         $input = Input::all();
+        
+        echo "asdf";
+        echo var_dump($input);
+        die;
+        
         $name = '';
         $keyFields = array();
         $keys = array();
@@ -97,7 +102,10 @@ class KeysController extends DbController {
                     ->leftJoin('_db_fields as fkfi', 'kf.fk_field_id', '=', 'fkfi.id')
                     ->leftJoin('_db_fields as fkfn', 'kf.fk_display_field_id', '=', 'fkfn.id')
                     ->where('k.id', '=', $id)
-                    ->select('k.id as key_id', 'k.name as key_name', 'pkfi.id as pkfi_fid', 'pkfi.fullname as pkfi_fin', 'pkfn.id as pkfn_fid', 'pkfn.fullname as pkfn_fin', 'fkfi.id as fkfi_fid', 'fkfi.fullname as fkfi_fin', 'fkfn.id as fkfn_fid', 'fkfn.fullname as fkfn_fin', 'kf.id as key_field_id', 'kf.order', 'kf.key_type_id')
+                    ->select('k.id as key_id', 'k.name as key_name', 'pkfi.id as pkfi_fid', 
+                            'pkfi.fullname as pkfi_fin', 'pkfn.id as pkfn_fid', 'pkfn.fullname as pkfn_fin', 
+                            'fkfi.id as fkfi_fid', 'fkfi.fullname as fkfi_fin', 'fkfn.id as fkfn_fid', 
+                            'fkfn.fullname as fkfn_fin', 'kf.id as key_field_id', 'kf.order', 'kf.key_type_id')
                     ->get();
 
             $selects['fullname'] = Model::getSelectBox('_db_fields', 'id', 'fullname');
