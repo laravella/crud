@@ -21,6 +21,7 @@ class CreateTraceTable extends Migration {
                         $table->string('method', 100)->nullable();
                         $table->string('filename', 300)->nullable();
                         $table->integer('line')->nullable();
+                        $table->integer('level')->nullable();  //the depth of the trace
                         $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
                         $table->timestamp('updated_at')->default('0000-00-00 00:00:00');
                     });

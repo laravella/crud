@@ -12,13 +12,19 @@ use Laravella\Crud\Exceptions\DBException;
  */
 class DbGopher {
 
-    public static function backtrace() {
+    public static function backtrace($log = false) {
         $bt = debug_backtrace();
         $arr = array();
         $i = 0;
         foreach($bt as $btx) {
             if(isset($btx['file'])) {  
-                echo $btx['file']." : ".$btx['line']."\n";
+                if ($log) {
+                    DB::table('_db_trace')->insertGetId(array("filename"=>$btx['file'], "line"=>$btx['line']));
+                }
+                else 
+                {
+                    echo $btx['file']." : ".$btx['line']."\n";
+                }
             }
             
             /*

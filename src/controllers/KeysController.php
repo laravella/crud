@@ -19,11 +19,14 @@ class KeysController extends DbController {
      */
     public function postKeys()
     {
+        
         $input = Input::all();
         
+        /*
         echo "asdf";
         echo var_dump($input);
         die;
+        */
         
         $name = '';
         $keyFields = array();
